@@ -8,11 +8,12 @@
 
 ```
 sts2-mod\
-├── MyMod\            Mod 源码项目（改名时同步改 csproj 的 AssemblyName 和 json 文件名）
-│   ├── MyMod.csproj  构建后自动把 dll+json 部署到游戏 mods 目录
-│   ├── MyMod.json    Mod 清单（名称/版本/依赖等，字段见 notes）
-│   └── src\Mod.cs    入口与 Harmony 补丁模板
-├── lib\              编译引用的游戏 DLL（sts2 / 0Harmony / GodotSharp + sts2.xml API 文档）
+├── GamblerMod\          Mod 源码项目（改名时同步改 csproj 的 AssemblyName 和 json 文件名）
+│   ├── GamblerMod.csproj  构建后自动把 dll+json 部署到游戏 mods 目录
+│   ├── GamblerMod.json    Mod 清单（id/版本/依赖 BaseLib 3.4.7）
+│   └── src\               Entry（注册入口）+ Character + Core + Cards
+├── lib\              编译引用的游戏 DLL（sts2 / 0Harmony / GodotSharp / BaseLib + sts2.xml API 文档）
+├── docs\design\      游戏设计（gambler-design.md）+ 技术设计（gambler-tech-design.md）
 └── notes\            从游戏本体挖出的 Modding API 笔记
 ```
 
@@ -27,8 +28,8 @@ winget install Microsoft.DotNet.SDK.9
 ## 日常流程
 
 ```bash
-cd D:\worlk\sts2-mod\MyMod
-dotnet build        # 编译 + 自动部署到游戏 mods 目录
+cd D:\worlk\sts2-mod\GamblerMod
+dotnet build        # 编译 + 自动部署到游戏 mods 目录（需 BaseLib 工坊订阅，运行时依赖）
 ```
 
 启动游戏，在主菜单的 Mod 管理界面确认 MyMod 显示为已加载。

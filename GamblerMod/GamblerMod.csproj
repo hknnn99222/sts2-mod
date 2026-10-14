@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <AssemblyName>MyMod</AssemblyName>
-    <RootNamespace>MyMod</RootNamespace>
+    <AssemblyName>GamblerMod</AssemblyName>
+    <RootNamespace>GamblerMod</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <!-- 游戏安装目录：换机器或换盘符时改这里 -->
@@ -25,12 +25,17 @@
       <HintPath>..\lib\GodotSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- BaseLib 3.4.7：编译期引用本地拷贝；运行时由工坊订阅的 BaseLib 提供（清单已声明依赖） -->
+    <Reference Include="BaseLib">
+      <HintPath>..\lib\BaseLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <!-- 构建后自动部署：把 dll 和 manifest 拷进游戏 mods 目录 -->
   <Target Name="DeployToGame" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsDir)" />
-    <Copy SourceFiles="MyMod.json" DestinationFiles="$(ModsDir)\$(AssemblyName).json" />
+    <Copy SourceFiles="GamblerMod.json" DestinationFiles="$(ModsDir)\$(AssemblyName).json" />
     <Message Text="== 已部署 $(AssemblyName) 到 $(ModsDir) ==" Importance="high" />
   </Target>
 
