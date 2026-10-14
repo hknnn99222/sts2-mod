@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
+using BaseLib.Utils;
 using GamblerMod.Core;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -14,6 +15,7 @@ namespace GamblerMod.Relics;
 // 幸运筹码（初始遗物，占位名）：每回合一次，掷出反面后花 5 金币改为正面（设计 §4）。
 // M2 简化：金币足够时自动触发（无询问弹窗——弹窗 UI 待美术资产批一起做，已在技术设计记档）。
 // 价格 5 金是头号平衡旋钮（设计 §7.3-1）。
+[Pool(typeof(Character.GamblerRelicPool))]
 public sealed class LuckyChip : CustomRelicModel
 {
     public const int Cost = 5;

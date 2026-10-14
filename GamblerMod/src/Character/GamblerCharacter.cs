@@ -57,7 +57,9 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
     // 后果：M1 期间卡牌奖励较薄（池里只有 3 张），M3 分批入池后正常。
     public override CardPoolModel CardPool => ModelDb.CardPool<GamblerCardPool>();
 
-    public override RelicPoolModel RelicPool => Source.RelicPool;
+    // 遗物池同卡池逻辑：必须引用自有池（LuckyChip 的 [Pool] 指向它），
+    // 借战士池会让自有遗物池成孤儿、遗物注册在初始化期直接抛异常（M4 踩过）。
+    public override RelicPoolModel RelicPool => ModelDb.RelicPool<GamblerRelicPool>();
 
     public override PotionPoolModel PotionPool => Source.PotionPool;
 

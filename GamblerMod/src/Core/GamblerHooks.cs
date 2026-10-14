@@ -22,8 +22,12 @@ public sealed class GamblerHooks : CustomSingletonModel
 
     public GamblerHooks() : base(HookType.Combat)
     {
+        if (_subscribed) return; // 初始化重试时防重复订阅（ModHelper 按幂等 id 拒绝二次订阅）
+        _subscribed = true;
         GambleService.OnHeads += OnHeadsFlipped;
     }
+
+    private static bool _subscribed;
 
     public override Task AfterPlayerTurnStart(PlayerChoiceContext ctx, Player player)
     {
