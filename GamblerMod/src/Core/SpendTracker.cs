@@ -1,29 +1,50 @@
+using System.Linq;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+
 namespace GamblerMod.Core;
 
-// 本回合花费金币累计（技术设计 §4.4）：连续下注 / 流水 的数据源（M3 消费）。
-// M1 实现：单计数器 + 战斗实例变更时惰性清零（零订阅、零分配，红线 R3）。
-// TODO(M2)：回合级清零（做局遗物钩子接入时一并实现）；多人分槽计数留 M3。
+// 金币花费记账（技术设计 §4.4，M4 完整版）：
+//   SpentThisTurn    —— 本回合花费（连续下注消费，回合开始由 GamblerHooks 重置）
+//   流水抽牌         —— 累计花费每过阈值抽 1 张（阈值 = 流水能力层数，未持有则不触发）
+// 容器与计数全复用（红线 R3）；多人注记：单静态按 M4 简化，M5 校准。
 public static class SpendTracker
 {
-    private static int _spent;
-    private static object? _combat;
+    private static int _spentThisTurn;
+    private static int _cumulative;      // 流水累计（跨回合，按战斗）
+    private static int _thresholdPool;   // 已触发过的阈值累计
 
-    public static int SpentThisCombat(object combatIdentity)
+    public static int SpentThisTurn => _spentThisTurn;
+    public static int SpentThisCombat => _cumulative;
+
+    public static void OnTurnStart() => _spentThisTurn = 0;
+
+    public static void OnCombatStart()
     {
-        ResetIfNewCombat(combatIdentity);
-        return _spent;
+        _spentThisTurn = 0;
+        _cumulative = 0;
+        _thresholdPool = 0;
     }
 
-    public static void Record(int amount, object combatIdentity)
+    public static async Task Record(Player player, int amount)
     {
-        ResetIfNewCombat(combatIdentity);
-        _spent += amount;
-    }
+        if (amount <= 0) return;
+        _spentThisTurn += amount;
+        _cumulative += amount;
 
-    private static void ResetIfNewCombat(object combatIdentity)
-    {
-        if (ReferenceEquals(_combat, combatIdentity)) return;
-        _combat = combatIdentity;
-        _spent = 0;
+        // 流水：每累计花费过阈值 → 抽 1 张（持有 CashFlowPower 时阈值 = 其 Amount）
+        var cashFlow = player.Creature.GetPower<Powers.CashFlowPower>();
+        if (cashFlow == null) return;
+
+        var threshold = (int)cashFlow.Amount;
+        if (threshold <= 0) return;
+
+        var draws = _cumulative / threshold - _thresholdPool / threshold;
+        if (draws <= 0) return;
+        _thresholdPool = _cumulative - _cumulative % threshold;
+        for (var i = 0; i < draws; i++)
+            await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), 1, player);
     }
 }

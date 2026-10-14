@@ -6,11 +6,17 @@ public static class GamblerPowers
     public static HotStreakPower HotStreak { get; private set; } = null!;
     public static GamblingGodPower GamblingGod { get; private set; } = null!;
     public static PiggyBankPower PiggyBank { get; private set; } = null!;
+    public static HouseRulesPower HouseRules { get; private set; } = null!;
+    public static CashFlowPower CashFlow { get; private set; } = null!;
+    public static CompoundInterestPower CompoundInterest { get; private set; } = null!;
 
     public static void Init()
     {
         HotStreak = new HotStreakPower();
         GamblingGod = new GamblingGodPower();
         PiggyBank = new PiggyBankPower();
+        HouseRules = new HouseRulesPower();
+        CashFlow = new CashFlowPower();
+        CompoundInterest = new CompoundInterestPower();
     }
 }

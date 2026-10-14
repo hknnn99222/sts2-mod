@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
@@ -7,12 +8,12 @@ using MegaCrit.Sts2.Core.Random;
 
 namespace GamblerMod.Core;
 
-// 掷硬币管线（技术设计 §4.2，M2 完整版）：
+// 掷硬币管线（技术设计 §4.2，M4 完整版）：
 //   掷骰（正面率聚合）→ 干预窗口 → 定案 → 记录。
 // 干预顺序（固定，勿改）：赌神(全正) > 暗记(必正,消耗层数) > 幸运筹码(反面后花5金改正面,每回合1次)。
-// 随机源 = 每战斗一个 Rng(player, characterId, combatMixin)——官方"内容专属 RNG"构造器；
-// mixin 用战斗序号：官方文档明示"同内容再见会出同结果"，必须逐战斗区分。
-// 无重掷 API（评审 D4 已定）；记录容器跨战斗复用（红线 R3）。
+// 随机源 = 每战斗一个 Rng(player, characterId, combatMixin)——官方"内容专属 RNG"构造器。
+// 记录按"回合"清空（同花顺/底牌消费本回合正面数；GamblerHooks.AfterPlayerTurnStart 兜底重置）。
+// 无重掷 API（评审 D4 已定）；容器跨战斗/回合复用（红线 R3）。
 public static class GambleService
 {
     public const int BaseRatePercent = 50;
@@ -20,9 +21,13 @@ public static class GambleService
 
     public readonly record struct FlipRecord(CardModel Source, bool OriginalHeads, bool FinalHeads);
 
+    /// <summary>定案为正面时触发（赌场规则等消费；静态方法组订阅，红线 R5）。</summary>
+    public static event Action<Player>? OnHeads;
+
     private static readonly List<FlipRecord> Flips = new();
     private static object? _combat;
     private static int _combatCount = -1;
+    private static int _round = -1;
     private static Rng? _rng;
     private static int _forcedHeads; // 暗记层数，跨回合存续直到消耗
 
@@ -52,6 +57,8 @@ public static class GambleService
 
         Flips.Add(new FlipRecord(source, original, final));
         GD.Print($"[GamblerMod] 掷硬币 {source.Id.Entry}：{(original ? "正面" : "反面")}{(final != original ? " → 改为正面" : "")}");
+
+        if (final) OnHeads?.Invoke(player);
         return final;
     }
 
@@ -61,23 +68,25 @@ public static class GambleService
         var bonus = 0;
         var hotStreak = player.Creature.GetPower<Powers.HotStreakPower>();
         if (hotStreak != null) bonus += (int)hotStreak.Amount;
-        return System.Math.Min(BaseRatePercent + bonus, RateCapPercent);
+        return Math.Min(BaseRatePercent + bonus, RateCapPercent);
     }
 
-    public static IReadOnlyList<FlipRecord> Records(object combatIdentity)
+    public static IReadOnlyList<FlipRecord> Records => Flips;
+
+    /// <summary>本回合定案正面次数（同花顺/底牌消费）。</summary>
+    public static int HeadsCountThisTurn
     {
-        ResetIfNewCombat(combatIdentity);
-        return Flips;
+        get
+        {
+            var count = 0;
+            for (var i = 0; i < Flips.Count; i++)
+                if (Flips[i].FinalHeads) count++;
+            return count;
+        }
     }
 
-    public static int HeadsCount(object combatIdentity)
-    {
-        var records = Records(combatIdentity);
-        var count = 0;
-        for (var i = 0; i < records.Count; i++)
-            if (records[i].FinalHeads) count++;
-        return count;
-    }
+    /// <summary>最近一次定案结果（叠注消费）；无记录时返回 null。</summary>
+    public static bool? LastFlipHeads => Flips.Count > 0 ? Flips[^1].FinalHeads : null;
 
     private static bool Roll(Player player)
     {
@@ -92,6 +101,7 @@ public static class GambleService
         if (ReferenceEquals(_combat, combatIdentity)) return;
         _combat = combatIdentity;
         _combatCount++;
+        _round = -1;
         Flips.Clear();
         _rng = null;
         _forcedHeads = 0;

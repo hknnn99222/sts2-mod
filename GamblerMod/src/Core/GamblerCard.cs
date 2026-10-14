@@ -16,8 +16,8 @@ namespace GamblerMod.Core;
 // CanonicalVars 声明数值、ApplyEffect 写效果；升级走 OnUpgrade + UpgradeValueBy。
 // 约束④：改卡数值/效果只动卡文件，本类与 Core 层不动。
 [Pool(typeof(GamblerCardPool))]
-public abstract class GamblerCard(int cost, CardType type, CardRarity rarity, TargetType target)
-    : CustomCardModel(cost, type, rarity, target)
+public abstract class GamblerCard(int cost, CardType type, CardRarity rarity, TargetType target, bool costsX = false)
+    : CustomCardModel(cost, type, rarity, target, costsX)
 {
     protected int BaseGoldCost;  // 0 = 纯能量卡
     protected bool IsGambleCard; // 打出时是否掷硬币
@@ -28,7 +28,7 @@ public abstract class GamblerCard(int cost, CardType type, CardRarity rarity, Ta
     protected const string HeadsHitSfx = "heavy_attack.mp3";
 
     // 金币费的最终值出口：升级减费（§2.7）、假币免单等修正未来挂在这里，CanPlay 与扣费共用
-    public int EffectiveGoldCost => BaseGoldCost;
+    public virtual int EffectiveGoldCost => BaseGoldCost;
 
     protected override async Task OnPlay(PlayerChoiceContext ctx, CardPlay play)
     {
