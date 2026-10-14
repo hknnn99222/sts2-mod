@@ -100,7 +100,7 @@ GamblerMod/
     │   ├── SpendTracker.cs    # 本回合花费累计
     │   └── CombatState.cs     # 战斗内状态仓（回合/战斗重置）
     ├── Character/
-    │   └── GamblerCharacter.cs# CustomCharacterModel（HP72、起始99金、起始牌、初始遗物；视觉=战士贴图占位 D2）
+    │   └── GamblerCharacter.cs# CustomCharacterModel（HP72、起始148金、起始牌、初始遗物；视觉=战士贴图占位 D2）
     ├── Cards/
     │   ├── Basic/             # 起始 4 种（打击/防御/私房钱/试手气）
     │   ├── Common/            # 11 普
@@ -301,7 +301,7 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 
 | 里程碑 | 内容 | 游戏内验收标准 |
 |---|---|---|
-| M0 骨架 | 项目改名、引 BaseLib、Entry 注册、角色占位（D2）进选人界面 | 选人界面出现赌徒（占位视觉），能开一局，起始 99 金 |
+| M0 骨架 | 项目改名、引 BaseLib、Entry 注册、角色占位（D2）进选人界面 | 选人界面出现赌徒（占位视觉），能开一局，起始 148 金 |
 | M1 核心管线 | GamblerCard + GoldCost + GambleService + 起始 4 种牌 | ①私房钱加真金（商店同款钱）②试手气掷硬币、正/反伤害正确 ③金币不足卡变灰 ④掷骰记录可在日志查看 ⑤**改卡演练**：改试手气数值→只动 1 个卡文件→Core 零改动→重编译生效 |
 | M2 做局 | 幸运筹码 + 暗记/手气正旺 + 赌神 | 反面后弹改币、暗记必正按层数消耗、正面率加法上限 75% 生效 |
 | M3 卡池① | 普通档 11 张 + 私房钱升级等 | 全部可玩、数值对照 §5.4 校验表抽查 |

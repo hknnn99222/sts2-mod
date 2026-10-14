@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Characters;
 namespace GamblerMod.Character;
 
 // M0 占位角色（技术设计 D2）：PlaceholderCharacterModel 只借原版战士的资产路径（场景/贴图）。
-// 数值按游戏设计 v1.3：HP 72、起始 99 金。
+// 数值按游戏设计 v1.3 + 角色设定：HP 72、起始 148 金（本该 150，当铺抽走两枚"手续费"）。
 // 卡池 / 起始牌 / 起始遗物 / 药水池暂借战士（M1 起换成本职业内容）。
 // 注意：原版模型是 ModelDb 单例，禁止 new（DuplicateModelException），
 // 一律用 ModelDb.GetById + GetId 运行时查库；不做静态字段初始化，避免 cctor 抛异常连累类型加载。
@@ -25,7 +25,7 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
 
     public override int StartingHp => 72;
 
-    public override int StartingGold => 99;
+    public override int StartingGold => 148;
 
     public override CharacterGender Gender => Source.Gender;
 
@@ -64,7 +64,7 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
     public override List<(string, string)> Localization => new CharacterLoc(
         Title: "赌徒",
         TitleObject: "赌徒",
-        Description: "他带着一袋金币和一枚幸运筹码，来找命运讨回一笔旧账。",
+        Description: "他带着一袋金币和一枚幸运筹码，上塔去找一位欠他运气的先古之民。",
         PronounObject: "他",
         PronounSubject: "他",
         PronounPossessive: "他的",
