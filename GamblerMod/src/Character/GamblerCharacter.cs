@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BaseLib.Abstracts;
 using GamblerMod.Cards;
+using GamblerMod.Relics;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
@@ -31,7 +32,7 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
     public override Godot.Color NameColor => Source.NameColor;
 
     // 起始套牌（游戏设计 §3）：4 打击 + 4 防御（借原版）+ 私房钱 + 试手气（本职业签名）。
-    // 飞牌为 M1 验收用临时牌（TODO：M1 验收后移除）。
+    // M1 验收已完成，飞牌移出起始牌（保留在卡池作为奖励卡）。
     public override IEnumerable<CardModel> StartingDeck =>
     [
         ModelDb.Card<StrikeIronclad>(),
@@ -44,10 +45,11 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
         ModelDb.Card<DefendIronclad>(),
         GamblerCards.PrivateStash,
         GamblerCards.TryYourLuck,
-        GamblerCards.FlyingCard,
     ];
 
-    public override IReadOnlyList<RelicModel> StartingRelics => Source.StartingRelics;
+    // 初始遗物（游戏设计 §4，M2）：幸运筹码——"钱能买运气"的核心表达
+    public override IReadOnlyList<RelicModel> StartingRelics => [GamblerRelics.LuckyChip];
+
 
     // 卡池必须是自己的 GamblerCardPool：BaseLib 规定"卡池必须被角色引用，否则不会被找到"，
     // 引用他人池会导致本池成孤儿池、卡牌实例化抛 InvalidProgramException（M1 踩过）。

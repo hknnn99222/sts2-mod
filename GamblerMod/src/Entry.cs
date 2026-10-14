@@ -21,14 +21,16 @@ public static class Entry
 
     public static void Initialize()
     {
-        GD.Print($"[{ModId}] v{Version} 初始化（M1：金币费用 + 赌博管线 + 起始签名牌）");
+        GD.Print($"[{ModId}] v{Version} 初始化（M2：做局工具；M3：普通档卡池）");
 
         new Harmony(ModId).PatchAll(Assembly.GetExecutingAssembly());
 
+        Powers.GamblerPowers.Init();
+        Relics.GamblerRelics.Init();
         Cards.GamblerCards.Init();
 
         _ = new Character.GamblerCharacter();
 
-        GD.Print($"[{ModId}] 注册完成：角色 + {nameof(Cards.GamblerCards)}（私房钱/试手气/飞牌）");
+        GD.Print($"[{ModId}] 注册完成：角色 + 15 卡（起始2/普11/罕2/稀1）+ 3 力量 + 幸运筹码");
     }
 }

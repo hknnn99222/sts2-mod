@@ -38,7 +38,7 @@ public abstract class GamblerCard(int cost, CardType type, CardRarity rarity, Ta
             GD.Print($"[GamblerMod] {Id.Entry} 支付 {EffectiveGoldCost} 金币");
         }
 
-        var heads = IsGambleCard && GambleService.Flip(Owner, this);
+        var heads = IsGambleCard && await GambleService.Flip(Owner, this);
         await ApplyEffect(ctx, play, heads);
     }
 
