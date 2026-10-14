@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using BaseLib.Abstracts;
+using GamblerMod.Cards;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Characters;
 
 namespace GamblerMod.Character;
@@ -28,11 +30,29 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
 
     public override Godot.Color NameColor => Source.NameColor;
 
-    public override IEnumerable<CardModel> StartingDeck => Source.StartingDeck;
+    // 起始套牌（游戏设计 §3）：4 打击 + 4 防御（借原版）+ 私房钱 + 试手气（本职业签名）。
+    // 飞牌为 M1 验收用临时牌（TODO：M1 验收后移除）。
+    public override IEnumerable<CardModel> StartingDeck =>
+    [
+        ModelDb.Card<StrikeIronclad>(),
+        ModelDb.Card<StrikeIronclad>(),
+        ModelDb.Card<StrikeIronclad>(),
+        ModelDb.Card<StrikeIronclad>(),
+        ModelDb.Card<DefendIronclad>(),
+        ModelDb.Card<DefendIronclad>(),
+        ModelDb.Card<DefendIronclad>(),
+        ModelDb.Card<DefendIronclad>(),
+        GamblerCards.PrivateStash,
+        GamblerCards.TryYourLuck,
+        GamblerCards.FlyingCard,
+    ];
 
     public override IReadOnlyList<RelicModel> StartingRelics => Source.StartingRelics;
 
-    public override CardPoolModel CardPool => Source.CardPool;
+    // 卡池必须是自己的 GamblerCardPool：BaseLib 规定"卡池必须被角色引用，否则不会被找到"，
+    // 引用他人池会导致本池成孤儿池、卡牌实例化抛 InvalidProgramException（M1 踩过）。
+    // 后果：M1 期间卡牌奖励较薄（池里只有 3 张），M3 分批入池后正常。
+    public override CardPoolModel CardPool => ModelDb.CardPool<GamblerCardPool>();
 
     public override RelicPoolModel RelicPool => Source.RelicPool;
 
