@@ -1,51 +1,75 @@
-# 杀戮尖塔2（Slay the Spire 2）Mod 开发工作区
+# 杀戮尖塔2 赌徒 Mod（GamblerMod）
 
-本机游戏：`D:\SteamLibrary\steamapps\common\Slay the Spire 2`（v0.111.0，Godot + C#/.NET 9）。
-游戏自带官方 Mod 系统与 Harmony 补丁库，Mod 是 **C# DLL + 同名 JSON 清单**（可选同名 .pck 资源包），
-放进游戏目录下的 `mods\` 即被加载（创意工坊订阅的也算）。
+为 Slay the Spire 2 开发自定义角色"**赌徒**"：金币混合费用 + 掷硬币赌博。
+基于游戏官方 Mod 系统 + 社区库 BaseLib，纯 C# DLL（无 pck 资源包，立绘暂为占位）。
+
+## 当前状态
+
+| 里程碑 | 状态 |
+|---|---|
+| M0 骨架（占位角色进选人界面） | ✅ 验收通过 |
+| M1 核心管线（金币费用 + 赌博掷硬币 + 起始牌） | ✅ 验收通过 |
+| M2 做局（幸运筹码遗物 + 暗记/手气正旺/赌神） | ✅ 代码完成，待验收 |
+| M3/M4 卡池（43 张全量：普 11 / 罕 19 / 稀 13） | ✅ 代码完成，待验收 |
+
+测试清单见 [docs/testing/test-plan.md](docs/testing/test-plan.md)。
 
 ## 目录结构
 
 ```
 sts2-mod\
-├── GamblerMod\          Mod 源码项目（改名时同步改 csproj 的 AssemblyName 和 json 文件名）
-│   ├── GamblerMod.csproj  构建后自动把 dll+json 部署到游戏 mods 目录
-│   ├── GamblerMod.json    Mod 清单（id/版本/依赖 BaseLib 3.4.7）
-│   └── src\               Entry（注册入口）+ Character + Core + Cards
-├── lib\              编译引用的游戏 DLL（sts2 / 0Harmony / GodotSharp / BaseLib + sts2.xml API 文档）
-├── docs\design\      游戏设计（gambler-design.md）+ 技术设计（gambler-tech-design.md）
-└── notes\            从游戏本体挖出的 Modding API 笔记
+├── GamblerMod\               Mod 源码
+│   ├── GamblerMod.csproj     构建后自动部署 dll+json 到游戏 mods 目录
+│   ├── GamblerMod.json       清单（依赖 BaseLib ≥3.4.7，工坊订阅提供运行时）
+│   └── src\
+│       ├── Entry.cs          唯一注册点（Harmony 补丁 → 力量/遗物/卡牌 → 角色）
+│       ├── Core\             共用层：GamblerCard 基类 / GoldCost / GambleService /
+│       │                     SpendTracker / GoldCostCheckPatch / GamblerHooks（全局钩子）
+│       ├── Character\        角色 + 职业卡池
+│       ├── Cards\            43 张卡（Basic/Common/Uncommon/Rare + 单例仓）
+│       ├── Powers\           6 个力量 + 单例仓
+│       └── Relics\           幸运筹码 + 单例仓
+├── lib\                      编译引用（sts2 / 0Harmony / GodotSharp / BaseLib + sts2.xml API 文档）
+├── docs\
+│   ├── design\               游戏设计（gambler-design.md v1.3）+ 技术设计（gambler-tech-design.md）
+│   └── testing\              测试文档
+├── notes\modding-api.md      Modding API 笔记（含 BaseLib 使用要点/踩坑记录）
+└── HANDOFF.md                交接摘要（必读：引擎语义、加卡流程、历史事故）
 ```
 
-## 环境（唯一缺的东西）
+## 环境与构建
 
-本机只装了 .NET 运行时，没有 SDK。装一次即可：
-
-```powershell
-winget install Microsoft.DotNet.SDK.9
-```
-
-## 日常流程
+- .NET SDK 9 装在 **D:\dotnet**（PATH 异常时用全路径 `/d/dotnet/dotnet.exe`）
+- BaseLib 3.4.7 需在创意工坊订阅（运行时依赖，本机已装）
+- **构建前关游戏**——mods 目录里的 dll 被游戏进程锁定会导致部署失败（编译仍成功，看报错是否 MSB3027）
 
 ```bash
 cd D:\worlk\sts2-mod\GamblerMod
-dotnet build        # 编译 + 自动部署到游戏 mods 目录（需 BaseLib 工坊订阅，运行时依赖）
+dotnet build        # 编译 + 自动部署到 D:\SteamLibrary\...\Slay the Spire 2\mods
 ```
 
-启动游戏，在主菜单的 Mod 管理界面确认 MyMod 显示为已加载。
-（若显示 Failed：核对 MyMod.json 字段与 notes\modding-api.md 中的清单字段是否仍一致。）
+开游戏 → Mod 管理界面确认 GamblerMod 已加载 → 选赌徒开一局。
 
-## 下一步
+## 加一张新卡（3 步，不动 Core）
 
-1. 翻 `lib\sts2.xml` 找想改的游戏类型（文本搜索即可，命名空间 MegaCrit.Sts2.Core.*）。
-2. 在 `src\Mod.cs` 里按模板写第一个 `[HarmonyPatch]`，或加 `ModInitializer` 做初始化。
-3. 要做自定义卡牌/遗物，先看 `notes\modding-api.md` 的 ModHelper 一节，
-   复杂内容建议直接依赖社区库 BaseLib-StS2（NuGet: `Alchyr.Sts2.BaseLib`）。
-4. 游戏更新后：重新从 `游戏目录\data_sts2_windows_x86_64\` 拷贝最新 DLL 覆盖 `lib\`，
-   并重新核对清单字段（notes 里有现成命令）。
+1. 复制任意现有卡文件（如 `src/Cards/Common/SmallChange.cs`），改类名、
+   base 构造四元组（费用/类型/稀有度/目标）、构造体里设 `BaseGoldCost` / `IsGambleCard`、
+   `CanonicalVars` 数值、`OnUpgrade` 升级增量、`ApplyEffect` 效果、`Localization` 文案；
+2. `GamblerCards.cs` 加一行属性 + Init 一行；
+3. 关游戏 → `dotnet build`。
+
+改数值/效果只动卡文件（Core 层 M1 起冻结，约束见技术设计 §3.1/§4.8）。
+卡牌文案用 BaseLib SimpleLoc 语法：**描述必须 `#` 开头**，`!D!`/`!变量名!` 显示数值、
+`*文字*` 金色高亮、`-旧-+新+` 升级差异。
+
+## 排障
+
+- 游戏日志：`%APPDATA%\SlayTheSpire2\logs\godot.log`，搜 `GamblerMod`（掷硬币/扣金币均有记录）
+- 常见坑（详见 [HANDOFF.md](HANDOFF.md)）：构建前没关游戏；`RegisterType` 不注册内容；
+  原版模型禁止 new；卡池必须被角色引用；SimpleLoc 缺 `#`；资源路径区分大小写
+- BaseLib 源码：`https://github.com/Alchyr/BaseLib-StS2`（语义不明时以源码为准）
 
 ## 发布
 
-- Steam 创意工坊：用游戏自带的 ModUploader（Steam 库中右键游戏 → 管理 → 浏览本地文件，
-  或用创意工坊上传工具）。
-- Nexus / 手动分发：把 `bin\Debug\net9.0\MyMod.dll` + `MyMod.json`（+ 如有 `.pck`）打包即可。
+- Steam 创意工坊：游戏自带 ModUploader（需补 .pck 资源包后发布更完整）
+- 手动分发：`bin\Debug\net9.0\GamblerMod.dll` + `GamblerMod.json` 打包即可（要求用户订阅 BaseLib）
