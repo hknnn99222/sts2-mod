@@ -12,8 +12,12 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace GamblerMod.Cards.Common;
 
 // 普通 #3·赌一把（游戏设计 §5.1 / §5.4）：2 能 AoE 攻击，6 伤（升级 9）；赌博：正面 → 13（升级 17）。
-public sealed class GambleAll() : GamblerCard(2, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
+public sealed class GambleAll : GamblerCard
 {
+    public GambleAll() : base(2, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
+    {
+        IsGambleCard = true;
+    }
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(6, ValueProp.Move),

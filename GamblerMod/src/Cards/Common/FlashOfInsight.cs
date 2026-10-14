@@ -12,8 +12,12 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace GamblerMod.Cards.Common;
 
 // 普通 #8·灵光一闪（游戏设计 §5.1 / §5.4）：1 能，4 格挡；赌博：正面 → 8（升级 6 / 13）。
-public sealed class FlashOfInsight() : GamblerCard(1, CardType.Skill, CardRarity.Common, TargetType.None)
+public sealed class FlashOfInsight : GamblerCard
 {
+    public FlashOfInsight() : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
+    {
+        IsGambleCard = true;
+    }
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(4, ValueProp.Move),
