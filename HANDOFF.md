@@ -66,6 +66,19 @@ GamblerMod/src/
 - [ ] 设计侧 TBD：角色显示名、初始遗物名（不阻塞）
 - [ ] `docs/design/gambler-design.xlsx` 是被否决的 Excel 残留（未跟踪状态，用户待定删否）
 
+## 资产管线（.pck，2026-10-14 已跑通）
+
+- Godot 4.5.1（与游戏引擎 MegaDot 4.5.1 同版）装在 `D:\tools\godot`，用 console 版可执行文件
+- 资产工程在 `assets/`：图片放 `GamblerMod/images/<分类>/`，场景放 `GamblerMod/scenes/`；
+  已有：选人封面（charui/char_select_gambler.png，486×720 竖版裁剪）、选人背景
+  （scenes/screens/char_select/char_select_bg_gambler.tscn = TextureRect 全屏锚点 + 保持比例铺满）
+- 导出两条命令（在 assets/ 下）：
+  `Godot_v4.5.1-stable_win64_console.exe --headless --import .`
+  `Godot_v4.5.1-stable_win64_console.exe --headless --export-pack "GamblerMod" export/GamblerMod.pck`
+- `dotnet build` 自动把 pck 随 dll 部署到游戏 mods；清单 `has_pck: true`
+- 规格速查：卡牌立绘 1000×760（全艺术 606×852）、遗物 64/256、选人封面 2:3 竖版
+- 手写 .tscn 的 ext_resource 可省 uid（按 path 解析）；pck 内容可用 `strings xxx.pck` 快速核对
+
 ## 历史事故（别重蹈）
 
 - 改 PATH 一律用 PowerShell `[Environment]::SetEnvironmentVariable`，**禁用 setx + git-bash 变量展开**（曾污染注册表 PATH）
