@@ -34,20 +34,30 @@
   If this is present, we'll call the method named `initializerMethod` within the class.
   **Otherwise, we'll create a harmony instance for the mod and call Harmony.PatchAll.**"
 
-## Mod 清单 JSON 字段
+## Mod 清单 JSON 字段（已实测验证，2026-10-14）
 
-从 `sts2.dll` 元数据字符串簇中提取（紧邻出现的连续字段名）：
+对照本机正常运行的工坊 Mod（BaseLib v3.4.7 / QuickRestart v2.0.0）+ 加载日志确认：
 
+```json
+{
+  "id": "QuickRestart",          // 必填！缺失时加载器直接报错：
+                                 // "looks like a mod manifest but is missing the 'id' field"
+  "name": "Quick Restart",       // 显示名
+  "author": "erasels",
+  "description": "...",
+  "version": "v2.0.0",           // 带 v 前缀
+  "min_game_version": "0.107.0",
+  "has_pck": true,               // 有 .pck 资源包才写 true
+  "has_dll": true,
+  "dependencies": [              // 依赖数组，每项 { "id", "min_version" }
+    { "id": "BaseLib", "min_version": "3.4.5" }
+  ],
+  "affects_gameplay": false
+}
 ```
-min_version, author, description, version,
-has_pck, has_dll, dependencies,
-affects_gameplay, min_game_version
-```
 
-对照社区 Mod 的发布包（如 BaseLib：`BaseLib.dll` + `BaseLib.json` + `BaseLib.pck`），
-manifest 与 DLL 同名放在一起。`has_pck` / `has_dll` 疑似加载器探测标志，
-模板里已按实际包内容填写。字段集合在游戏版本更新后可能变化，若加载报错
-（ModLoadState.Failed），优先回来核对这些字段名。
+注意：`min_version` 是** dependencies 内条目**的字段，不是清单顶层字段。
+游戏版本更新后字段若变化，优先翻 `%APPDATA%\SlayTheSpire2\logs\godot.log` 看加载报错。
 
 ## ModHelper 可用方法（XML 文档摘要）
 
