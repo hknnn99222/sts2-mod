@@ -27,6 +27,10 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
     public override string? CustomCharacterSelectIconPath =>
         "res://GamblerMod/images/charui/char_select_gambler.png";
 
+    // 选人大图/背景（同一张图的完整 1280×720，TextureRect 全屏场景，保持比例铺满）
+    public override string? CustomCharacterSelectBg =>
+        "res://GamblerMod/scenes/screens/char_select/char_select_bg_gambler.tscn";
+
     public override int StartingHp => 72;
 
     public override int StartingGold => 148;
