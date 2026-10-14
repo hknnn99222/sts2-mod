@@ -23,6 +23,10 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
     // （写成 "Ironclad" 会导致选人背景/转场材质加载失败，选人界面状态切换中断）
     public override string PlaceholderID => "ironclad";
 
+    // 选人封面图（用户提供，assets 工程导出的 pck 提供，486×720 竖版裁剪）
+    public override string? CustomCharacterSelectIconPath =>
+        "res://GamblerMod/images/charui/char_select_gambler.png";
+
     public override int StartingHp => 72;
 
     public override int StartingGold => 148;

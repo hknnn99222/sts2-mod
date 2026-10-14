@@ -32,10 +32,11 @@
     </Reference>
   </ItemGroup>
 
-  <!-- 构建后自动部署：把 dll 和 manifest 拷进游戏 mods 目录 -->
+  <!-- 构建后自动部署：把 dll、manifest 和资源包拷进游戏 mods 目录 -->
   <Target Name="DeployToGame" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModsDir)" />
     <Copy SourceFiles="GamblerMod.json" DestinationFiles="$(ModsDir)\$(AssemblyName).json" />
+    <Copy SourceFiles="..\assets\export\GamblerMod.pck" DestinationFolder="$(ModsDir)" Condition="Exists('..\assets\export\GamblerMod.pck')" />
     <Message Text="== 已部署 $(AssemblyName) 到 $(ModsDir) ==" Importance="high" />
   </Target>
 

@@ -5,7 +5,7 @@
   "description": "赌徒（The Gambler）：金币混合费用 + 掷硬币赌博的自定义角色。",
   "version": "v0.1.0",
   "min_game_version": "0.111.0",
-  "has_pck": false,
+  "has_pck": true,
   "has_dll": true,
   "dependencies": [
     {

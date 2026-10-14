@@ -1,0 +1,7 @@
+; GamblerMod 资产工程：所有游戏内图片资源在此维护，用 Godot 4.5.1 导出 .pck
+; 导出命令见 README（--headless --import 后 --export-pack）
+config_version=5
+
+[application]
+
+config/name="GamblerModAssets"
