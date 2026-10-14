@@ -59,6 +59,24 @@
 注意：`min_version` 是** dependencies 内条目**的字段，不是清单顶层字段。
 游戏版本更新后字段若变化，优先翻 `%APPDATA%\SlayTheSpire2\logs\godot.log` 看加载报错。
 
+## BaseLib 使用要点（源码核实，2026-10-14，BaseLib 3.4.7）
+
+BaseLib 源码：https://github.com/Alchyr/BaseLib-StS2（关键文件 `Patches/Content/ContentPatches.cs`、`Abstracts/CustomCharacterModel.cs`、`Abstracts/ILocalizationProvider.cs`、`Patches/Localization/ModelLocPatch.cs`）
+
+1. **内容注册是"实例化即注册"**：`Custom*Model` 的构造器自动调
+   `CustomContentDictionary.AddCharacter(this)` / `AddModel(...)`（卡牌走 `PoolAttribute` 指定池）。
+   Mod 里只要 `new` 一次模型即可，**不要**自己调 `RegisterType(typeof(...))`——
+   它只把类型塞进去重集合，不挂载内容，且会让之后构造器里的 AddCharacter 因"类型已登记"而跳过。
+2. **角色挂载机制**：BaseLib 给 `ModelDb.AllCharacters` 打 Postfix，追加
+   `CustomContentDictionary.CustomCharacters` 列表；选人/开局即走这条管线。
+3. **原版模型全是 ModelDb 单例**：任何 `new 原版模型()` 都会抛 `DuplicateModelException`。
+   取已有实例：`ModelDb.GetById<T>(ModelDb.GetId<T>())`（T 也可写具体子类）。
+4. **代码内本地化**：模型实现 `ILocalizationProvider.Localization`（返回 `CardLoc`/`CharacterLoc` 等
+   record，隐式转 `List<(string,string)>`）。在 `ModelDb.Init` 后被 `ModelLocPatch` 消费，
+   写入对应 loc 表，键 = `{ModelId.Entry}.{title|description|...}`。
+5. **占位角色**：`PlaceholderCharacterModel` 按 `PlaceholderID` 拼原版资产路径
+   （creature_visuals / 选人背景 / 营火 / 商人 / 能量球等全套），默认 "ironclad"。
+
 ## ModHelper 可用方法（XML 文档摘要）
 
 - `AddModelToPool<...>()` — Mod 向内容池（卡牌/遗物等）注册自定义模型；
