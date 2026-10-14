@@ -29,7 +29,8 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
 
     public override CharacterGender Gender => Source.Gender;
 
-    public override Godot.Color NameColor => Source.NameColor;
+    // 名字色：暗金（角色设定 §4 色彩基调，与卡背/牌组图标同色系）
+    public override Godot.Color NameColor => new("e8c34a");
 
     // 起始套牌（游戏设计 §3）：4 打击 + 4 防御（借原版）+ 私房钱 + 试手气（本职业签名）。
     // M1 验收已完成，飞牌移出起始牌（保留在卡池作为奖励卡）。
@@ -63,16 +64,16 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
     public override List<(string, string)> Localization => new CharacterLoc(
         Title: "赌徒",
         TitleObject: "赌徒",
-        Description: "钱能买运气。",
+        Description: "他带着一袋金币和一枚幸运筹码，来找命运讨回一笔旧账。",
         PronounObject: "他",
         PronounSubject: "他",
         PronounPossessive: "他的",
         PossessiveAdjective: "他的",
-        AromaPrinciple: "",
-        EndTurnPingAlive: "",
-        EndTurnPingDead: "",
-        EventDeathPrevention: "",
-        GoldMonologue: "",
+        AromaPrinciple: "贪婪，但守规矩。",
+        EndTurnPingAlive: "轮到我了？——下注吧。",
+        EndTurnPingDead: "……这一手，先欠着。",
+        EventDeathPrevention: "还轮不到我离场。",
+        GoldMonologue: "叮——世上最好听的声音。",
         CardsModifierTitle: "",
         CardsModifierDescription: "",
         ExtraLoc: []);
