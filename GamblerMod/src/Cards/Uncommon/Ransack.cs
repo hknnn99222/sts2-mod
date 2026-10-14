@@ -45,5 +45,5 @@ public sealed class Ransack : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "洗劫",
-        "#*额外花费 4 金币*。对所有敌人造成 !D! 伤害。每*击杀*一个敌人，获得 !Loot! 金币。");
+        "#花费 *4 金币*。\n对所有敌人造成 !D! 伤害。每*击杀*一个敌人，获得 !Loot! 金币。");
 }

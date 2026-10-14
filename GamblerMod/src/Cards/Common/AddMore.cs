@@ -37,5 +37,5 @@ public sealed class AddMore() : GamblerCard(1, CardType.Attack, CardRarity.Commo
 
     public override List<(string, string)>? Localization => new CardLoc(
         "加注",
-        "#造成 !D! 伤害。自动额外花费至多 *6 金币*，每 1 金币 +1 伤害。");
+        "#花费至多 *6 金币*，每 1 金币 +1 伤害。\n造成 !D! 伤害。");
 }

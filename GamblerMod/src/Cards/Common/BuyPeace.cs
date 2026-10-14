@@ -28,5 +28,5 @@ public sealed class BuyPeace : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "买平安",
-        "#*额外花费 4 金币*。获得 !B! 格挡。");
+        "#花费 *4 金币*。\n获得 !B! 格挡。");
 }

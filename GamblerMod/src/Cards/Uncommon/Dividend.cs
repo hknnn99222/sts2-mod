@@ -30,5 +30,5 @@ public sealed class Dividend : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "分红",
-        "#*额外花费 3 金币*。获得 !GoldGain! 金币，抽 1 张牌。");
+        "#花费 *3 金币*。\n获得 !GoldGain! 金币，抽 1 张牌。");
 }

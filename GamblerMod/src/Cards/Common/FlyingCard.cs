@@ -33,5 +33,5 @@ public sealed class FlyingCard : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "飞牌",
-        "#*额外花费 2 金币*。造成 !D! 伤害。");
+        "#花费 *2 金币*。\n造成 !D! 伤害。");
 }

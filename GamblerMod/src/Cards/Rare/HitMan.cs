@@ -38,5 +38,5 @@ public sealed class HitMan : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "买凶",
-        "#*额外花费 15 金币*。对生命值最低的敌人造成 !D! 伤害。");
+        "#花费 *15 金币*。\n对生命值最低的敌人造成 !D! 伤害。");
 }

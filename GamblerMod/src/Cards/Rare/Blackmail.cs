@@ -40,5 +40,5 @@ public sealed class Blackmail : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "黑吃黑",
-        "#*额外花费 8 金币*。施加 !StrengthLoss! 点*力量削弱*与 !Vuln! 易伤。");
+        "#花费 *8 金币*。\n施加 !StrengthLoss! 点*力量削弱*与 !Vuln! 易伤。");
 }

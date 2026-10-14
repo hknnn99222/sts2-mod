@@ -40,5 +40,5 @@ public sealed class SlotMachine : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "老虎机",
-        "#*额外花费 5 金币*。*赌博* 3 次，每次正面：获得 !GoldGain! 金币并抽 1 张牌。");
+        "#花费 *5 金币*。\n*赌博* 3 次，每次正面：获得 !GoldGain! 金币并抽 1 张牌。");
 }

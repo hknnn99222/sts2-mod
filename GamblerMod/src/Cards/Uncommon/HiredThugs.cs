@@ -44,5 +44,5 @@ public sealed class HiredThugs : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "雇佣打手",
-        "#*额外花费 5 金币*。对随机敌人造成 !D! 伤害 !Hits! 次。*赌博*：正面 → 每次 !HeadsDamage! 伤害。");
+        "#花费 *5 金币*。\n对随机敌人造成 !D! 伤害 !Hits! 次。*赌博*：正面 → 每次 !HeadsDamage! 伤害。");
 }

@@ -45,5 +45,5 @@ public sealed class Thug : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "打手",
-        "#*额外花费 5 金币*。造成 !D! 伤害，施加 !Vuln! 易伤。");
+        "#花费 *5 金币*。\n造成 !D! 伤害，施加 !Vuln! 易伤。");
 }

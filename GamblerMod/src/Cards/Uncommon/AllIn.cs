@@ -43,5 +43,5 @@ public sealed class AllIn : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "梭哈",
-        "#造成 10×X 伤害。*额外花费 10×X 金币*。");
+        "#花费 *10×X 金币*。\n造成 10×X 伤害。");
 }

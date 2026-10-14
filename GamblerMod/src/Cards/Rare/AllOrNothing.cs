@@ -51,5 +51,5 @@ public sealed class AllOrNothing : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "孤注一掷",
-        "#*额外花费 10 金币*。造成 !D! 伤害。*赌博*：正面 → 改为造成 !HeadsDamage! 伤害；反面 → 改为 !TailsDamage! 伤害且自己受到 !TailsSelfHurt! 伤害。");
+        "#花费 *10 金币*。\n造成 !D! 伤害。*赌博*：正面 → 改为造成 !HeadsDamage! 伤害；反面 → 改为 !TailsDamage! 伤害且自己受到 !TailsSelfHurt! 伤害。");
 }

@@ -27,5 +27,5 @@ public sealed class BuyTheRoad : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "买路钱",
-        "#*额外花费 5 金币*。抽 !Cards! 张牌。");
+        "#花费 *5 金币*。\n抽 !Cards! 张牌。");
 }

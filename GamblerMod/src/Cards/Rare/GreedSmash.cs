@@ -41,5 +41,5 @@ public sealed class GreedSmash : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "贪婪重击",
-        "#*额外花费 8 金币*。造成 !D! 伤害。*击杀*则获得 !Bounty! 金币。");
+        "#花费 *8 金币*。\n造成 !D! 伤害。*击杀*则获得 !Bounty! 金币。");
 }

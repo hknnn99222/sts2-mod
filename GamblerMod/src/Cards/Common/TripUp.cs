@@ -28,5 +28,5 @@ public sealed class TripUp : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "下绊子",
-        "#*额外花费 4 金币*。施加 !Weak! 虚弱。");
+        "#花费 *4 金币*。\n施加 !Weak! 虚弱。");
 }

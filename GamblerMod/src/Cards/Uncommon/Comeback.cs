@@ -41,5 +41,5 @@ public sealed class Comeback : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "翻本",
-        "#*额外花费 3 金币*。造成 !D! 伤害。*赌博*：正面 → 改为造成 !HeadsDamage! 伤害。");
+        "#花费 *3 金币*。\n造成 !D! 伤害。*赌博*：正面 → 改为造成 !HeadsDamage! 伤害。");
 }

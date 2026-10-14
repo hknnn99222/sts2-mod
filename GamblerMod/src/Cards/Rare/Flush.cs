@@ -44,5 +44,5 @@ public sealed class Flush : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "同花顺",
-        "#*额外花费 12 金币*。造成 !D! 伤害。若本回合你掷出过 ≥3 次*正面*，改为 !HotDamage! 伤害。");
+        "#花费 *12 金币*。\n造成 !D! 伤害。若本回合你掷出过 ≥3 次*正面*，改为 !HotDamage! 伤害。");
 }

@@ -49,5 +49,5 @@ public sealed class TripleSevens : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "豹子",
-        "#*额外花费 10 金币*。造成 !D! 伤害 !Hits! 次，每击独立*赌博*：正面则该击改为 !HeadsDamage! 伤害。");
+        "#花费 *10 金币*。\n造成 !D! 伤害 !Hits! 次，每击独立*赌博*：正面则该击改为 !HeadsDamage! 伤害。");
 }
