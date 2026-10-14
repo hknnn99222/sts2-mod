@@ -22,6 +22,11 @@ public abstract class GamblerCard(int cost, CardType type, CardRarity rarity, Ta
     protected int BaseGoldCost;  // 0 = 纯能量卡
     protected bool IsGambleCard; // 打出时是否掷硬币
 
+    // 掷硬币结果的视听反馈（M1 方案：特效+音效区分正反面；正式硬币翻转 UI 留待有美术资产后做）
+    protected const string HeadsHitFx = "vfx/vfx_heavy_blunt";
+    protected const string TailsHitFx = "vfx/vfx_attack_slash";
+    protected const string HeadsHitSfx = "heavy_attack.mp3";
+
     // 金币费的最终值出口：升级减费（§2.7）、假币免单等修正未来挂在这里，CanPlay 与扣费共用
     public int EffectiveGoldCost => BaseGoldCost;
 

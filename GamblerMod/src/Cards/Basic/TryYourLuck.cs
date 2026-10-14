@@ -31,7 +31,7 @@ public sealed class TryYourLuck() : GamblerCard(1, CardType.Attack, CardRarity.B
         => DamageCmd.Attack(heads ? DynamicVars["HeadsDamage"].BaseValue : DynamicVars.Damage.BaseValue)
             .FromCard(this, play)
             .Targeting(play.Target)
-            .WithHitFx("vfx/vfx_attack_slash")
+            .WithHitFx(heads ? HeadsHitFx : TailsHitFx, null, heads ? HeadsHitSfx : null)
             .Execute(ctx);
 
     public override List<(string, string)>? Localization => new CardLoc(
