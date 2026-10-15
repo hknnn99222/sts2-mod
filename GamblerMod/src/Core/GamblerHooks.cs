@@ -57,6 +57,7 @@ public sealed class GamblerHooks : CustomSingletonModel
         GoldCost.OnCombatStart();
         SpendTracker.OnCombatStart();
         MultiplierService.Reset(); // 「风头正盛」倍率：战斗结束清空（设计 §2.8）
+        GambleService.OnCombatEnd(); // 掷骰记录一并清空（徽章的正/反不该跨战斗残留）
         return Task.CompletedTask;
     }
 

@@ -58,9 +58,19 @@ public static class GambleService
         }
 
         // 「风头正盛」倍率（设计 §2.8）：自然正面 / 赌神 / 暗记 → +0.5；掷出反面 → 立刻归零；
-        // 幸运筹码改币**只保命不涨**（用户拍板 Q4）——所以用 byChip 把它排除在 +0.5 之外。
-        if (!final) MultiplierService.Reset();
-        else if (!byChip) MultiplierService.AddHeads();
+        // 幸运筹码改币**只保命不涨**（用户拍板 Q4）——用 byChip 把它排除在 +0.5 之外（但也别归零）。
+        if (!final)
+        {
+            MultiplierService.Reset();
+        }
+        else if (byChip)
+        {
+            MultiplierService.MarkSavedByChip();
+        }
+        else
+        {
+            MultiplierService.AddHeads();
+        }
 
         Flips.Add(new FlipRecord(source, original, final));
         GD.Print($"[GamblerMod] 掷硬币 {source.Id.Entry}：{(original ? "正面" : "反面")}{(final != original ? " → 改为正面" : "")}（风头 {MultiplierService.Label}{(byChip ? "，改币不计" : "")}）");
@@ -80,6 +90,15 @@ public static class GambleService
     }
 
     public static IReadOnlyList<FlipRecord> Records => Flips;
+
+    /// <summary>战斗结束：清空掷骰记录/RNG/必正层数（否则新战斗开局徽章会残留上一场的正反）。</summary>
+    public static void OnCombatEnd()
+    {
+        Flips.Clear();
+        _rng = null;
+        _forcedHeads = 0;
+        _round = -1;
+    }
 
     /// <summary>本回合定案正面次数（同花顺/底牌消费）。</summary>
     public static int HeadsCountThisTurn

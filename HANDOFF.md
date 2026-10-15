@@ -54,7 +54,8 @@
 12. 金币：`Player.Gold`（int）、`PlayerCmd.GainGold(dec, player, bool)` / `LoseGold(dec, player, GoldLossType.Spent)`；可打出检查挂 `PlayerCombatState.HasEnoughResourcesFor` Postfix（与 BaseLib 附加费用同出口）
 13. **Godot C# 覆盖 `_Ready` 必须调 `base._Ready()`**：`MegaLabel._Ready` 里是 `RefreshFont() + AdjustFontSize()`（IL 核实），漏掉字体不初始化、文字**不显示**——倍率徽章踩过（数值一直在变，只是没渲染）。写 UI 节点同理
 14. 卡池能量图标缺失（`CARD_POOL∴…_energy_icon.png`）是占位缺口，卡描述里的能量符号会报 No loader found
-15. 选人美术覆写：角色 `CustomCharacterSelectIconPath`（封面）/ `CustomCharacterSelectBg`（背景场景）两个 override，资产经 pck 提供（见下）
+15. 掷骰记录 `GambleService.Flips` 的作用域 = **单场战斗**（`GamblerHooks.AfterCombatEnd` 里 `GambleService.OnCombatEnd()` 清空；此前只在"新战斗首次掷币"时清，会残留上一场数据）
+16. 选人美术覆写：角色 `CustomCharacterSelectIconPath`（封面）/ `CustomCharacterSelectBg`（背景场景）两个 override，资产经 pck 提供（见下）
 
 ## 数值口径（v1.6，改卡前必读）
 

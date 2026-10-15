@@ -134,7 +134,11 @@ public sealed class MultiplierBadge : MegaLabel
         GD.Print($"[GamblerMod] 徽章刷新 → {MultiplierService.LabelOf(steps)}");
     }
 
-    /// <summary>把"最近一次定案结果"同步成 正/反（用掷骰条数当版本号，变化才写）。</summary>
+    /// <summary>
+    /// 显示"最近一次**计入倍率**的判定"（用户 2026-10-16 定：只显示赌博那一掷，遗物改币不算）——
+    /// 自然正面/赌神/暗记 → 正；反面 → 反；幸运筹码改币 → 反（保命但不涨，和倍率口径一致）。
+    /// 记录按**整场战斗**（GamblerHooks 战斗结束时清空），所以新战斗自动回到 —。
+    /// </summary>
     private void RefreshFlip(bool force = false)
     {
         if (_flipLabel == null) return;
@@ -143,17 +147,16 @@ public sealed class MultiplierBadge : MegaLabel
         if (!force && count == _lastFlipCount) return;
         _lastFlipCount = count;
 
-        var last = GambleService.LastFlipHeads;
-        if (last == null)
+        if (count == 0)
         {
             _flipLabel.SetTextAutoSize("—");
             _flipLabel.Modulate = IdleColor; // 本场还没掷过
             return;
         }
 
-        var heads = last.Value;
-        _flipLabel.SetTextAutoSize(heads ? "正" : "反");
-        _flipLabel.Modulate = heads ? HeadsColor : TailsColor;
+        var counted = MultiplierService.LastFlipCounted;
+        _flipLabel.SetTextAutoSize(counted ? "正" : "反");
+        _flipLabel.Modulate = counted ? HeadsColor : TailsColor;
     }
 
     private void SyncPosition()
