@@ -228,9 +228,11 @@ sealed class MultiplierBadge : Control      // 纯文字版：一个 MegaLabel �
 2026-10-16 追加：徽章右侧带**掷币结果指示**（正=金色 / 反=红色 / 本场未掷过显示 —），数据源复用 `GambleService.LastFlipHeads` 与 `Records.Count`（用条数当版本号，变化才写。注意该记录按**整场战斗**累积、换战斗时清空，所以新战斗自动回到 —）；
 整组（倍率 76px + 间隙 4px + 正反 44px = 124px）**以头顶中线居中**。
 
-**⚠ 两个实测踩到的坑（已在代码里修掉）**：
-1. **覆盖 `MegaLabel._Ready` 必须调 `base._Ready()`**——它的实现是 `RefreshFont() + AdjustFontSize()`（IL 核实），漏掉字体就不初始化、文字**根本不显示**（2026-10-16 用户实测"倍率不随赌博加减"，数值其实一直准，只是没渲染出来）。
-2. 覆盖 `_Ready` 后加了两条自证日志：`风头徽章 _Process 已启动` 与每次变化的 `徽章刷新 → x…`，用于区分"调用链没跑"和"渲染没生效"。
+**⚠⚠ 实测踩到的坑（代码里都有注释，别删）**：
+1. **`MegaLabel._Ready()` 里的 `AssertThemeFontOverride` 是「抛异常」而不是「打日志」**——本节点没有主题字体覆盖时它会抛 `InvalidOperationException: … has no theme font override`。2026-10-16 因为把它调在 `_Ready` 最前面，异常一抛、后面设文字的代码全被跳过 → **徽章整块消失（用户原话："啥也没有 倍率也没有了"）**。
+   → 正确姿势：先 `AddThemeFontOverride("font", GetThemeFont("font","Label") ?? ThemeDB.FallbackFont)` 让断言通过，再 `try { base._Ready(); } catch { … }` 兜底；**非玩家生物提前 return**，不初始化字体（否则敌方每只各抛一次）。
+   注：完全不调 `base._Ready()` 时文字**能**渲染（走 Godot 默认主题）——前一版"看得见"就是这么来的，但字体不是游戏 UI 字体。
+2. 另加了两条自证日志：`风头徽章 _Process 已启动` 与每次变化的 `徽章刷新 → x…`，用于区分"调用链没跑"和"渲染没生效"。
 
 **当前校准值 `HeadOffsetY = -58f`**（2026-10-16 由 -34 上调 24px，用户反馈位置偏低）。实测锚点示例：`(960, 262)`（2560×1369 窗口下的全局坐标）。
 
