@@ -17,11 +17,20 @@ public static class MultiplierService
     /// <summary>内部刻度（0.5 为单位），供显示与调试。</summary>
     public static int Steps => _steps;
 
+    /// <summary>最近一次掷币的**归属**（供徽章显示；与倍率口径严格一致）。</summary>
+    public enum FlipOutcome
+    {
+        None = 0,     // 本场还没掷过
+        Heads = 1,    // 正面（自然/赌神/暗记）→ 倍率 +0.5
+        Tails = 2,    // 反面 → 倍率归零
+        SavedByChip = 3, // 幸运筹码改币保命 → 倍率**不动**（不涨也不归零）
+    }
+
     /// <summary>
-    /// 最近一次掷币**是否计入倍率**（= 显示用的"正/反"口径）：
-    /// 自然正面 / 赌神 / 暗记 → true（显示正）；掷出反面 → false；**幸运筹码改币 → false**（保命但不涨，显示反）。
+    /// 最近一次掷币的归属：自然正面 / 赌神 / 暗记 → Heads；掷出反面 → Tails；
+    /// **幸运筹码改币 → SavedByChip**（保命但不涨，显示与倍率口径一致）。
     /// </summary>
-    public static bool LastFlipCounted { get; private set; }
+    public static FlipOutcome LastOutcome { get; private set; }
 
     /// <summary>显示标签（x1.0 / x1.5 …）。仅显示层调用，不在热路径。</summary>
     public static string Label => LabelOf(_steps);
@@ -32,18 +41,18 @@ public static class MultiplierService
     public static void AddHeads()
     {
         _steps++;
-        LastFlipCounted = true;
+        LastOutcome = FlipOutcome.Heads;
     }
 
     /// <summary>掷出反面：立刻归零。</summary>
     public static void Reset()
     {
         _steps = BaseSteps;
-        LastFlipCounted = false;
+        LastOutcome = FlipOutcome.Tails;
     }
 
-    /// <summary>幸运筹码改币保命：倍率**不动**（不涨也不归零），但显示口径按"反"（改币不计）。</summary>
-    public static void MarkSavedByChip() => LastFlipCounted = false;
+    /// <summary>幸运筹码改币保命：倍率**不动**（不涨也不归零），归属记为 SavedByChip。</summary>
+    public static void MarkSavedByChip() => LastOutcome = FlipOutcome.SavedByChip;
 
     /// <summary>「风头正盛」牌兑现：结算后清空（与 Reset 语义分开，便于日志排查）。</summary>
     public static void Clear() => _steps = BaseSteps;

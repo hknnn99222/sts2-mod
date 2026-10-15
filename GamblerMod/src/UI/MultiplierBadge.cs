@@ -30,6 +30,7 @@ public sealed class MultiplierBadge : MegaLabel
 
     private static readonly Color HeadsColor = new("e8c34a"); // 金（同角色名色）
     private static readonly Color TailsColor = new("d95b5b"); // 红
+    private static readonly Color SavedColor = new("6fa8dc"); // 蓝：遗物保命（没涨也没归零）
     private static readonly Color IdleColor = new(1f, 1f, 1f, 0.45f);
 
     /// <summary>挂钩注册：静态字段初始化即向 BaseLib 登记（Entry.Initialize 里 touch 一下）。</summary>
@@ -135,8 +136,9 @@ public sealed class MultiplierBadge : MegaLabel
     }
 
     /// <summary>
-    /// 显示"最近一次**计入倍率**的判定"（用户 2026-10-16 定：只显示赌博那一掷，遗物改币不算）——
-    /// 自然正面/赌神/暗记 → 正；反面 → 反；幸运筹码改币 → 反（保命但不涨，和倍率口径一致）。
+    /// 显示"最近一次掷币的归属"，三态与倍率口径严格一致（用户 2026-10-16 两轮修正后定稿）：
+    /// **正**（金，+0.5）/ **反**（红，归零）/ **保**（蓝，幸运筹码花 5 金保命——没涨也没归零）。
+    /// 之所以要有"保"这一态：把改币显示成"反"会让人觉得"显示反、倍率却没降"是 bug（用户实测反馈）。
     /// 记录按**整场战斗**（GamblerHooks 战斗结束时清空），所以新战斗自动回到 —。
     /// </summary>
     private void RefreshFlip(bool force = false)
@@ -154,9 +156,21 @@ public sealed class MultiplierBadge : MegaLabel
             return;
         }
 
-        var counted = MultiplierService.LastFlipCounted;
-        _flipLabel.SetTextAutoSize(counted ? "正" : "反");
-        _flipLabel.Modulate = counted ? HeadsColor : TailsColor;
+        switch (MultiplierService.LastOutcome)
+        {
+            case MultiplierService.FlipOutcome.Heads:
+                _flipLabel.SetTextAutoSize("正");
+                _flipLabel.Modulate = HeadsColor;
+                break;
+            case MultiplierService.FlipOutcome.SavedByChip:
+                _flipLabel.SetTextAutoSize("保");
+                _flipLabel.Modulate = SavedColor;
+                break;
+            default:
+                _flipLabel.SetTextAutoSize("反");
+                _flipLabel.Modulate = TailsColor;
+                break;
+        }
     }
 
     private void SyncPosition()
