@@ -72,6 +72,8 @@ public sealed class MultiplierBadge : MegaLabel
 
         _isPlayer = true;
         MouseFilter = MouseFilterEnum.Ignore; // 别挡住点击
+        SetProcess(true); // ⚠ 必须显式开：Godot 的 _Ready 是引擎必调回调，而 _Process 受 process 标志控制
+                          //（C# 节点不像 GDScript 那样自动检测到 _Process 就打开；2026-10-16 实测：徽章显示但不刷新）
         Size = new Vector2(BadgeWidth, BoxHeight);
         HorizontalAlignment = HorizontalAlignment.Center;
         VerticalAlignment = VerticalAlignment.Center;

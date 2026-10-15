@@ -232,7 +232,8 @@ sealed class MultiplierBadge : Control      // 纯文字版：一个 MegaLabel �
 1. **`MegaLabel._Ready()` 里的 `AssertThemeFontOverride` 是「抛异常」而不是「打日志」**——本节点没有主题字体覆盖时它会抛 `InvalidOperationException: … has no theme font override`。2026-10-16 因为把它调在 `_Ready` 最前面，异常一抛、后面设文字的代码全被跳过 → **徽章整块消失（用户原话："啥也没有 倍率也没有了"）**。
    → 正确姿势：先 `AddThemeFontOverride("font", GetThemeFont("font","Label") ?? ThemeDB.FallbackFont)` 让断言通过，再 `try { base._Ready(); } catch { … }` 兜底；**非玩家生物提前 return**，不初始化字体（否则敌方每只各抛一次）。
    注：完全不调 `base._Ready()` 时文字**能**渲染（走 Godot 默认主题）——前一版"看得见"就是这么来的，但字体不是游戏 UI 字体。
-2. 另加了两条自证日志：`风头徽章 _Process 已启动` 与每次变化的 `徽章刷新 → x…`，用于区分"调用链没跑"和"渲染没生效"。
+2. **C# 节点的 `_Process` 必须显式 `SetProcess(true)`**——`_Ready`/`_EnterTree` 是引擎必调的生命周期回调（所以看起来"回调通了"），但 `_Process` 受 process 标志控制，Godot 不像 GDScript 那样"检测到有 `_Process` 就自动打开"。2026-10-16 现象：徽章**显示**但不刷新（倍率/正反都冻在初始值），日志里只有 `已挂载` 没有 `_Process 已启动`。
+3. 另加了两条自证日志：`风头徽章 _Process 已启动` 与每次变化的 `徽章刷新 → x…`，用于区分"调用链没跑"和"渲染没生效"。
 
 **当前校准值 `HeadOffsetY = -58f`**（2026-10-16 由 -34 上调 24px，用户反馈位置偏低）。实测锚点示例：`(960, 262)`（2560×1369 窗口下的全局坐标）。
 
