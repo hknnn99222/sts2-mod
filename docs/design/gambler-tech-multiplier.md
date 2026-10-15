@@ -224,7 +224,9 @@ sealed class MultiplierBadge : Control      // 纯文字版：一个 MegaLabel �
 
 ### ⚠ 唯一需要游戏内校准的点
 
-`UI/MultiplierBadge.cs` 的 `HeadOffsetY`（再往上抬多少像素）。定位方式经 **IL 核实**：`NCreature.GetTopOfHitbox()` 返回的是**全局坐标**（`Hitbox.GlobalPosition + (Hitbox.Size.X*0.5, 0)`，命中框顶边中点），所以徽章直接写自己的 `GlobalPosition`，不做坐标空间换算；每帧只在目标点变化时才写（无分配）。徽章只在 `NCreature.Entity.IsPlayer` 的生物上显示，并设 `MouseFilter = Ignore` 以免挡点击，文本框 96×34（文本自动缩放按这个盒子算）。
+`UI/MultiplierBadge.cs` 的 `HeadOffsetY`（再往上抬多少像素）。定位方式经 **IL 核实**：`NCreature.GetTopOfHitbox()` 返回的是**全局坐标**（`Hitbox.GlobalPosition + (Hitbox.Size.X*0.5, 0)`，命中框顶边中点），所以徽章直接写自己的 `GlobalPosition`，不做坐标空间换算；每帧只在目标点变化时才写（无分配）。徽章只在 `NCreature.Entity.IsPlayer` 的生物上显示，并设 `MouseFilter = Ignore` 以免挡点击。
+2026-10-16 追加：徽章右侧带**掷币结果指示**（正=金色 / 反=红色 / 本场未掷过显示 —），数据源复用 `GambleService.LastFlipHeads` 与 `Records.Count`（用条数当版本号，变化才写。注意该记录按**整场战斗**累积、换战斗时清空，所以新战斗自动回到 —）；
+整组（倍率 76px + 间隙 4px + 正反 44px = 124px）**以头顶中线居中**。
 
 **⚠ 两个实测踩到的坑（已在代码里修掉）**：
 1. **覆盖 `MegaLabel._Ready` 必须调 `base._Ready()`**——它的实现是 `RefreshFont() + AdjustFontSize()`（IL 核实），漏掉字体就不初始化、文字**根本不显示**（2026-10-16 用户实测"倍率不随赌博加减"，数值其实一直准，只是没渲染出来）。
