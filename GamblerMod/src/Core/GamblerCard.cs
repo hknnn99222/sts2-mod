@@ -21,6 +21,10 @@ public abstract class GamblerCard(int cost, CardType type, CardRarity rarity, Ta
 {
     protected int BaseGoldCost;  // 0 = 纯能量卡
     protected bool IsGambleCard; // 打出时是否掷硬币
+    // 「风头正盛」词条（v1.6）：数值 ×倍率，结算后清空；与 IsGambleCard 互斥（设计 §2.8）。
+    // internal 而非 protected：Core 的 GamblerHooks 要读它来决定是否乘算。
+    internal bool IsHeadsStreakCard;
+    protected bool KeepStreakAfterPlay; // 「翻本局」击杀时置 true，跳过本次清空
 
     // 掷硬币结果的视听反馈（M1 方案：特效+音效区分正反面；正式硬币翻转 UI 留待有美术资产后做）
     protected const string HeadsHitFx = "vfx/vfx_heavy_blunt";
@@ -40,6 +44,22 @@ public abstract class GamblerCard(int cost, CardType type, CardRarity rarity, Ta
 
         var heads = IsGambleCard && await GambleService.Flip(Owner, this);
         await ApplyEffect(ctx, play, heads);
+
+        // 「风头正盛」兑现清空（设计 §2.8）：该牌自己已吃满倍率，结算完才清回 1.0。
+        if (IsHeadsStreakCard)
+        {
+            if (KeepStreakAfterPlay)
+            {
+                GD.Print($"[GamblerMod] {Id.Entry} 击杀续风：倍率保留 {MultiplierService.Label}");
+            }
+            else
+            {
+                MultiplierService.Clear();
+                GD.Print($"[GamblerMod] {Id.Entry} 兑现风头，倍率清空回 x1.0");
+            }
+        }
+
+        KeepStreakAfterPlay = false; // 防状态残留到下一次打出
     }
 
     protected abstract Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads);

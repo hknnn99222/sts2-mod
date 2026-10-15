@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #8·灵光一闪（游戏设计 §5.1 / §5.4）：1 能，4 格挡；赌博：正面 → 8（升级 6 / 13）。
+// 普通 #8·盲注（游戏设计 §5.1 / §5.4）：1 能，4 格挡；赌博：正面 → 8（升级 6 / 13）。
 public sealed class FlashOfInsight : GamblerCard
 {
     public FlashOfInsight() : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
@@ -37,6 +37,6 @@ public sealed class FlashOfInsight : GamblerCard
             ValueProp.Move, play, false);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "灵光一闪",
+        "盲注",
         "#获得 !B! 格挡。*赌博*：正面 → 改为获得 !HeadsBlock! 格挡。");
 }

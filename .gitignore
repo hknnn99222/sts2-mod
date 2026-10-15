@@ -6,3 +6,6 @@ obj/
 assets/.godot/
 assets/*.tmp
 ~$*
+
+# 构建/发布产物（可再生成）
+GamblerMod_v*.zip

@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通档 #1·飞牌（游戏设计 §5.1）：1 能 + 2 金，造成 10 伤害（升级 13）。
+// 普通档 #1·底注（游戏设计 §5.1）：1 能 + 2 金，造成 10 伤害（升级 13）。
 // 混合费用的最小样板（附加费·伤）。验收用：暂入起始牌，M1 验收后移除。
 public sealed class FlyingCard : GamblerCard
 {
@@ -32,6 +32,6 @@ public sealed class FlyingCard : GamblerCard
             .Execute(ctx);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "飞牌",
+        "底注",
         "#花费 *2 金币*。\n造成 !D! 伤害。");
 }

@@ -17,21 +17,22 @@ namespace GamblerMod;
 public static class Entry
 {
     public const string ModId = "GamblerMod";
-    public const string Version = "0.3.0";
+    public const string Version = "0.4.0";
 
     public static void Initialize()
     {
-        GD.Print($"[{ModId}] v{Version} 初始化（M4：43 卡全量）");
+        GD.Print($"[{ModId}] v{Version} 初始化（M5：51 卡全量 + 「风头正盛」倍率）");
 
         new Harmony(ModId).PatchAll(Assembly.GetExecutingAssembly());
 
-        _ = new Core.GamblerHooks(); // 全局钩子单例（战斗态复位/高利贷/利滚利/赌场规则）
+        _ = new Core.GamblerHooks(); // 全局钩子单例（战斗态复位/高利贷/利滚利/赌场规则/风头倍率乘算）
         Powers.GamblerPowers.Init();
         Relics.GamblerRelics.Init();
         Cards.GamblerCards.Init();
+        _ = UI.MultiplierBadge.Attached; // 头顶倍率徽章（AddedNode 静态字段初始化即登记）
 
         _ = new Character.GamblerCharacter();
 
-        GD.Print($"[{ModId}] 注册完成：角色 + 43 卡（起始2/普11/罕19/稀13）+ 6 力量 + 幸运筹码");
+        GD.Print($"[{ModId}] 注册完成：角色 + 80 卡（起始2/普20/罕35/稀25）+ 6 力量 + 幸运筹码");
     }
 }

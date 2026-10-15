@@ -50,15 +50,23 @@ public static class GambleService
         }
 
         // 干预②：幸运筹码——掷出反面后花 5 金改为正面（每回合 1 次；M2 简化：金币足够时自动触发）
+        var byChip = false;
         if (!final && await Relics.LuckyChip.TryIntervene(player))
         {
             final = true;
+            byChip = true;
         }
 
+        // 「风头正盛」倍率（设计 §2.8）：自然正面 / 赌神 / 暗记 → +0.5；掷出反面 → 立刻归零；
+        // 幸运筹码改币**只保命不涨**（用户拍板 Q4）——所以用 byChip 把它排除在 +0.5 之外。
+        if (!final) MultiplierService.Reset();
+        else if (!byChip) MultiplierService.AddHeads();
+
         Flips.Add(new FlipRecord(source, original, final));
-        GD.Print($"[GamblerMod] 掷硬币 {source.Id.Entry}：{(original ? "正面" : "反面")}{(final != original ? " → 改为正面" : "")}");
+        GD.Print($"[GamblerMod] 掷硬币 {source.Id.Entry}：{(original ? "正面" : "反面")}{(final != original ? " → 改为正面" : "")}（风头 {MultiplierService.Label}{(byChip ? "，改币不计" : "")}）");
 
         if (final) OnHeads?.Invoke(player);
+
         return final;
     }
 

@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #4·打手（游戏设计 §5.1）：1 能 + 5 金，16 伤害并施加 1 易伤（升级 19 伤 / 2 易伤）。
+// 普通 #4·看场（游戏设计 §5.1）：1 能 + 5 金，16 伤害并施加 1 易伤（升级 19 伤 / 2 易伤）。
 public sealed class Thug : GamblerCard
 {
     public Thug() : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
@@ -44,6 +44,6 @@ public sealed class Thug : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "打手",
+        "看场",
         "#花费 *5 金币*。\n造成 !D! 伤害，施加 !Vuln! 易伤。");
 }

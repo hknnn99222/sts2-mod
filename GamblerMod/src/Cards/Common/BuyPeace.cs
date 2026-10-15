@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #7·买平安（游戏设计 §5.1）：1 能 + 4 金，获得 15 格挡（升级 18）。
+// 普通 #7·护盘（游戏设计 §5.1）：1 能 + 4 金，获得 15 格挡（升级 18）。
 public sealed class BuyPeace : GamblerCard
 {
     public BuyPeace() : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
@@ -27,6 +27,6 @@ public sealed class BuyPeace : GamblerCard
         => CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, play);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "买平安",
+        "护盘",
         "#花费 *4 金币*。\n获得 !B! 格挡。");
 }

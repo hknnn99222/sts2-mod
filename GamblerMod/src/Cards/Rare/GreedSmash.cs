@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #33·贪婪重击（游戏设计 §5.3）：3 能 + 8 金，35 伤害；击杀则获得 20 金币（升级 40 伤害）。
+// 稀有 #33·爆机（游戏设计 §5.3）：3 能 + 8 金，35 伤害；击杀则获得 25 金币（升级 40 伤害）。
 public sealed class GreedSmash : GamblerCard
 {
     public GreedSmash() : base(3, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
@@ -22,7 +22,7 @@ public sealed class GreedSmash : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(35, ValueProp.Move),
-        new IntVar("Bounty", 20),
+        new IntVar("Bounty", 25),
     ];
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(5);
@@ -40,6 +40,6 @@ public sealed class GreedSmash : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "贪婪重击",
+        "爆机",
         "#花费 *8 金币*。\n造成 !D! 伤害。*击杀*则获得 !Bounty! 金币。");
 }

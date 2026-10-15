@@ -10,13 +10,13 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #27·高利贷（游戏设计 §5.2）：0 能，获得 12 金币；下场战斗开始时失去 6 金币（不足则全失，升级 +16 金）。
+// 罕见 #27·高利贷（游戏设计 §5.2）：0 能，获得 14 金币；下场战斗开始时失去 6 金币（不足则全失，升级 +18 金）。
 // M4 简化：欠款在下场战斗首次回合开始时结算（GamblerHooks），不做区分债务人的多人校准。
 public sealed class LoanShark() : GamblerCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.None)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("GoldGain", 12),
+        new IntVar("GoldGain", 14),
         new IntVar("Debt", 6),
     ];
 

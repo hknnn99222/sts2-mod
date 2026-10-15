@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Characters;
 namespace GamblerMod.Character;
 
 // M0 占位角色（技术设计 D2）：PlaceholderCharacterModel 只借原版战士的资产路径（场景/贴图）。
-// 数值按游戏设计 v1.3 + 角色设定：HP 72、起始 148 金（本该 150，当铺抽走两枚"手续费"）。
+// 数值按游戏设计 v1.3 + 角色设定：HP 72、起始 148 金（本该 150，兑筹抽走两枚"手续费"）。
 // 卡池 / 起始牌 / 起始遗物 / 药水池暂借战士（M1 起换成本职业内容）。
 // 注意：原版模型是 ModelDb 单例，禁止 new（DuplicateModelException），
 // 一律用 ModelDb.GetById + GetId 运行时查库；不做静态字段初始化，避免 cctor 抛异常连累类型加载。
@@ -40,8 +40,8 @@ public sealed class GamblerCharacter : PlaceholderCharacterModel
     // 名字色：暗金（角色设定 §4 色彩基调，与卡背/牌组图标同色系）
     public override Godot.Color NameColor => new("e8c34a");
 
-    // 起始套牌（游戏设计 §3）：4 打击 + 4 防御（借原版）+ 私房钱 + 试手气（本职业签名）。
-    // M1 验收已完成，飞牌移出起始牌（保留在卡池作为奖励卡）。
+    // 起始套牌（游戏设计 §3）：4 打击 + 4 防御（借原版）+ 本钱 + 试手气（本职业签名）。
+    // M1 验收已完成，底注移出起始牌（保留在卡池作为奖励卡）。
     public override IEnumerable<CardModel> StartingDeck =>
     [
         ModelDb.Card<StrikeIronclad>(),

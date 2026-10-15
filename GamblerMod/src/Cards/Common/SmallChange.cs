@@ -10,10 +10,10 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #6·零钱（游戏设计 §5.1）：0 能，获得 3 金币（升级 5）。
-public sealed class SmallChange() : GamblerCard(0, CardType.Skill, CardRarity.Common, TargetType.None)
+// 普通 #6·筹码（游戏设计 §5.1）：1 能，获得 7 金币（升级 9）——产金基准 1 能量 = 7 金币的样板卡。
+public sealed class SmallChange() : GamblerCard(1, CardType.Skill, CardRarity.Common, TargetType.None)
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("GoldGain", 3)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("GoldGain", 7)];
 
     protected override void OnUpgrade() => DynamicVars["GoldGain"].UpgradeValueBy(2);
 
@@ -21,6 +21,6 @@ public sealed class SmallChange() : GamblerCard(0, CardType.Skill, CardRarity.Co
         => PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, true);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "零钱",
+        "筹码",
         "#获得 *!GoldGain! 金币*。");
 }

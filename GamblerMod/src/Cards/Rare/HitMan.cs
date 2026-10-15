@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #38·买凶（游戏设计 §5.3）：2 能 + 15 金，对生命值最低的敌人造成 43 伤害（升级 50）。
+// 稀有 #38·打庄（游戏设计 §5.3）：2 能 + 15 金，对生命值最低的敌人造成 43 伤害（升级 50）。
 public sealed class HitMan : GamblerCard
 {
     public HitMan() : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
@@ -37,6 +37,6 @@ public sealed class HitMan : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "买凶",
+        "打庄",
         "#花费 *15 金币*。\n对生命值最低的敌人造成 !D! 伤害。");
 }

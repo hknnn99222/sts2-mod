@@ -102,7 +102,7 @@ GamblerMod/
     ├── Character/
     │   └── GamblerCharacter.cs# CustomCharacterModel（HP72、起始148金、起始牌、初始遗物；视觉=战士贴图占位 D2）
     ├── Cards/
-    │   ├── Basic/             # 起始 4 种（打击/防御/私房钱/试手气）
+    │   ├── Basic/             # 起始 4 种（打击/防御/本钱/试手气）
     │   ├── Common/            # 11 普
     │   ├── Uncommon/          # 19 罕
     │   └── Rare/              # 13 稀
@@ -194,7 +194,7 @@ static class GambleService
     // 查询 player 身上实现 IGambleModifier 的 power（手气正旺/赌神）聚合而成
     static int HeadsRatePercent(Player player);
 
-    // 本回合掷骰记录（只读统计，供 同花顺/底牌/赌场规则/叠注 消费；无重掷 API——D4 已定）
+    // 本回合掷骰记录（只读统计，供 同花顺/底牌/台规/叠注 消费；无重掷 API——D4 已定）
     static IReadOnlyList<FlipRecord> FlipsThisTurn { get; }   // 复用 List，回合开始 Clear（§5 R3）
 }
 
@@ -221,7 +221,7 @@ static class GoldCost
 }
 ```
 
-假币（下一次金币花费免单）：实现为 Pay 前查询的免单层数（存于战斗状态仓），不动 PlayerCmd。
+假筹（下一次金币花费免单）：实现为 Pay 前查询的免单层数（存于战斗状态仓），不动 PlayerCmd。
 
 ### 4.4 `SpendTracker` —— 本回合花费累计
 
@@ -243,7 +243,7 @@ static class SpendTracker
 ```csharp
 static class GamblerCombatState
 {
-    // 掷骰记录（List 复用）/ 本回合花费 / 假币免单层数 / 暗记必正层数 / 幸运筹码本回合已用
+    // 掷骰记录（List 复用）/ 本回合花费 / 假筹免单层数 / 暗记必正层数 / 幸运筹码本回合已用
     static void OnCombatStart();  // 订阅战斗钩子：Clear 全部，不 new（§5 R3）
     static void OnTurnStart();    // 回合级重置
 }
@@ -267,7 +267,7 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 
 ### 4.7 D4 重掷——已按评审结论移除
 
-「换骰」「操纵牌局」两张卡删除（不补新卡，卡池 43），GambleService 不提供 Reroll；`FlipRecord` 仅记录原始/干预后结果，供只读统计（同花顺计数、底牌条件、赌场规则产金、叠注的"上一掷"查询）。游戏设计文档 v1.3 已同步。
+「换骰」「操纵牌局」两张卡删除（不补新卡，卡池 43），GambleService 不提供 Reroll；`FlipRecord` 仅记录原始/干预后结果，供只读统计（同花顺计数、底牌条件、台规产金、叠注的"上一掷"查询）。游戏设计文档 v1.3 已同步。
 
 ### 4.8 Core 冻结与变更门禁（约束④的执行机制）
 
@@ -302,9 +302,9 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 | 里程碑 | 内容 | 游戏内验收标准 |
 |---|---|---|
 | M0 骨架 | 项目改名、引 BaseLib、Entry 注册、角色占位（D2）进选人界面 | 选人界面出现赌徒（占位视觉），能开一局，起始 148 金 |
-| M1 核心管线 | GamblerCard + GoldCost + GambleService + 起始 4 种牌 | ①私房钱加真金（商店同款钱）②试手气掷硬币、正/反伤害正确 ③金币不足卡变灰 ④掷骰记录可在日志查看 ⑤**改卡演练**：改试手气数值→只动 1 个卡文件→Core 零改动→重编译生效 |
+| M1 核心管线 | GamblerCard + GoldCost + GambleService + 起始 4 种牌 | ①本钱加真金（商店同款钱）②试手气掷硬币、正/反伤害正确 ③金币不足卡变灰 ④掷骰记录可在日志查看 ⑤**改卡演练**：改试手气数值→只动 1 个卡文件→Core 零改动→重编译生效 |
 | M2 做局 | 幸运筹码 + 暗记/手气正旺 + 赌神 | 反面后弹改币、暗记必正按层数消耗、正面率加法上限 75% 生效 |
-| M3 卡池① | 普通档 11 张 + 私房钱升级等 | 全部可玩、数值对照 §5.4 校验表抽查 |
+| M3 卡池① | 普通档 11 张 + 本钱升级等 | 全部可玩、数值对照 §5.4 校验表抽查 |
 | M4 卡池②③ | 罕见 19 + 稀有 13（真赌牌最后） | 43 卡全量可玩；一局完整跑通无报错 |
 
 每个里程碑 = 一次 git 提交序列 + 游戏内实测截图/日志，通过后才进下一个。

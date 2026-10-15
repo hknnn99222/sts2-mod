@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #19·雇佣打手（游戏设计 §5.2 / §5.4）：1 能 + 5 金，对随机敌人 4×3 次；
+// 罕见 #19·摇骰（游戏设计 §5.2 / §5.4）：1 能 + 5 金，对随机敌人 4×3 次；
 // 赌博：正面 → 每次 9（升级 5×3 / 正面每次 10）。
 public sealed class HiredThugs : GamblerCard
 {
@@ -43,6 +43,6 @@ public sealed class HiredThugs : GamblerCard
             .Execute(ctx);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "雇佣打手",
+        "摇骰",
         "#花费 *5 金币*。\n对随机敌人造成 !D! 伤害 !Hits! 次。*赌博*：正面 → 每次 !HeadsDamage! 伤害。");
 }

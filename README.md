@@ -1,7 +1,7 @@
 # 杀戮尖塔2 赌徒 Mod（GamblerMod）
 
 为 Slay the Spire 2 开发自定义角色"**赌徒**"：金币混合费用 + 掷硬币赌博。
-基于游戏官方 Mod 系统 + 社区库 BaseLib，纯 C# DLL（无 pck 资源包，立绘暂为占位）。
+基于游戏官方 Mod 系统 + 社区库 BaseLib，C# DLL + pck 资源包（选人封面/背景已接入，卡面立绘暂为占位）。
 
 ## 当前状态
 
@@ -11,6 +11,8 @@
 | M1 核心管线（金币费用 + 赌博掷硬币 + 起始牌） | ✅ 验收通过 |
 | M2 做局（幸运筹码遗物 + 暗记/手气正旺/赌神） | ✅ 代码完成，待验收 |
 | M3/M4 卡池（43 张全量：普 11 / 罕 19 / 稀 13） | ✅ 代码完成，待验收 |
+| M5 风头正盛倍率（+8 张新卡、改造 3 张，卡池 51） | ✅ 代码完成，待验收 |
+| v1.7 扩池至 80（+29 张：普 7 / 罕 13 / 稀 9） | ✅ 代码完成，待验收 |
 
 测试清单见 [docs/testing/test-plan.md](docs/testing/test-plan.md)。
 
@@ -26,12 +28,13 @@ sts2-mod\
 │       ├── Core\             共用层：GamblerCard 基类 / GoldCost / GambleService /
 │       │                     SpendTracker / GoldCostCheckPatch / GamblerHooks（全局钩子）
 │       ├── Character\        角色 + 职业卡池
-│       ├── Cards\            43 张卡（Basic/Common/Uncommon/Rare + 单例仓）
+│       ├── Cards\            80 张卡（Basic/Common/Uncommon/Rare + 单例仓）
 │       ├── Powers\           6 个力量 + 单例仓
+│       ├── UI\               头顶「风头正盛」倍率徽章
 │       └── Relics\           幸运筹码 + 单例仓
 ├── lib\                      编译引用（sts2 / 0Harmony / GodotSharp / BaseLib + sts2.xml API 文档）
 ├── docs\
-│   ├── design\               游戏设计（gambler-design.md v1.3）+ 技术设计（gambler-tech-design.md）
+│   ├── design\               游戏设计（gambler-design.md v1.5）+ 技术设计（gambler-tech-design.md）
 │   └── testing\              测试文档
 ├── notes\modding-api.md      Modding API 笔记（含 BaseLib 使用要点/踩坑记录）
 └── HANDOFF.md                交接摘要（必读：引擎语义、加卡流程、历史事故）

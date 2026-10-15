@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #36·天命（游戏设计 §5.3 真赌）：1 能，赌博：正面 → 获得 4 点能量；反面 → 失去 1 点能量（升级正面 5）。
+// 稀有 #36·单双（游戏设计 §5.3 真赌）：1 能，赌博：正面 → 获得 4 点能量；反面 → 失去 1 点能量（升级正面 5）。
 public sealed class Destiny : GamblerCard
 {
     public Destiny() : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)
@@ -30,6 +30,6 @@ public sealed class Destiny : GamblerCard
         => PlayerCmd.GainEnergy(heads ? DynamicVars["HeadsEnergy"].BaseValue : DynamicVars["TailsEnergy"].BaseValue, Owner);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "天命",
+        "单双",
         "#*赌博*：正面 → 获得 !HeadsEnergy! 点能量；反面 → 失去 1 点能量。");
 }

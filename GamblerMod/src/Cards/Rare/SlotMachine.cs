@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #37·老虎机（游戏设计 §5.3）：2 能 + 5 金，赌博 3 次，每次正面：获得 7 金币并抽 1 张牌（升级每次 9 金）。
+// 稀有 #37·老虎机（游戏设计 §5.3）：2 能 + 5 金，赌博 3 次，每次正面：获得 9 金币并抽 1 张牌（升级每次 11 金）。
 // 逐次独立掷（基类单掷流程不够用，卡内自行掷；heads 参数无效）。
 public sealed class SlotMachine : GamblerCard
 {
@@ -21,7 +21,7 @@ public sealed class SlotMachine : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("GoldGain", 7),
+        new IntVar("GoldGain", 9),
         new IntVar("Spins", 3),
     ];
 

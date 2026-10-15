@@ -10,13 +10,13 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #39·撕毁契约（游戏设计 §5.3）：2 能，消耗。抽 2 张牌，获得 12 金币（升级 抽 3 / 16 金）。
+// 稀有 #39·弃牌（游戏设计 §5.3）：2 能，消耗。抽 2 张牌，获得 14 金币（升级 抽 3 / 18 金）。
 public sealed class TearContract() : GamblerCard(2, CardType.Skill, CardRarity.Rare, TargetType.None)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new IntVar("Cards", 2),
-        new IntVar("GoldGain", 12),
+        new IntVar("GoldGain", 14),
     ];
 
     public override void AfterCreated()
@@ -38,6 +38,6 @@ public sealed class TearContract() : GamblerCard(2, CardType.Skill, CardRarity.R
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "撕毁契约",
+        "弃牌",
         "#消耗。抽 !Cards! 张牌，获得 !GoldGain! 金币。");
 }

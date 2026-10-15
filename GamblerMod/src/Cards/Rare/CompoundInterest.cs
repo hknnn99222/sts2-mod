@@ -10,10 +10,10 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #43·利滚利（游戏设计 §5.3）：2 能能力，本场战斗中你每次获得金币时，额外获得 1 金币（升级 +2）。
+// 稀有 #43·利滚利（游戏设计 §5.3）：2 能能力，本场战斗中你每次获得金币时，额外获得 2 金币（升级 +3）。
 public sealed class CompoundInterestCard() : GamblerCard(2, CardType.Power, CardRarity.Rare, TargetType.None)
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Gold", 1)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Gold", 2)];
 
     protected override void OnUpgrade() => DynamicVars["Gold"].UpgradeValueBy(1);
 
