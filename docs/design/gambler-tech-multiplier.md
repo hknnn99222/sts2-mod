@@ -225,7 +225,7 @@ sealed class MultiplierBadge : Control      // 纯文字版：一个 MegaLabel �
 ### ⚠ 唯一需要游戏内校准的点
 
 `UI/MultiplierBadge.cs` 的 `HeadOffsetY`（再往上抬多少像素）。定位方式经 **IL 核实**：`NCreature.GetTopOfHitbox()` 返回的是**全局坐标**（`Hitbox.GlobalPosition + (Hitbox.Size.X*0.5, 0)`，命中框顶边中点），所以徽章直接写自己的 `GlobalPosition`，不做坐标空间换算；每帧只在目标点变化时才写（无分配）。徽章只在 `NCreature.Entity.IsPlayer` 的生物上显示，并设 `MouseFilter = Ignore` 以免挡点击。
-数据源：`GambleService.Records.Count`（当版本号，变化才写）+ `MultiplierService.LastOutcome`（枚举 **Heads/Tails/SavedByChip**）。**三态与倍率口径严格一致**：正（金，+0.5）/ 反（红，归零）/ **保**（蓝，幸运筹码花 5 金保命——没涨也没归零）。2026-10-16 用户三轮实测后的定稿：①记录改为**战斗结束时清空**（原来只在"新战斗首次掷币"清，导致新战斗开局残留上一场正反）；②改币**不能**显示成"反"——那会让人以为"显示反、倍率却没降"是 bug，所以单独立了「保」这一态。
+数据源：`GambleService.Records.Count`（当版本号，变化才写）+ `MultiplierService.LastOutcome`（Heads/Tails）。**两态与倍率严格一致**：正（金，+0.5）/ 反（红，归零）。2026-10-16 用户三轮实测后的最终口径：①记录改为**战斗结束时清空**（原来只在"新战斗首次掷币"清，新战斗开局会残留上一场正反）；②**幸运筹码改币也按反面归零**（用户拍板"要归零"：遗物只保牌效、不保连胜）——所以曾短暂加过的第三态「保」已废弃，显示与倍率始终一致。
 整组（倍率 76px + 间隙 4px + 正反 44px = 124px）**以头顶中线居中**。
 
 **⚠⚠ 实测踩到的坑（代码里都有注释，别删）**：

@@ -57,20 +57,11 @@ public static class GambleService
             byChip = true;
         }
 
-        // 「风头正盛」倍率（设计 §2.8）：自然正面 / 赌神 / 暗记 → +0.5；掷出反面 → 立刻归零；
-        // 幸运筹码改币**只保命不涨**（用户拍板 Q4）——用 byChip 把它排除在 +0.5 之外（但也别归零）。
-        if (!final)
-        {
-            MultiplierService.Reset();
-        }
-        else if (byChip)
-        {
-            MultiplierService.MarkSavedByChip();
-        }
-        else
-        {
-            MultiplierService.AddHeads();
-        }
+        // 「风头正盛」倍率（设计 §2.8，2026-10-16 用户拍板）：倍率只认**赌博本身**的结果——
+        // 掷出反面就归零，**哪怕幸运筹码花钱把它改成了正面**（遗物只保牌效，不保连胜）；
+        // 赌神 / 暗记属于"做局换确定性"，照常 +0.5。
+        if (!final || byChip) MultiplierService.Reset();
+        else MultiplierService.AddHeads();
 
         Flips.Add(new FlipRecord(source, original, final));
         GD.Print($"[GamblerMod] 掷硬币 {source.Id.Entry}：{(original ? "正面" : "反面")}{(final != original ? " → 改为正面" : "")}（风头 {MultiplierService.Label}{(byChip ? "，改币不计" : "")}）");
