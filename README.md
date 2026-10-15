@@ -30,7 +30,7 @@ sts2-mod\
 │       ├── Character\        角色 + 职业卡池
 │       ├── Cards\            80 张卡（Basic/Common/Uncommon/Rare + 单例仓）
 │       ├── Powers\           6 个力量 + 单例仓
-│       ├── UI\               头顶「风头正盛」倍率徽章
+│       ├── UI\               头顶「风头正盛」倍率徽章（倍率 x1.5 + 掷币 正/反）
 │       └── Relics\           幸运筹码 + 单例仓
 ├── lib\                      编译引用（sts2 / 0Harmony / GodotSharp / BaseLib + sts2.xml API 文档）
 ├── docs\

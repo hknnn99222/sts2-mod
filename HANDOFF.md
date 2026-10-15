@@ -52,7 +52,8 @@
 10. 卡牌效果写法：看 ModTemplate wiki 的 Common-Commands-Cookbook（DamageCmd/CreatureCmd/PlayerCmd/CardPileCmd 流式命令）
 11. 掷硬币随机：官方"内容专属 Rng"构造器 `new Rng(player, contentId, mixin)`——同内容重见会出同结果，**必须用战斗序号做 mixin**（GambleService 已实现）；多人下读档确定性的校准仍待做
 12. 金币：`Player.Gold`（int）、`PlayerCmd.GainGold(dec, player, bool)` / `LoseGold(dec, player, GoldLossType.Spent)`；可打出检查挂 `PlayerCombatState.HasEnoughResourcesFor` Postfix（与 BaseLib 附加费用同出口）
-13. **Godot C# 覆盖 `_Ready` 必须调 `base._Ready()`**：`MegaLabel._Ready` 里是 `RefreshFont() + AdjustFontSize()`（IL 核实），漏掉字体不初始化、文字**不显示**——倍率徽章踩过（数值一直在变，只是没渲染）。写 UI 节点同理
+13. **`MegaLabel._Ready()` 的字体断言是「抛异常」不是「打日志」**：缺主题字体覆盖时它会抛 `InvalidOperationException: … has no theme font override`。覆盖 `_Ready` 时必须先 `AddThemeFontOverride("font", GetThemeFont("font","Label") ?? ThemeDB.FallbackFont)` 再 `try { base._Ready(); }`，否则异常一抛、后面代码全跳过（徽章整块消失；2026-10-16 踩过）
+14. **C# 节点的 `_Process` 靠不住**：`SetProcess(true)` 也未必被引擎回调（实测两次都没回调）。UI 需要逐帧刷新时，挂 **`GetTree().ProcessFrame` 信号**（`_ExitTree` 里退订）——信号连接不受节点 process 标志控制
 14. 卡池能量图标缺失（`CARD_POOL∴…_energy_icon.png`）是占位缺口，卡描述里的能量符号会报 No loader found
 15. 掷骰记录 `GambleService.Flips` 的作用域 = **单场战斗**（`GamblerHooks.AfterCombatEnd` 里 `GambleService.OnCombatEnd()` 清空；此前只在"新战斗首次掷币"时清，会残留上一场数据）
 16. 选人美术覆写：角色 `CustomCharacterSelectIconPath`（封面）/ `CustomCharacterSelectBg`（背景场景）两个 override，资产经 pck 提供（见下）
@@ -62,7 +63,7 @@
 - **金币汇率**：2.1 伤害/金币、2.5 格挡/金币；双费卡的"能+金"组合按此折算定价（17 张已全量重定价）
 - **能量↔金币换算（v1.5）**：**1 能量 = 7 金币**——产金与补贴的统一换算基准（取代按稀有度分档的 4-6/5-10/8-15 口径）。产金牌按此重定：筹码 1 能 → 7 金（基准样板；原 0 能 3 金）、本钱 0 能 → 5 金（升级 7，免能量特例），其余产金牌同步上调（抽头 7/正 14、派彩 18、兑筹 12、高利贷 14、弃牌 14、老虎机每次 9、赏金 10、清台 7、爆机 25、返水 3/回合、台规 4/回合+正面 3、利滚利 +2）
 - **赌博期望锚定**：E = 1.2×白板基准（反面 ≈ ×0.8、正面 ≈ ×1.6，公式 0.8+0.8p）；动态数据见设计文档 §5.4 期望校验表
-- **「风头正盛」倍率（v1.6，已实装）**：正面积累 +0.5 / 反面归零 / 带词条的牌数值 ×倍率后清空；**裸值 = 白板**、**不设上限**（含金币，经济风险用户已接受）。关联 11 张牌（8 新 + 同花顺挂词条，叠注/底牌只读条件）。实现要点：倍率存 `Core/MultiplierService`（int 记 0.5 刻度），乘算走 `GamblerHooks` 的 `ModifyDamage/BlockMultiplicative`（**金币没有带 cardSource 的钩子 → 兑现在卡内自算、卡面显示裸值**）
+- **「风头正盛」倍率（v1.6，已实装）**：正面积累 +0.5 / 反面归零 / 带词条的牌数值 ×倍率后清空；**裸值 = 白板**、**不设上限**（含金币，经济风险用户已接受）。关联 12 张牌（**10 挂词条**：8 张新卡 + 同花顺 + 换筹；**2 只读条件**：叠注、底牌）；**幸运筹码改币照常归零**（2026-10-16 用户拍板：遗物只保牌效、不保连胜）。实现要点：倍率存 `Core/MultiplierService`（int 记 0.5 刻度），乘算走 `GamblerHooks` 的 `ModifyDamage/BlockMultiplicative`（**金币没有带 cardSource 的钩子 → 兑现在卡内自算、卡面显示裸值**）
 - **平衡旋钮**：设计文档 §7.3 / xlsx「平衡旋钮清单」sheet——改平衡先动那六个螺丝
 - 起始金币 **148**（设定梗：本该 150，兑筹抽走两枚"手续费"）；HP 72
 - 改数值只动卡文件（`GamblerMod/src/Cards/`），Core 层不动

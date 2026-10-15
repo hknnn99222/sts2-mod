@@ -233,7 +233,7 @@ sealed class MultiplierBadge : Control      // 纯文字版：一个 MegaLabel �
    → 正确姿势：先 `AddThemeFontOverride("font", GetThemeFont("font","Label") ?? ThemeDB.FallbackFont)` 让断言通过，再 `try { base._Ready(); } catch { … }` 兜底；**非玩家生物提前 return**，不初始化字体（否则敌方每只各抛一次）。
    注：完全不调 `base._Ready()` 时文字**能**渲染（走 Godot 默认主题）——前一版"看得见"就是这么来的，但字体不是游戏 UI 字体。
 2. **不要依赖本节点的 `_Process`（连 `SetProcess(true)` 都不行）**——`_Ready`/`_EnterTree` 是引擎必调的生命周期回调（所以看起来"回调通了"），但 `_Process` 受 process 标志控制，Godot 不像 GDScript 那样"检测到有 `_Process` 就自动打开"。2026-10-16 **两次**实测：徽章显示但不刷新（倍率/正反都冻在初始值），日志里只有 `已挂载`、没有 `_Process 已启动`；补了 `SetProcess(true)` 后**依然**没回调。最终改成挂 **`SceneTree.ProcessFrame` 信号**（`GetTree().ProcessFrame += OnFrame`，`_ExitTree` 里退订）——信号连接不受 process 标志控制，一挂就生效。
-3. 另加了两条自证日志：`风头徽章 _Process 已启动` 与每次变化的 `徽章刷新 → x…`，用于区分"调用链没跑"和"渲染没生效"。
+3. 两条自证日志（现名）：`徽章帧回调已启动（ProcessFrame 信号）` 与每次变化的 `徽章刷新 → x…`，用于区分"刷新没挂上"和"渲染没生效"（旧名 `_Process 已启动` 随 _Process 方案一起废弃）。
 
 **当前校准值 `HeadOffsetY = -58f`**（2026-10-16 由 -34 上调 24px，用户反馈位置偏低）。实测锚点示例：`(960, 262)`（2560×1369 窗口下的全局坐标）。
 
