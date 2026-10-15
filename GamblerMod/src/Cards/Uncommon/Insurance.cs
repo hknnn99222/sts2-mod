@@ -11,8 +11,8 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #25·保险（游戏设计 §5.2 / §5.4）：1 能 + 2 金，获得 6 格挡；
-// 反向赌博：反面 → 改为 13 格挡（升级 8 / 反面 18）。全池唯一"盼反面"的赌博牌。
+// 罕见 #25·保险（游戏设计 §5.2 / §5.4）：1 能 + 2 金，获得 8 格挡；
+// 反向赌博：反面 → 改为 16 格挡（升级 10 / 反面 20）。全池唯一"盼反面"的赌博牌。
 public sealed class Insurance : GamblerCard
 {
     public Insurance() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
@@ -23,14 +23,14 @@ public sealed class Insurance : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(6, ValueProp.Move),
-        new IntVar("TailsBlock", 13),
+        new BlockVar(8, ValueProp.Move),
+        new IntVar("TailsBlock", 16),
     ];
 
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(2);
-        DynamicVars["TailsBlock"].UpgradeValueBy(5);
+        DynamicVars["TailsBlock"].UpgradeValueBy(4);
     }
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)

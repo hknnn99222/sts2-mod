@@ -28,7 +28,7 @@ public sealed class AddMore() : GamblerCard(1, CardType.Attack, CardRarity.Commo
         var spend = Math.Min(MaxSpend, Owner.Gold);
         if (spend > 0) await GoldCost.Pay(Owner, spend);
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + spend)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + spend * 2)
             .FromCard(this, play)
             .Targeting(play.Target)
             .WithHitFx("vfx/vfx_attack_slash")
@@ -37,5 +37,5 @@ public sealed class AddMore() : GamblerCard(1, CardType.Attack, CardRarity.Commo
 
     public override List<(string, string)>? Localization => new CardLoc(
         "加注",
-        "#花费至多 *6 金币*，每 1 金币 +1 伤害。\n造成 !D! 伤害。");
+        "#花费至多 *6 金币*，每 1 金币 +2 伤害。\n造成 !D! 伤害。");
 }

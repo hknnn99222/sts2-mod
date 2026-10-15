@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #34·豹子（游戏设计 §5.3）：2 能 + 10 金，5×3 次，每击独立赌博：正面则该击改为 12（升级 每击 6 / 正 13）。
+// 稀有 #34·豹子（游戏设计 §5.3）：2 能 + 10 金，9×3 次，每击独立赌博：正面则该击改为 18（升级 每击 10 / 正 20）。
 // 注意：本卡不走基类 IsGambleCard 单掷流程，ApplyEffect 的 heads 参数无效，逐击自行掷。
 public sealed class TripleSevens : GamblerCard
 {
@@ -22,15 +22,15 @@ public sealed class TripleSevens : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(5, ValueProp.Move),
-        new IntVar("HeadsDamage", 12),
+        new DamageVar(9, ValueProp.Move),
+        new IntVar("HeadsDamage", 18),
         new IntVar("Hits", 3),
     ];
 
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(1);
-        DynamicVars["HeadsDamage"].UpgradeValueBy(1);
+        DynamicVars["HeadsDamage"].UpgradeValueBy(2);
     }
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)

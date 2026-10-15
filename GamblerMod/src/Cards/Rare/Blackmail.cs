@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #40·黑吃黑（游戏设计 §5.3）：2 能 + 8 金，施加 3 点力量削弱与 2 易伤（升级 4 点 / 3 易伤）。
+// 稀有 #40·黑吃黑（游戏设计 §5.3）：2 能 + 8 金，施加 5 点力量削弱与 3 易伤（升级 6 点 / 4 易伤）。
 // 力量削弱 = 负数 StrengthPower。
 public sealed class Blackmail : GamblerCard
 {
@@ -22,8 +22,8 @@ public sealed class Blackmail : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("StrengthLoss", 3),
-        new IntVar("Vuln", 2),
+        new IntVar("StrengthLoss", 5),
+        new IntVar("Vuln", 3),
     ];
 
     protected override void OnUpgrade()

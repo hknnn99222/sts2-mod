@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace GamblerMod.Cards.Uncommon;
 
 // 罕见 #19·雇佣打手（游戏设计 §5.2 / §5.4）：1 能 + 5 金，对随机敌人 4×3 次；
-// 赌博：正面 → 每次 7（升级 5×3 / 正面每次 8）。
+// 赌博：正面 → 每次 9（升级 5×3 / 正面每次 10）。
 public sealed class HiredThugs : GamblerCard
 {
     public HiredThugs() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.RandomEnemy)
@@ -24,7 +24,7 @@ public sealed class HiredThugs : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(4, ValueProp.Move),
-        new IntVar("HeadsDamage", 7),
+        new IntVar("HeadsDamage", 9),
         new IntVar("Hits", 3),
     ];
 

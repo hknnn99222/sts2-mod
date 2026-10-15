@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #14·洗劫（游戏设计 §5.2）：1 能 + 4 金，对所有敌人 5 伤害，每击杀一个 +5 金（升级 7 伤）。
+// 罕见 #14·洗劫（游戏设计 §5.2）：1 能 + 4 金，对所有敌人 13 伤害，每击杀一个 +5 金（升级 15 伤）。
 public sealed class Ransack : GamblerCard
 {
     public Ransack() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
@@ -22,7 +22,7 @@ public sealed class Ransack : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(5, ValueProp.Move),
+        new DamageVar(13, ValueProp.Move),
         new IntVar("Loot", 5),
     ];
 

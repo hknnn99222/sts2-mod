@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #38·买凶（游戏设计 §5.3）：2 能 + 15 金，对生命值最低的敌人造成 30 伤害（升级 40）。
+// 稀有 #38·买凶（游戏设计 §5.3）：2 能 + 15 金，对生命值最低的敌人造成 43 伤害（升级 50）。
 public sealed class HitMan : GamblerCard
 {
     public HitMan() : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
@@ -20,9 +20,9 @@ public sealed class HitMan : GamblerCard
         BaseGoldCost = 15;
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(30, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(43, ValueProp.Move)];
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(10);
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(7);
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {

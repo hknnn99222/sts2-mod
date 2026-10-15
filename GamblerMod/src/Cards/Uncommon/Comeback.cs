@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #17·翻本（游戏设计 §5.2 / §5.4）：1 能 + 3 金，8 伤害；赌博：正面 → 16（升级 11 / 21）。
+// 罕见 #17·翻本（游戏设计 §5.2 / §5.4）：1 能 + 3 金，10 伤害；赌博：正面 → 20（升级 13 / 25）。
 public sealed class Comeback : GamblerCard
 {
     public Comeback() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
@@ -22,8 +22,8 @@ public sealed class Comeback : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8, ValueProp.Move),
-        new IntVar("HeadsDamage", 16),
+        new DamageVar(10, ValueProp.Move),
+        new IntVar("HeadsDamage", 20),
     ];
 
     protected override void OnUpgrade()

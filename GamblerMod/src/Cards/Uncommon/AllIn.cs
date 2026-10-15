@@ -34,7 +34,7 @@ public sealed class AllIn : GamblerCard
         var x = ResolvedX;
         await GoldCost.Pay(Owner, GoldPerX * x);
 
-        await DamageCmd.Attack(10 * x)
+        await DamageCmd.Attack(27 * x)
             .FromCard(this, play)
             .Targeting(play.Target)
             .WithHitFx("vfx/vfx_heavy_blunt", null, HeadsHitSfx)
@@ -43,5 +43,5 @@ public sealed class AllIn : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "梭哈",
-        "#花费 *10×X 金币*。\n造成 10×X 伤害。");
+        "#花费 *10×X 金币*。\n造成 27×X 伤害。");
 }

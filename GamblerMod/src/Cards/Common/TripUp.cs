@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #10·下绊子（游戏设计 §5.1）：1 能 + 4 金，施加 2 虚弱（升级 3）。
+// 普通 #10·下绊子（游戏设计 §5.1）：1 能 + 4 金，施加 4 虚弱（升级 5）。
 public sealed class TripUp : GamblerCard
 {
     public TripUp() : base(1, CardType.Skill, CardRarity.Common, TargetType.AnyEnemy)
@@ -19,7 +19,7 @@ public sealed class TripUp : GamblerCard
         BaseGoldCost = 4;
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Weak", 2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Weak", 4)];
 
     protected override void OnUpgrade() => DynamicVars["Weak"].UpgradeValueBy(1);
 

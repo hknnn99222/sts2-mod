@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #4·打手（游戏设计 §5.1）：1 能 + 5 金，8 伤害并施加 1 易伤（升级 11 伤 / 2 易伤）。
+// 普通 #4·打手（游戏设计 §5.1）：1 能 + 5 金，16 伤害并施加 1 易伤（升级 19 伤 / 2 易伤）。
 public sealed class Thug : GamblerCard
 {
     public Thug() : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
@@ -22,7 +22,7 @@ public sealed class Thug : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8, ValueProp.Move),
+        new DamageVar(16, ValueProp.Move),
         new IntVar("Vuln", 1),
     ];
 
