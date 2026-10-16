@@ -1,13 +1,13 @@
 # 赌徒 Mod 技术设计文档
 
-> 状态：**已评审（2026-10-14），按结论修订**｜依据：游戏设计 [gambler-design.md](gambler-design.md)（评审时 v1.3 / 卡池 43 张；该文档其后演进至 v1.7 / 80 张常规卡，本设计的分层与组件结构经该版本沿用）｜API 调研完成于 2026-10-14（本机实测：sts2 v0.111.0 + BaseLib 3.4.7 工坊版反射导出）
+> 状态：**已评审（2026-10-14），按结论修订**｜依据：游戏设计 [gambler-design.md](gambler-design.md)（评审时 v1.3 / 卡池 43 张；其后演进至 v1.7 / 80 张，**v1.8 删 4 张自掷牌 → 76 张 + 两个真词条**，本设计的分层与组件结构经这些版本沿用）｜API 调研完成于 2026-10-14（本机实测：sts2 v0.111.0 + BaseLib 3.4.7 工坊版反射导出）
 > 本文档只做设计，不含实现代码；文中代码均为**签名草图**，用于评审接口形态。
 
 ## 0. 三条硬约束的落实位置（评审时重点看）
 
 | 约束 | 落实章节 |
 |---|---|
-| ① 共用方法提取，不重复写 | §4 共用组件（GamblerCard 基类 + 4 个服务，82 张卡只写效果差异） |
+| ① 共用方法提取，不重复写 | §4 共用组件（GamblerCard 基类 + 4 个服务，76 张卡只写效果差异） |
 | ② 减少内存分配（申请空间） | §5 分配红线（热路径零 new、集合复用、静态缓存） |
 | ③ 多用成熟库，少自己写 | §2 依赖决策表（BaseLib 承担注册/本地化/关键词/UI 扩展，自写仅 5 个组件且均属"简单"级） |
 | ④ **卡牌必改：公共类能不改就不改，改卡只改卡牌文件** | §3.1 变更影响半径规则 + §4.1 基类覆盖全部已知变体 + §4.8 Core 冻结门禁 |
@@ -20,7 +20,7 @@
 
 | 能力 | API | 备注 |
 |---|---|---|
-| 卡模型构造 | `CardModel.#ctor(int energyCost, CardType, CardRarity, TargetType, bool)` | 82 张卡全部走此构造 |
+| 卡模型构造 | `CardModel.#ctor(int energyCost, CardType, CardRarity, TargetType, bool)` | 76 张卡全部走此构造 |
 | 打出效果钩子 | `CardModel.OnPlay(PlayerChoiceContext, CardPlay)` | 异步管线 |
 | 可打出检查 | `CardModel.CanPlay()` / `CanPlay(out UnplayableReason, ref AbstractModel)` | 金币不足 → 返回 UnplayableReason |
 | 金币增减 | `PlayerCmd.GainGold(Decimal, Player, bool)` / `LoseGold(Decimal, Player, GoldLossType)` | `GoldLossType = Spent / Lost / Stolen`，挥金协同用 `Spent` |
@@ -68,7 +68,7 @@
 | **掷骰管线（含做局干预）** | 自写 `GambleService`（见 §4.2） | ~120 行，核心是纯函数 |
 | **本回合花费累计** | 自写 `SpendTracker`（见 §4.4） | ~30 行，一个 int |
 | **战斗状态仓** | 自写 `GamblerCombatState`（见 §4.5） | ~40 行，字段+重置 |
-| 82 张卡效果 | 自写（不可避免） | 每张 5-20 行 |
+| 76 张卡效果 | 自写（不可避免） | 每张 5-20 行 |
 
 ### 2.2 引入方式与版本
 
@@ -130,7 +130,7 @@ GamblerMod/
 
 ## 4. 共用组件设计（约束①）
 
-### 4.1 `GamblerCard : CustomCardModel` —— 82 张卡的模板方法
+### 4.1 `GamblerCard : CustomCardModel` —— 76 张卡的模板方法
 
 把"金币费用 + 赌博"的公共流程固化在基类，子类只声明数据和效果：
 
@@ -159,10 +159,8 @@ abstract class GamblerCard : CustomCardModel
 | 固定金币附加费 | 双费 16 张 | `BaseGoldCost` 字段 + Pay/Check/CostText |
 | X 金币费 | 梭哈（X能+10X金） | `GoldCostX` 数据 + ResolveX 桥接（复用引擎 X 费解析） |
 | 可选加投（想花多少花多少） | 加注（至多 6 金） | GoldCost.BeginOptionalSpend 原语（打牌时选择投入额） |
-| 赌博 / 反向赌博 | 13 张 + 保险 | `IsGambleCard` + ApplyEffect(heads)（反向=卡内判 heads） |
-| 多次独立掷 | 豹子/老虎机 | 卡内多次调 GambleService.Flip（循环写在卡里） |
-| 连锁掷（上限） | 连胜 | Flip 返回值自递归，上限是卡数据 |
-| 真赌（反面惩罚） | 3 张 | 纯卡内逻辑，无特殊支撑 |
+| 赌博 / 反向赌博 | 14 张（含反向的保险） | `IsGambleCard` + ApplyEffect(heads)（反向=卡内判 heads）；**该标志同时是「赌博」词条的挂载条件**（v1.8） |
+| 真赌（反面惩罚） | 5 张 | 纯卡内逻辑，无特殊支撑 |
 | 升级改金币费 | 按 §2.7 约定 | OnUpgrade 虚方法 + CostText(升级态) 缓存联动 |
 
 清单之外的新形态（未来的新钩子）先查游戏设计 §5.5，确实组合不出来才走 §4.8 门禁动 Core。
@@ -179,7 +177,7 @@ class TryYourLuck : GamblerCard
 }
 ```
 
-按此估算：82 张卡 × 平均 15 行 + 本地化数据；实测卡源码（含 using／注释／本地化声明）合计 3263 行，且**无一张卡需要知道"怎么扣金币/怎么掷硬币"**。
+按此估算：76 张卡 × 平均 15 行 + 本地化数据；实测卡源码（含 using／注释／本地化声明）合计 3263 行，且**无一张卡需要知道"怎么扣金币/怎么掷硬币"**。
 
 ### 4.2 `GambleService` —— 掷骰管线（核心自写组件）
 
@@ -338,3 +336,39 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 - [ ] 游戏设计侧仍待定（不阻塞编码）：角色显示名、初始遗物名（当前占位"幸运筹码"）
 
 **评审通过。下一步：按 §6 从 M0（项目骨架 + BaseLib 引入 + 战士占位角色进选人界面）开工。**
+
+
+## 10. Core 变更记录（2026-10-16 代码审查修复批，§4.8 ③）
+
+代码审查报告见 [code-review-2026-10-16.md](../testing/code-review-2026-10-16.md)。本批对 Core 的改动均为缺陷修复或"只加不改"的扩展，逐条说明理由：
+
+| 文件 | 改动 | 理由（门禁①：为什么卡内做不了） |
+|---|---|---|
+| `GamblerHooks.cs` | ①利滚利 `AfterGoldGained` 的防递归守卫改为 `await` 包在 try/finally 内 | 原写法 finally 在 Task 完成前就复位守卫，金币入账发生在命令执行层时递归窗口重新敞开（潜在无限递归）——卡内无法修，属 Core 自身缺陷 |
+| | ②移除台规 `OnHeadsFlipped` 及其订阅，迁移至 `Powers/HouseRulesPower`（Entry 注册） | 卡牌专属数值（+3 金）硬编码在 Core 违反约束④；数值与卡面同处内容层后，改台规只动 power 文件 |
+| | ③`AfterPlayerTurnStart` 增加 `GambleService.OnTurnStart()` | 出千"本回合全正"需要回合级清空；回合钩子只在 Core |
+| `GambleService.cs` | ④新增 `Intervenor` 委托 + `ForceNextFlipsThisTurn`/`OnTurnStart`，移除对 `Relics.LuckyChip` 的硬引用 | Core→内容层反向依赖违背分层规则；干预窗口做成注册点后新增做局遗物/卡不需再动 Core。**只加不改**：`ForceNextFlips`（暗记持久层）签名不动 |
+| | ⑤`HeadsCountThisTurn` 更名 `HeadsCountThisCombat`；删死字段 `_round`；头注改"按整场战斗" | 记录从未按回合清空，原名/注释误导（未来按旧注释补回合清空会让满贯静默坏掉）。唯一消费者满贯同步更名 |
+| `MultiplierService.cs` | ⑥新增 `AddSteps(int)`（不写 `LastOutcome`） | 叠码/倍投直接推进倍率是设计本意（做局·倍率注入），但 `AddHeads` 附带写"最近一次掷币归属"，会把正/反徽章写脏。**只加不改**：`AddHeads` 保留给掷币路径 |
+| `GamblerCard.cs` | ⑦`KeepStreakAfterPlay` 复位移入 finally | 状态残留防护：ApplyEffect 中途异常时旧写法不复位，下一次打出会误判续风 |
+| `GoldCost.cs` | ⑧`OnCombatStart()` 更名 `ResetForNextCombat()` | 旧名与调用点（AfterCombatEnd）语义相反；唯一调用点同步更新 |
+| 内容层 | ⑨`Entry` 注册 Intervenor/OnHeads；`HouseRulesPower` 承接台规；`CheatDeal` 改用回合层原语；`BankWind`/`Redouble` 改用 `AddSteps`；`GrandSlam` 改用新名 | 均为上述 Core 改动的消费侧同步 |
+
+**未改的口径（评估后保留）**：热路径 `GD.Print` 日志（M1-M5 验收的证据链，量级为每出牌 1-3 条、无性能实测问题，优先于 R1/R7 字面）；`GainGold` 第三参已全库修正为 `false`（wasStolenBack 语义，见审查报告 §3.4）。
+
+## 11. Core / 内容层变更记录（2026-10-17「游玩体验优化」批，§4.8 ③）
+
+本批把「赌博」「风头正盛」词条化、修掉赌博牌正面数值吃不到附魔的显示问题、让卡牌图鉴全可见、给头顶倍率徽章加悬停提示。按 §4.8 门禁逐条说明**为什么卡内做不了**：
+
+| 文件 | 改动 | 理由（门禁①：为什么卡内做不到） |
+|---|---|---|
+| `Core/GamblerKeywords.cs`（新增） | `[CustomEnum]` 两个 `CardKeyword`（`Gamble`/`HotStreak`）+ 一个 `StaticHoverTip`（`Multiplier`） | 自定义词条只能注册成**类型上的静态字段**（BaseLib 反射扫描后写入枚举值），卡文件里没有可声明的载体；词条文案走 pck 的 `GamblerMod/localization/zhs/card_keywords.json` 与 `static_hover_tips.json` |
+| `Core/GamblerCard.cs` | ①新增 `CanonicalKeywords` override：按 `IsGambleCard` / `IsHeadsStreakCard` 挂对应词条；②新增 `LogValueCheck()` | ① 词条是**模型固有属性**，在基类一处按既有标志派生，胜过 24 张卡各写一遍；**不能用 `AfterCreated` + `AddKeyword`**——那个钩子的语义是"卡**实例**创建后"（`sts2.xml` CardModel.AfterCreated），图鉴/牌堆里的模型本体拿不到词条。② 附魔与倍率的"卡面值 vs 结算值"需要日志证据链（与既有掷币日志同量级） |
+| `Core/CardValueVars.cs`（新增） | `EnchantAware.Apply()` + `EnchantAwareVar` + `MultiplierAwareVar` | 附魔（锋利/灵巧）只修标准 `DamageVar`/`BlockVar`，赌博牌把正/反面数值写在独立 `IntVar` 上 → 卡面永远显示裸值。做法照抄 BaseLib `Cards/Variables/CustomExtraDamageVar`：预览刷新时把附魔的加法/乘法修正如实算进 `EnchantedValue`。**结算侧仍传 `BaseValue`**（API 文档明示 BaseValue 才是"改游戏状态"该用的值，附魔由伤害/格挡管线的 `Enchant*` 钩子落地）→ 两侧各算一次，不会重复计数。变量类型必须放 Core 才能被 14 张卡共用（各卡自写会重复 14 份） |
+| `Character/GamblerCardPool.cs` | `SeenByDefault => true` | 图鉴（百科）可见性由 BaseLib 的 `CustomCardPoolMarkAsSeenPatch` 以该属性为开关（默认 false → 76 张全渲染成"未知/未解锁"）；只能在池定义处覆写 |
+| `UI/MultiplierBadge.cs` | `MouseFilter` `Ignore` → `Pass`；接 `MouseEntered/Exited` + `NHoverTipSet` 弹自定义静态提示 | 徽章是战斗 UI 节点，改的是**鼠标热区与提示接线**（`Pass` = 自己收事件、事件继续上传给父节点，点角色不受影响），不涉及 Core 语义 |
+| 内容层同步 | 删 4 张自掷牌（豹子/老虎机/连庄/连胜）+ 注册行；14 张赌博牌描述改「硬币为正/为负」句式、数值变量换 `EnchantAwareVar`；10 张风头牌删与自动词条重复的 `*风头正盛*` 字头；9 张不挂词条的牌把正文里的词条名降为普通文字；兑现的 `GoldGain` 换 `MultiplierAwareVar`（卡面显示当前倍率下的实际到账值） | 均为上述 Core 改动的消费侧同步；描述文案里的 `!Var!` 只是取值出口，数值语义未变 |
+
+**删卡理由（游戏设计侧同步记录在 gambler-design.md §5.3 v1.8 说明）**：豹子/老虎机/连庄/连胜都绕开基类单掷流程自行掷币（`GambleService.Flip` 写在 `ApplyEffect` 的循环里），因此 ①挂不上「赌博」词条（词条挂载条件就是 `IsGambleCard`）；②一次出牌里多次推进倍率、覆盖徽章正反。用户决定整形态退场，卡池 80 → 76。
+
+**未改的口径**：`GambleService.Flip` 管线、`MultiplierService` 刻度语义、`GoldCost`、伤害/格挡钩子（`GamblerHooks.ModifyDamage/BlockMultiplicative`）本批一行未动。

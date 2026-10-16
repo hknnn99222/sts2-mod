@@ -31,5 +31,5 @@ public sealed class Destiny : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "单双",
-        "#*赌博*：正面 → 获得 !HeadsEnergy! 点能量；反面 → 失去 1 点能量。");
+        "#硬币为正时：获得 !HeadsEnergy! 点能量；硬币为负时：失去 1 点能量。");
 }

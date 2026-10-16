@@ -21,7 +21,7 @@ public sealed class FlashOfInsight : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(4, ValueProp.Move),
-        new IntVar("HeadsBlock", 8),
+        new EnchantAwareVar("HeadsBlock", 8, EnchantKind.Block),
     ];
 
     protected override void OnUpgrade()
@@ -38,5 +38,5 @@ public sealed class FlashOfInsight : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "盲注",
-        "#获得 !B! 格挡。*赌博*：正面 → 改为获得 !HeadsBlock! 格挡。");
+        "#硬币为正时：获得 !HeadsBlock! 格挡；硬币为负时：获得 !B! 格挡。");
 }

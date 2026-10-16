@@ -25,7 +25,7 @@ public sealed class Skim : GamblerCard
         var cards = PileType.Hand.GetPile(Owner).Cards.Count;
         if (cards > (int)DynamicVars["Cap"].BaseValue) cards = (int)DynamicVars["Cap"].BaseValue;
         if (cards <= 0) return Task.CompletedTask;
-        return PlayerCmd.GainGold(cards, Owner, true);
+        return PlayerCmd.GainGold(cards, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

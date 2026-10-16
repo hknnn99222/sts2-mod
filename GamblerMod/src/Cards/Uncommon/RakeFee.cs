@@ -28,7 +28,8 @@ public sealed class RakeFee : GamblerCard
     {
         var extra = SpendTracker.SpentThisTurn / (int)DynamicVars["Threshold"].BaseValue;
         var cap = (int)DynamicVars["Cap"].BaseValue;
-        var energy = 1 + (extra > cap - 1 ? cap - 1 : extra);
+        // 「至多 !Cap!」修饰的是额外 +1 → 总额 = 1 + Cap（2026-10-16 审查修正 off-by-one）
+        var energy = 1 + (extra > cap ? cap : extra);
         return PlayerCmd.GainEnergy(energy, Owner);
     }
 

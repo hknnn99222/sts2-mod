@@ -12,22 +12,27 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #12·梭哈（游戏设计 §5.2）：X 能 + 10×X 金，造成 10×X 伤害（升级金币费降为 8×X）。
+// 罕见 #12·梭哈（游戏设计 §5.2）：X 能 + 10×X 金，造成 27×X 伤害（升级金币费降为 8×X）。
 // 可打出检查按最低 X=1 的金币（10/8）判灰；打出时按实际 X 结算。
 public sealed class AllIn : GamblerCard
 {
     public AllIn() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy, costsX: true)
     {
-        GoldPerX = 10;
     }
 
-    public int GoldPerX { get; set; }
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(27, ValueProp.Move),
+        new IntVar("GoldX", 10), // 每 X 的金币系数；升级 −2（10→8）。卡面费用随 DynamicVar 同步显示
+    ];
+
+    private int GoldPerX => (int)DynamicVars["GoldX"].BaseValue;
 
     private int ResolvedX => Math.Max(1, ResolveEnergyXValue());
 
     public override int EffectiveGoldCost => GoldPerX * ResolvedX;
 
-    protected override void OnUpgrade() => GoldPerX = 8;
+    protected override void OnUpgrade() => DynamicVars["GoldX"].UpgradeValueBy(-2);
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
@@ -43,5 +48,5 @@ public sealed class AllIn : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "梭哈",
-        "#花费 *10×X 金币*。\n造成 27×X 伤害。");
+        "#花费 *!GoldX!×X 金币*。\n造成 27×X 伤害。");
 }

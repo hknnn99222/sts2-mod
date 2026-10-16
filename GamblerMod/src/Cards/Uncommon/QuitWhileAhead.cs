@@ -32,5 +32,5 @@ public sealed class QuitWhileAhead : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "割禾青",
-        "#每 0.5 倍率抽 1 张牌（至多 !Cap! 张）。*风头正盛*：结算后清空倍率。");
+        "#每 0.5 倍率抽 1 张牌（至多 !Cap! 张）。结算后清空倍率。");
 }

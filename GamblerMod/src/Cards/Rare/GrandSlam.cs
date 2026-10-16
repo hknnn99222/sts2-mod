@@ -24,7 +24,7 @@ public sealed class GrandSlam : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(30, ValueProp.Move),
-        new IntVar("HotDamage", 50),
+        new EnchantAwareVar("HotDamage", 50, EnchantKind.Damage),
     ];
 
     protected override void OnUpgrade()
@@ -35,7 +35,7 @@ public sealed class GrandSlam : GamblerCard
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var hot = GambleService.HeadsCountThisTurn > 0;
+        var hot = GambleService.HeadsCountThisCombat > 0;
         var damage = hot ? (int)DynamicVars["HotDamage"].BaseValue : DynamicVars.Damage.BaseValue;
 
         return DamageCmd.Attack(damage)

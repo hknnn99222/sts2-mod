@@ -22,13 +22,14 @@ public sealed class Redouble : GamblerCard
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        // 当前刻度先取快照，再逐段推进（循环里 Steps 会变，不能用它当上界）
+        // 当前刻度先取快照再推进（AddSteps 内 Steps 会变，不能用它当上界）；
+        // AddSteps 不写 LastOutcome——正/反徽章只跟"最近一次掷币"走（2026-10-16 审查修正）。
         var add = MultiplierService.Steps;
-        for (var i = 0; i < add; i++) MultiplierService.AddHeads();
+        MultiplierService.AddSteps(add);
         return Task.CompletedTask;
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "倍投",
-        "#你的*风头*倍率**翻倍**（不清空）。");
+        "#你的风头倍率**翻倍**（不清空）。");
 }

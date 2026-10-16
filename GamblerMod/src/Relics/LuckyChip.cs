@@ -24,15 +24,15 @@ public sealed class LuckyChip : CustomRelicModel
 
     private static bool _usedThisTurn;
 
-    // GambleService 干预窗口调用：反面且本回合未用且够钱 → 扣 5 金改正面
+    // GambleService 干预窗口调用（Intervenor 由 Entry 注册）：反面且本回合未用且够钱 → 扣 5 金改正面
     public static async Task<bool> TryIntervene(Player player)
     {
         if (_usedThisTurn) return false;
         if (player.GetRelic<LuckyChip>() == null) return false;
         if (player.Gold < Cost) return false;
 
-        _usedThisTurn = true;
         await PlayerCmd.LoseGold(Cost, player, GoldLossType.Spent);
+        _usedThisTurn = true; // 扣款成功后再置位（2026-10-16 审查修正：扣款异常不白耗本回合次数）
         GD.Print($"[GamblerMod] 幸运筹码：花费 {Cost} 金币将反面改为正面（本回合已用）");
         return true;
     }

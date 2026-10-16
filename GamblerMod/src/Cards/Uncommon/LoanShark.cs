@@ -25,7 +25,7 @@ public sealed class LoanShark() : GamblerCard(0, CardType.Skill, CardRarity.Unco
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
         GamblerHooks.PendingLoanDebt += (int)DynamicVars["Debt"].BaseValue;
-        return PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, true);
+        return PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

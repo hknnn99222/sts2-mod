@@ -24,7 +24,7 @@ public sealed class AnteUp : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(8, ValueProp.Move),
-        new IntVar("HeadsDamage", 15),
+        new EnchantAwareVar("HeadsDamage", 15, EnchantKind.Damage),
         new IntVar("Discards", 2),
     ];
 
@@ -52,5 +52,5 @@ public sealed class AnteUp : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "押牌",
-        "#造成 !D! 伤害。*赌博*：正面 → 改为 !HeadsDamage! 伤害；反面 → 弃掉 !Discards! 张手牌。");
+        "#硬币为正时：造成 !HeadsDamage! 伤害；硬币为负时：造成 !D! 伤害并弃掉 !Discards! 张手牌。");
 }

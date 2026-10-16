@@ -35,7 +35,7 @@ public sealed class BountyHunter() : GamblerCard(1, CardType.Attack, CardRarity.
             .Execute(ctx);
 
         if (play.Target.IsDead)
-            await PlayerCmd.GainGold(DynamicVars["Bounty"].BaseValue, Owner, true);
+            await PlayerCmd.GainGold(DynamicVars["Bounty"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

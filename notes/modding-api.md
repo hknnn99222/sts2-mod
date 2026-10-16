@@ -93,6 +93,7 @@ BaseLib 源码：https://github.com/Alchyr/BaseLib-StS2（关键文件 `Patches/
 | `DynamicVars.Damage/Block.BaseValue` / `DynamicVars["名"].BaseValue` | 效果结算取当前值（含升级/力量），decimal |
 | `CardModel.ResolveEnergyXValue()` | X 费卡取实际 X（梭哈） |
 | `public override void AfterCreated()` | 挂关键词：`AddKeyword(CardKeyword.Exhaust)`（撕毁契约；枚举还有 Ethereal/Innate/Retain 等） |
+| `protected override IEnumerable<CardKeyword> CanonicalKeywords` | 声明**模型固有词条**（v1.8 起「赌博」/「风头正盛」走这条，优于 `AfterCreated`+`AddKeyword`——后者拿不到模型本体的词条，详见 §9） |
 | `PlayerCombatState.HasEnoughResourcesFor` Postfix | 可打出检查的正规出口（GoldCostCheckPatch；`ref bool __result, ref UnplayableReason reason`） |
 
 ### 2. 战斗命令（流式，cookbook 范式）
@@ -163,7 +164,54 @@ BaseLib 源码：https://github.com/Alchyr/BaseLib-StS2（关键文件 `Patches/
 | `StartingHp/StartingGold/StartingDeck/StartingRelics/CardPool/RelicPool/PotionPool/Gender/NameColor` | 覆写点；起始牌直接引用自有卡单例 |
 | `CustomCharacterSelectIconPath`（png）/ `CustomCharacterSelectBg`（tscn 场景） | 选人封面/背景，走 pck |
 
+### 9. 词条 / 悬停提示 / 卡面数值显示（v1.8 新增，2026-10-17 实测）
+
+**自定义卡牌词条（BaseLib「自定义枚举」机制）**
+
+| 项 | 做法 |
+|---|---|
+| 声明 | `[CustomEnum, KeywordProperties(AutoKeywordPosition.Before)] public static CardKeyword HotStreak;`——字段**必须 public static**（readonly 会赋值失败），放任意 mod 类型里（本项目 `Core/GamblerKeywords.cs`） |
+| 挂载 | 覆写 `CardModel.CanonicalKeywords`。**别用 `AfterCreated` + `AddKeyword`**：那个钩子的语义是"卡**实例**创建后"（`CardModel.AfterCreated` 原文 "after the card is created (NOT during deserialization)"），图鉴/牌堆里的**模型本体**拿不到词条 |
+| 词条 ID | `根命名空间大写 + '-' + 字段名大写`（BaseLib `TypePrefix.GetPrefix()`）→ 本项目 `GAMBLERMOD-GAMBLE` / `GAMBLERMOD-HOTSTREAK`；`[CustomEnum("自定义名")]` 可换后半段 |
+| 文案 | pck 内 `GamblerMod/localization/<lang>/card_keywords.json`，键 = `词条ID.title` / `.description`（BaseLib 自带词条 BASELIB-PURGE 同款；lang 取 `zhs`/`zht`/`eng`…） |
+| 自动文字 | `[KeywordProperties(AutoKeywordPosition.Before/After)]` 让引擎把词条**标题**自动拼进卡描述（BaseLib 对 `CardKeywordOrder` 静态构造器打 Postfix）→ 卡文里**不要再手写**词条名 |
+| 悬停提示 | 白拿：BaseLib `CustomTooltips` 前缀补丁拦 `HoverTipFactory.FromKeyword`，用上面的 loc 键造 `HoverTip`；悬停卡牌由 `NCardHolder.CreateHoverTips` 触发。**引擎没有"点击才弹"的通道** |
+| ⚠️ | 词条值由 BaseLib 在 `ModelDb.Init` 反射写入 → **绝不可把词条值缓存进静态字段**（静态初始化更早，会固化成 0，即"陷阱 #8"的变体）；每次访问现读字段 |
+
+**自定义静态悬停提示（给非卡牌 UI 用）**：`[CustomEnum] public static StaticHoverTip X;` + pck 内 `static_hover_tips.json`，键 = `前缀-字段名UPPER_SNAKE.title/.description`（`BundledRewards` → `BUNDLED_REWARDS`）；取用 `HoverTipFactory.Static(X, Array.Empty<DynamicVar>())`。参考 BaseLib `Utils/BaseLibTip.cs`。
+
+**任意 Control 挂悬停提示**（本项目头顶倍率徽章 `UI/MultiplierBadge.cs`）：
+
+```csharp
+MouseFilter = MouseFilterEnum.Pass;   // Pass：自己收事件、事件继续上传父节点 → 不挡点角色（用 Ignore 则永远收不到悬停）
+Connect(Control.SignalName.MouseEntered, Callable.From(OnHovered));
+Connect(Control.SignalName.MouseExited,  Callable.From(OnUnhovered));
+// OnHovered → NHoverTipSet.CreateAndShow(this, tip)；OnUnhovered → NHoverTipSet.Remove(this)（_ExitTree 也要 Remove）
+```
+
+⚠️ 提示构建包 try/catch 并**懒建**：`HoverTipFactory.Static` 在自定义值没注册时可能抛，别让它把节点初始化带崩（本项目这个节点已被字体断言/_Process 坑过三次）。
+
+**卡牌图鉴（百科）可见性**：`CustomCardPoolModel.SeenByDefault`，**BaseLib 默认 false** → 打开图鉴时 `CustomCardPoolMarkAsSeenPatch` 跳过该池，整池被渲染成"未知/未解锁"。覆写 `=> true` 即"开局全可见"（写进存档 `ProgressState.DiscoveredCards`）。图鉴里的池筛选按钮由 BaseLib `CustomPoolFilters` 自动补。
+
+**附魔与卡面数值（本批最关键的一组事实）**：
+
+| API | 说明 |
+|---|---|
+| `DynamicVar.BaseValue` | **改游戏状态的计算用这个**（文档原文："the value that should be used when performing calculations that will modify the game's state"） |
+| `DynamicVar.EnchantedValue` | 附魔后的值（"附魔属于卡牌自身"的显示通道）；无附魔时 == BaseValue |
+| `DynamicVar.PreviewValue` | **仅供显示**，由 `CardModel.UpdateDynamicVarPreview` 刷新；别拿去结算 |
+| `EnchantmentModel.EnchantDamageAdditive(decimal, ValueProp)` / `EnchantDamageMultiplicative(decimal, ValueProp)` / `EnchantBlockAdditive(decimal)` / `EnchantBlockMultiplicative(decimal)` | 附魔数值钩子；**乘法钩子返回倍率**（`num *= hook(...)`，见 BaseLib `CustomExtraDamageVar`）。这两个钩子会被伤害/格挡管线调用（`ModifyDamageHookType.Additive/Multiplicative` 的文档明示包含 enchant 版） |
+| ⚠️ 陷阱 | 附魔**只修标准 `DamageVar`/`BlockVar`**；把数值写进自定义 `IntVar`（"正面改为 X"这种）→ 卡面永远显示裸值，玩家会以为吃不到附魔。修法见下 |
+| ⚠️ | **金币/能量没有任何附魔通道**，结构上不可能吃到附魔，别当 bug 查 |
+
+**自定义 DynamicVar 子类改卡面显示**（本项目 `Core/CardValueVars.cs`）：继承 `IntVar` 覆写 `UpdateCardPreview(CardModel, CardPreviewMode, Creature?, bool)`，算好写 `EnchantedValue` + `PreviewValue`（照抄 BaseLib `Cards/Variables/CustomExtraDamageVar` 的写法）。用途：让"正面/反面两套数值"或"×倍率后的金币"在卡面上如实显示，而不是显示裸值。
+
+**`DamageCmd.Attack` 只有两个重载**：`(decimal)` 与 `(CalculatedDamageVar)` —— 动态数值卡（如 PerfectedStrike）用后者。
+
+**pck 里放本地化 json**：直接把 `assets/GamblerMod/localization/<lang>/xxx.json` 交给现有 Godot 导出流程即可（`export_filter="all_resources"` 会带上），导出后用 `strings GamblerMod.pck | grep localization` 核对；运行时游戏按 `res://<ModId>/localization/<lang>/<表名>.json` 取（BaseLib `DefaultLoc` 的路径构造即此形式）。
+
 ## ModHelper 可用方法（XML 文档摘要）
+
 
 - `AddModelToPool<...>()` — Mod 向内容池（卡牌/遗物等）注册自定义模型；
   池一旦完成合并后再调用会抛异常（要在加载早期调用）。

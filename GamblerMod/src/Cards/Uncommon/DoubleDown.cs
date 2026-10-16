@@ -38,5 +38,5 @@ public sealed class DoubleDown : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "双倍下注",
-        "#造成 !D! 伤害。*赌博*：正面 → 改为造成 !D! 伤害两次。");
+        "#硬币为正时：造成 !D! 伤害两次；硬币为负时：造成 !D! 伤害。");
 }

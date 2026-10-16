@@ -27,18 +27,25 @@ public sealed class TakeCut : GamblerCard
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var hpBefore = play.Target?.CurrentHp ?? 0;
-        var damage = DynamicVars.Damage.BaseValue;
-
-        await DamageCmd.Attack(damage)
+        var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, play)
             .Targeting(play.Target)
-            .WithHitFx("vfx/vfx_attack_slash")
-            .Execute(ctx);
+            .WithHitFx("vfx/vfx_attack_slash");
 
-        var overflow = damage - hpBefore;
-        if (overflow > 0)
-            await PlayerCmd.GainGold(overflow, Owner, true);
+        await attack.Execute(ctx);
+
+        // 溢出转金：读引擎结算的 OverkillDamage——只有击杀才 >0，且已自动扣除格挡、
+        // 包含力量/易伤等修正（2026-10-16 审查修正：旧实现"裸伤害 − 战前 HP"不验击杀、不减格挡）。
+        if (play.Target == null || !play.Target.IsDead) return;
+
+        decimal overkill = 0m;
+        foreach (var hit in attack.Results)
+            foreach (var result in hit)
+                if (result.Receiver == play.Target)
+                    overkill += result.OverkillDamage;
+
+        if (overkill > 0)
+            await PlayerCmd.GainGold((int)overkill, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

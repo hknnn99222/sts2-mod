@@ -20,6 +20,7 @@ public sealed class CountMoney : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(5, ValueProp.Move),
+        new IntVar("SpendStep", 5), // 每花费 SpendStep 金币多一次结算
         new IntVar("PerSpend", 3),
     ];
 
@@ -27,12 +28,13 @@ public sealed class CountMoney : GamblerCard
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var steps = SpendTracker.SpentThisTurn / 5;
+        var step = (int)DynamicVars["SpendStep"].BaseValue;
+        var steps = SpendTracker.SpentThisTurn / step;
         var block = DynamicVars.Block.BaseValue + steps * (int)DynamicVars["PerSpend"].BaseValue;
         await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(block, ValueProp.Move), play);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "点码",
-        "#获得 !B! 格挡。本回合每花费过 *5 金币*，额外 +!PerSpend! 格挡。");
+        "#获得 !B! 格挡。本回合每花费过 *!SpendStep! 金币*，额外 +!PerSpend! 格挡。");
 }

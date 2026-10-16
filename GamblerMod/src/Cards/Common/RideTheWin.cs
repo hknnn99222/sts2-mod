@@ -32,5 +32,5 @@ public sealed class RideTheWin : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "乘胜",
-        "#造成 !D! 伤害。*风头正盛*：数值随头顶倍率放大，结算后清空。");
+        "#造成 !D! 伤害。数值随头顶倍率放大，结算后清空。");
 }

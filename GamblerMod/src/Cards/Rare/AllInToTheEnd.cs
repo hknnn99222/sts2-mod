@@ -34,5 +34,5 @@ public sealed class AllInToTheEnd : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "晒冷",
-        "#花费 *15 金币*。\n造成 !D! 伤害。*风头正盛*：数值随头顶倍率放大，结算后清空。");
+        "#花费 *15 金币*。\n造成 !D! 伤害。数值随头顶倍率放大，结算后清空。");
 }

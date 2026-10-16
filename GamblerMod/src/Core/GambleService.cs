@@ -10,10 +10,10 @@ namespace GamblerMod.Core;
 
 // 掷硬币管线（技术设计 §4.2，M4 完整版）：
 //   掷骰（正面率聚合）→ 干预窗口 → 定案 → 记录。
-// 干预顺序（固定，勿改）：赌神(全正) > 暗记(必正,消耗层数) > 幸运筹码(反面后花5金改正面,每回合1次)。
+// 干预顺序（固定，勿改）：赌神(全正) > 必正层数(暗记持久层 + 出千回合层) > 内容层干预(Intervenor，幸运筹码)。
 // 随机源 = 每战斗一个 Rng(player, characterId, combatMixin)——官方"内容专属 RNG"构造器。
-// 记录按"回合"清空（同花顺/底牌消费本回合正面数；GamblerHooks.AfterPlayerTurnStart 兜底重置）。
-// 无重掷 API（评审 D4 已定）；容器跨战斗/回合复用（红线 R3）。
+// 记录按"整场战斗"存续（战斗结束清空；满贯消费"本场正面数"，徽章正反也不跨战斗残留）。
+// 无重掷 API（评审 D4 已定）；容器跨战斗复用（红线 R3）。
 public static class GambleService
 {
     public const int BaseRatePercent = 50;
@@ -27,11 +27,20 @@ public static class GambleService
     private static readonly List<FlipRecord> Flips = new();
     private static object? _combat;
     private static int _combatCount = -1;
-    private static int _round = -1;
     private static Rng? _rng;
-    private static int _forcedHeads; // 暗记层数，跨回合存续直到消耗
+    private static int _forcedHeads;         // 暗记必正层数，跨回合存续直到消耗
+    private static int _forcedHeadsThisTurn; // 出千本回合必正层数，回合开始清零（OnTurnStart）
+
+    /// <summary>内容层干预窗口（幸运筹码在 Entry 注册）：反面后、结算前调用，返回 true = 已改为正面。</summary>
+    public static Func<Player, Task<bool>>? Intervenor;
 
     public static void ForceNextFlips(int count) => _forcedHeads += count;
+
+    /// <summary>出千：本回合接下来的 N 次赌博必为正面（回合开始清零，与暗记的持久层数分开记账）。</summary>
+    public static void ForceNextFlipsThisTurn(int count) => _forcedHeadsThisTurn += count;
+
+    /// <summary>回合开始：清空本回合必正层数（GamblerHooks.AfterPlayerTurnStart 调用）。</summary>
+    public static void OnTurnStart() => _forcedHeadsThisTurn = 0;
 
     public static async Task<bool> Flip(Player player, CardModel source)
     {
@@ -41,30 +50,31 @@ public static class GambleService
         var original = Roll(player);
         var final = original;
 
-        // 干预①：暗记——下一次赌博必为正面（无视概率上限，消耗层数）
-        if (!final && _forcedHeads > 0)
+        // 干预①：必正层数——先扣"本回合"层（出千），再扣持久层（暗记）；无视概率上限
+        if (!final && _forcedHeadsThisTurn + _forcedHeads > 0)
         {
-            _forcedHeads--;
+            if (_forcedHeadsThisTurn > 0) _forcedHeadsThisTurn--;
+            else _forcedHeads--;
             final = true;
-            GD.Print("[GamblerMod] 暗记：必为正面");
+            GD.Print($"[GamblerMod] 做局必正：剩余 {_forcedHeadsThisTurn + _forcedHeads} 次");
         }
 
-        // 干预②：幸运筹码——掷出反面后花 5 金改为正面（每回合 1 次；M2 简化：金币足够时自动触发）
-        var byChip = false;
-        if (!final && await Relics.LuckyChip.TryIntervene(player))
+        // 干预②：内容层干预（幸运筹码等）——掷出反面后、结算前询问（Intervenor 由 Entry 注册）
+        var intervened = false;
+        if (!final && Intervenor != null && await Intervenor(player))
         {
             final = true;
-            byChip = true;
+            intervened = true;
         }
 
         // 「风头正盛」倍率（设计 §2.8，2026-10-16 用户拍板）：倍率只认**赌博本身**的结果——
         // 掷出反面就归零，**哪怕幸运筹码花钱把它改成了正面**（遗物只保牌效，不保连胜）；
-        // 赌神 / 暗记属于"做局换确定性"，照常 +0.5。
-        if (!final || byChip) MultiplierService.Reset();
+        // 赌神 / 暗记 / 出千属于"做局换确定性"，照常 +0.5。
+        if (!final || intervened) MultiplierService.Reset();
         else MultiplierService.AddHeads();
 
         Flips.Add(new FlipRecord(source, original, final));
-        GD.Print($"[GamblerMod] 掷硬币 {source.Id.Entry}：{(original ? "正面" : "反面")}{(final != original ? " → 改为正面" : "")}（风头 {MultiplierService.Label}{(byChip ? "，改币不计" : "")}）");
+        GD.Print($"[GamblerMod] 掷硬币 {source.Id.Entry}：{(original ? "正面" : "反面")}{(final != original ? " → 改为正面" : "")}（风头 {MultiplierService.Label}{(intervened ? "，改币不计" : "")}）");
 
         if (final) OnHeads?.Invoke(player);
 
@@ -88,11 +98,11 @@ public static class GambleService
         Flips.Clear();
         _rng = null;
         _forcedHeads = 0;
-        _round = -1;
+        _forcedHeadsThisTurn = 0;
     }
 
-    /// <summary>本回合定案正面次数（同花顺/底牌消费）。</summary>
-    public static int HeadsCountThisTurn
+    /// <summary>本场战斗定案正面次数（满贯消费）。</summary>
+    public static int HeadsCountThisCombat
     {
         get
         {
@@ -103,7 +113,7 @@ public static class GambleService
         }
     }
 
-    /// <summary>最近一次定案结果（叠注消费）；无记录时返回 null。</summary>
+    /// <summary>最近一次定案结果；当前无消费者，属 M1 冻结接口按 §4.8② 保留（v2 清理时一并移除）。</summary>
     public static bool? LastFlipHeads => Flips.Count > 0 ? Flips[^1].FinalHeads : null;
 
     private static bool Roll(Player player)
@@ -119,9 +129,9 @@ public static class GambleService
         if (ReferenceEquals(_combat, combatIdentity)) return;
         _combat = combatIdentity;
         _combatCount++;
-        _round = -1;
         Flips.Clear();
         _rng = null;
         _forcedHeads = 0;
+        _forcedHeadsThisTurn = 0;
     }
 }

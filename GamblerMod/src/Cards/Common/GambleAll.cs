@@ -21,7 +21,7 @@ public sealed class GambleAll : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(6, ValueProp.Move),
-        new IntVar("HeadsDamage", 13),
+        new EnchantAwareVar("HeadsDamage", 13, EnchantKind.Damage),
     ];
 
     protected override void OnUpgrade()
@@ -39,5 +39,5 @@ public sealed class GambleAll : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "买定离手",
-        "#对所有敌人造成 !D! 伤害。*赌博*：正面 → 改为造成 !HeadsDamage! 伤害。");
+        "#硬币为正时：对所有敌人造成 !HeadsDamage! 伤害；硬币为负时：对所有敌人造成 !D! 伤害。");
 }

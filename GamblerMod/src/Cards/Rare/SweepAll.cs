@@ -42,7 +42,7 @@ public sealed class SweepAll : GamblerCard
             .Execute(ctx);
 
         if (target.IsDead)
-            await PlayerCmd.GainGold(DynamicVars["Bounty"].BaseValue, Owner, true);
+            await PlayerCmd.GainGold(DynamicVars["Bounty"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

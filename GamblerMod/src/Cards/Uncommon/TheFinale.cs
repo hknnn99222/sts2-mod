@@ -33,5 +33,5 @@ public sealed class TheFinale : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "通杀",
-        "#花费 *5 金币*。\n对所有敌人造成 !D! 伤害。*风头正盛*：数值随头顶倍率放大，结算后清空。");
+        "#花费 *5 金币*。\n对所有敌人造成 !D! 伤害。数值随头顶倍率放大，结算后清空。");
 }

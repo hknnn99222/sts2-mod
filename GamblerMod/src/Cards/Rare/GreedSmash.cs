@@ -36,7 +36,7 @@ public sealed class GreedSmash : GamblerCard
             .Execute(ctx);
 
         if (play.Target.IsDead)
-            await PlayerCmd.GainGold(DynamicVars["Bounty"].BaseValue, Owner, true);
+            await PlayerCmd.GainGold(DynamicVars["Bounty"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

@@ -24,7 +24,7 @@ public sealed class Insurance : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(8, ValueProp.Move),
-        new IntVar("TailsBlock", 16),
+        new EnchantAwareVar("TailsBlock", 16, EnchantKind.Block),
     ];
 
     protected override void OnUpgrade()
@@ -41,5 +41,5 @@ public sealed class Insurance : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "保险",
-        "#花费 *2 金币*。\n获得 !B! 格挡。*赌博*：反面 → 改为获得 !TailsBlock! 格挡。");
+        "#花费 *2 金币*。\n硬币为正时：获得 !B! 格挡；硬币为负时：获得 !TailsBlock! 格挡。");
 }

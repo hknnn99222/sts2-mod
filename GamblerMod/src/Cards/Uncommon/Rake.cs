@@ -27,13 +27,13 @@ public sealed class Rake : GamblerCard
     protected override void OnUpgrade()
     {
         DynamicVars["GoldGain"].UpgradeValueBy(2);
-        DynamicVars["HeadsGold"].UpgradeValueBy(2);
+        DynamicVars["HeadsGold"].UpgradeValueBy(4); // 14→18（设计 §5.2 #24；2026-10-16 审查修正）
     }
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
-        => PlayerCmd.GainGold(heads ? DynamicVars["HeadsGold"].BaseValue : DynamicVars["GoldGain"].BaseValue, Owner, true);
+        => PlayerCmd.GainGold(heads ? DynamicVars["HeadsGold"].BaseValue : DynamicVars["GoldGain"].BaseValue, Owner, false);
 
     public override List<(string, string)>? Localization => new CardLoc(
         "抽头",
-        "#获得 !GoldGain! 金币。*赌博*：正面 → 改为获得 !HeadsGold! 金币。");
+        "#硬币为正时：获得 !HeadsGold! 金币；硬币为负时：获得 !GoldGain! 金币。");
 }

@@ -22,5 +22,5 @@ public sealed class HotStreakCard() : GamblerCard(2, CardType.Power, CardRarity.
 
     public override List<(string, string)>? Localization => new CardLoc(
         "手气正旺",
-        "#*赌博*正面率 +!Rate!%（加法，上限 75%）。");
+        "#赌博正面率 +!Rate!%（加法，上限 75%）。");
 }

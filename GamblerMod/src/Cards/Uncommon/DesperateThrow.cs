@@ -11,7 +11,8 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #61·押宝（游戏设计 §5.2 / §5.5）：1 能 + 5 金，造成 18 伤害；赌博：**反面** → 自己失去 6 点生命（升级 22）。
+// 罕见 #61·押宝（游戏设计 §5.2 / §5.5）：1 能 + 5 金，造成 18 伤害；赌博：正面 → 25；
+// 反面 → 自己失去 6 点生命（升级 24 / 31）。
 // 钩子：真赌·押 HP。
 public sealed class DesperateThrow : GamblerCard
 {
@@ -24,7 +25,7 @@ public sealed class DesperateThrow : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(18, ValueProp.Move),
-        new IntVar("HeadsDamage", 25),
+        new EnchantAwareVar("HeadsDamage", 25, EnchantKind.Damage),
         new IntVar("SelfHurt", 6),
     ];
 
@@ -48,5 +49,5 @@ public sealed class DesperateThrow : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "押宝",
-        "#花费 *5 金币*。\n造成 !D! 伤害。*赌博*：反面 → 自己失去 !SelfHurt! 点生命。");
+        "#花费 *5 金币*。\n硬币为正时：造成 !HeadsDamage! 伤害；硬币为负时：造成 !D! 伤害且自己失去 !SelfHurt! 点生命。");
 }

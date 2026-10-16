@@ -18,7 +18,7 @@ public sealed class Parlay() : GamblerCard(1, CardType.Attack, CardRarity.Uncomm
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(8, ValueProp.Move),
-        new IntVar("HotDamage", 16),
+        new EnchantAwareVar("HotDamage", 16, EnchantKind.Damage),
     ];
 
     protected override void OnUpgrade()
@@ -40,5 +40,5 @@ public sealed class Parlay() : GamblerCard(1, CardType.Attack, CardRarity.Uncomm
 
     public override List<(string, string)>? Localization => new CardLoc(
         "叠注",
-        "#造成 !D! 伤害。若*风头正盛*倍率 ≥1.5，改为造成 !HotDamage! 伤害。");
+        "#造成 !D! 伤害。若风头正盛倍率 ≥1.5，改为造成 !HotDamage! 伤害。");
 }

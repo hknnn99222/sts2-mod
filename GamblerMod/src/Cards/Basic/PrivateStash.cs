@@ -20,7 +20,7 @@ public sealed class PrivateStash() : GamblerCard(0, CardType.Skill, CardRarity.B
     protected override void OnUpgrade() => DynamicVars["GoldGain"].UpgradeValueBy(2);
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
-        => PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, true);
+        => PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
 
     public override List<(string, string)>? Localization => new CardLoc("本钱", "#获得 *!GoldGain! 金币*。");
 }

@@ -24,5 +24,5 @@ public sealed class SecretMark() : GamblerCard(1, CardType.Skill, CardRarity.Unc
 
     public override List<(string, string)>? Localization => new CardLoc(
         "暗记",
-        "#你的接下来 !Times! 次*赌博*必为正面。");
+        "#你的接下来 !Times! 次赌博必为正面。");
 }

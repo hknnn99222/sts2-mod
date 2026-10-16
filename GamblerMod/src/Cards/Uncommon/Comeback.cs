@@ -23,7 +23,7 @@ public sealed class Comeback : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(10, ValueProp.Move),
-        new IntVar("HeadsDamage", 20),
+        new EnchantAwareVar("HeadsDamage", 20, EnchantKind.Damage),
     ];
 
     protected override void OnUpgrade()
@@ -41,5 +41,5 @@ public sealed class Comeback : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "翻本",
-        "#花费 *3 金币*。\n造成 !D! 伤害。*赌博*：正面 → 改为造成 !HeadsDamage! 伤害。");
+        "#花费 *3 金币*。\n硬币为正时：造成 !HeadsDamage! 伤害；硬币为负时：造成 !D! 伤害。");
 }

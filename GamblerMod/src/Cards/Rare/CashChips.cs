@@ -32,5 +32,5 @@ public sealed class CashChips : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "换筹",
-        "#按*风头正盛*倍率折算：获得「倍率取整」点能量（+!Bonus!），结算后清空倍率。");
+        "#按倍率折算：获得「倍率取整」点能量，结算后清空倍率。");
 }

@@ -24,7 +24,7 @@ public sealed class Dividend : GamblerCard
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, true);
+        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
         await CardPileCmd.Draw(ctx, 1, Owner);
     }
 

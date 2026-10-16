@@ -28,5 +28,5 @@ public sealed class HoleCard() : GamblerCard(2, CardType.Skill, CardRarity.Rare,
 
     public override List<(string, string)>? Localization => new CardLoc(
         "底牌",
-        "#抽 !Cards! 张牌。若*风头正盛*倍率 ≥1.5，额外抽 1 张牌。");
+        "#抽 !Cards! 张牌。若风头正盛倍率 ≥1.5，额外抽 1 张牌。");
 }

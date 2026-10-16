@@ -34,7 +34,7 @@ public sealed class TearContract() : GamblerCard(2, CardType.Skill, CardRarity.R
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
         await CardPileCmd.Draw(ctx, (int)DynamicVars["Cards"].BaseValue, Owner);
-        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, true);
+        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

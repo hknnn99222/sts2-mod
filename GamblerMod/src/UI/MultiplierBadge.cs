@@ -3,7 +3,10 @@ using BaseLib.Utils;
 using GamblerMod.Core;
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.HoverTips;
 
 namespace GamblerMod.UI;
 
@@ -38,6 +41,8 @@ public sealed class MultiplierBadge : MegaLabel
 
     private NCreature? _parent;
     private MegaLabel? _flipLabel;
+    private IHoverTip? _hoverTip;
+    private bool _hoverTipFailed;
     private SceneTree? _tree;
     private bool _isPlayer;
     private bool _sawFirstFrame;
@@ -72,11 +77,17 @@ public sealed class MultiplierBadge : MegaLabel
         }
 
         _isPlayer = true;
-        MouseFilter = MouseFilterEnum.Ignore; // 别挡住点击
+        // 悬停提示（2026-10-17 批次 5）：Pass = 自己收鼠标事件、事件**继续上传给父节点**，
+        // 所以点角色/选区照常（BaseLib NAdditionalResourceDisplay 同款做法）。
+        MouseFilter = MouseFilterEnum.Pass;
         SetProcess(true);                     // 留着无害；实际刷新走下面的 ProcessFrame 信号
         Size = new Vector2(BadgeWidth, BoxHeight);
         HorizontalAlignment = HorizontalAlignment.Center;
         VerticalAlignment = VerticalAlignment.Center;
+
+        _hoverTip = null; // 懒建：构建失败不能连累徽章（见 HoverTip 属性）
+        Connect(Control.SignalName.MouseEntered, Callable.From(OnHovered));
+        Connect(Control.SignalName.MouseExited, Callable.From(OnUnhovered));
 
         // ③ 右侧的掷币结果指示（同样先给字体覆盖，免得它自己的 _Ready 再抛）
         _flipLabel = new MegaLabel
@@ -102,6 +113,7 @@ public sealed class MultiplierBadge : MegaLabel
 
     public override void _ExitTree()
     {
+        NHoverTipSet.Remove(this);
         if (_tree != null)
         {
             _tree.ProcessFrame -= OnFrame;
@@ -159,6 +171,45 @@ public sealed class MultiplierBadge : MegaLabel
         _flipLabel.SetTextAutoSize(heads ? "正" : "反");
         _flipLabel.Modulate = heads ? HeadsColor : TailsColor;
     }
+
+    /// <summary>
+    /// 悬停提示（2026-10-17 批次 5）：文案在 pck 的 <c>localization/zhs/static_hover_tips.json</c>，
+    /// 经 BaseLib 的「自定义 StaticHoverTip」通道取。
+    /// **懒建 + 吞异常**：本节点已经被字体断言/_Process 坑过三次，提示构建（万一 BaseLib 那边没接上）
+    /// 绝不能把整个徽章带崩——失败就静默降级成"没有提示"。
+    /// </summary>
+    private IHoverTip? HoverTip
+    {
+        get
+        {
+            if (_hoverTip != null || _hoverTipFailed) return _hoverTip;
+            try
+            {
+                _hoverTip = HoverTipFactory.Static(GamblerHoverTips.Multiplier, Array.Empty<DynamicVar>());
+                if (_hoverTip == null)
+                {
+                    _hoverTipFailed = true;
+                    GD.PrintErr("[GamblerMod] 徽章提示为空（自定义 StaticHoverTip 未注册？），已禁用提示");
+                }
+            }
+            catch (Exception e)
+            {
+                _hoverTipFailed = true;
+                GD.PrintErr($"[GamblerMod] 徽章提示构建失败（已禁用提示，不影响徽章）：{e.Message}");
+            }
+            return _hoverTip;
+        }
+    }
+
+    private void OnHovered()
+    {
+        if (HoverTip is not { } tip) return;
+        // 位置交给引擎的默认对齐（跟随 owner）；若实测位置不理想，可在此加
+        // `?.SetGlobalPosition(GlobalPosition + new Vector2(0f, -46f))`（BaseLib NAdditionalResourceDisplay 的写法）
+        NHoverTipSet.CreateAndShow(this, tip);
+    }
+
+    private void OnUnhovered() => NHoverTipSet.Remove(this);
 
     private void SyncPosition()
     {

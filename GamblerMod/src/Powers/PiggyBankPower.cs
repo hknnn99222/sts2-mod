@@ -17,7 +17,7 @@ public sealed class PiggyBankPower : CustomPowerModel
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext ctx, Player player)
     {
-        await PlayerCmd.GainGold(Amount, player, true);
+        await PlayerCmd.GainGold(Amount, player, false);
     }
 
     public override List<(string, string)>? Localization => new PowerLoc(

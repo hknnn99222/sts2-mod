@@ -18,7 +18,7 @@ public sealed class SmallChange() : GamblerCard(1, CardType.Skill, CardRarity.Co
     protected override void OnUpgrade() => DynamicVars["GoldGain"].UpgradeValueBy(2);
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
-        => PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, true);
+        => PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
 
     public override List<(string, string)>? Localization => new CardLoc(
         "筹码",

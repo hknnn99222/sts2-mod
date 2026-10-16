@@ -16,4 +16,9 @@ public class GamblerCardPool : CustomCardPoolModel
     public override Color DeckEntryCardColor => new("e8c34a");
 
     public override bool IsColorless => false;
+
+    // 卡牌图鉴（百科）可见性（2026-10-17 批次 5）：BaseLib 的 CustomCardPoolMarkAsSeenPatch 在
+    // 打开图鉴时对所有 SeenByDefault 的池调 SaveManager.MarkCardAsSeen，默认值是 false → 赌徒池
+    // 的 76 张牌在图鉴里全被渲染成"未知/未解锁"。设为 true 即"开局全部可见"（写进存档进度）。
+    public override bool SeenByDefault => true;
 }

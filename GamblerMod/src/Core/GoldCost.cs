@@ -18,7 +18,8 @@ public static class GoldCost
     /// <summary>假币（升级版）授予的免单次数。</summary>
     public static void GrantFreeSpending(int count) => _freeSpends += count;
 
-    public static void OnCombatStart() => _freeSpends = 0;
+    /// <summary>战斗结束时复位免单次数（在 AfterCombatEnd 里调用，为下一场战斗准备）。</summary>
+    public static void ResetForNextCombat() => _freeSpends = 0;
 
     public static async Task Pay(Player player, int amount)
     {

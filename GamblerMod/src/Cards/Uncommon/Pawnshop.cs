@@ -30,7 +30,7 @@ public sealed class Pawnshop() : GamblerCard(1, CardType.Skill, CardRarity.Uncom
         if (selected.Count == 0) return;
 
         await CardCmd.Exhaust(ctx, selected[0]);
-        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, true);
+        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

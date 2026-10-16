@@ -40,7 +40,7 @@ public sealed class Ransack : GamblerCard
 
         var kills = aliveBefore - CombatState.Enemies.Count(e => e.IsAlive);
         if (kills > 0)
-            await PlayerCmd.GainGold(DynamicVars["Loot"].BaseValue * kills, Owner, true);
+            await PlayerCmd.GainGold(DynamicVars["Loot"].BaseValue * kills, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

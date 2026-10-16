@@ -23,7 +23,7 @@ public sealed class RussianRoulette : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(3, ValueProp.Move),
-        new IntVar("HeadsDamage", 5),
+        new EnchantAwareVar("HeadsDamage", 5, EnchantKind.Damage),
         new IntVar("Hits", 5),
         new IntVar("TailsSelfHurt", 10),
     ];
@@ -60,5 +60,5 @@ public sealed class RussianRoulette : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "俄罗斯轮盘",
-        "#对随机敌人造成 !D! 伤害 !Hits! 次。*赌博*：正面 → 每次改为 !HeadsDamage! 伤害；反面 → 其中 2 发改为打自己（自己共受 !TailsSelfHurt! 伤害）。");
+        "#硬币为正时：对随机敌人造成 !HeadsDamage! 伤害 !Hits! 次；硬币为负时：对随机敌人造成 !D! 伤害 3 次，且自己受到 !TailsSelfHurt! 伤害。");
 }

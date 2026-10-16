@@ -38,5 +38,5 @@ public sealed class ComebackRound : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "追数",
-        "#花费 *8 金币*。\n造成 !D! 伤害。*风头正盛*：数值随头顶倍率放大；若*击杀*则倍率不清空。");
+        "#花费 *8 金币*。\n造成 !D! 伤害。数值随头顶倍率放大；若*击杀*则倍率不清空。");
 }

@@ -42,12 +42,12 @@ STR_RE = re.compile(r'"((?:[^"\\]|\\.)*)"')
 # ---- 功能分类口径（详见 docs/design/gambler-cards-classified.md）----
 FUNC = {
     "伤害": ["试手气", "底注", "加注", "买定离手", "看场", "悬红", "乘胜", "吃水", "梭哈", "连续下注",
-             "清台", "双倍下注", "叠注", "翻本", "连胜", "摇骰", "通杀", "再加注", "押宝", "翻盘",
-             "暗注", "孤注一掷", "俄罗斯轮盘", "爆机", "豹子", "同花顺", "打庄", "晒冷", "追数",
+             "清台", "双倍下注", "叠注", "翻本", "摇骰", "通杀", "再加注", "押宝", "翻盘",
+             "暗注", "孤注一掷", "俄罗斯轮盘", "爆机", "同花顺", "打庄", "晒冷", "追数",
              "全下", "摊牌", "押牌", "截胡", "满贯"],
     "产金": ["本钱", "筹码", "返水", "散码", "买码", "派彩", "兑筹", "抽头", "高利贷", "台规", "兑现",
-             "抽水", "清码", "老虎机", "利滚利", "弃牌"],
-    "格挡": ["护盘", "盲注", "收手", "点码", "护池", "保险", "反水", "保底", "连庄", "抵押", "割肉", "保本"],
+             "抽水", "清码", "利滚利", "弃牌"],
+    "格挡": ["护盘", "盲注", "收手", "点码", "护池", "保险", "反水", "保底", "抵押", "割肉", "保本"],
     "资源": ["摸牌", "洗牌", "换码", "数牌", "流水", "割禾青", "加码", "换牌", "单双", "底牌", "换筹"],
     "操控·辅助": ["暗记", "假筹", "手气正旺", "叠码", "赌神", "出千", "倍投"],
     "debuff": ["放水", "抽佣"],
@@ -57,7 +57,7 @@ MECH_COLS = ["附加费", "可变投入", "赌博", "多掷", "真赌", "风头�
              "击杀产金", "即时产金", "引擎产金", "做局", "条件·赌博计数", "自伤/自消耗", "特异"]
 
 TRUEGAMBLE = {"孤注一掷", "俄罗斯轮盘", "单双", "押宝", "押牌"}   # §5.5 真赌家族
-MULTI = {"豹子", "连庄", "老虎机"}                              # 逐击/多次掷硬币
+MULTI = set()                                                # v1.8：逐击/多次掷硬币牌已删，全池每张牌只掷一次硬币
 VOLUME = {"加注", "梭哈", "全下", "再加注"}                      # §5.5 可变投入家族
 ENGINE = {"返水", "台规", "利滚利"}                             # §6 引擎型产金
 INSTANT = {"本钱", "筹码", "散码", "买码", "派彩", "兑筹", "高利贷", "抽水", "清码", "抽头", "老虎机"}
@@ -82,7 +82,9 @@ def parse_cards() -> list[dict]:
         rarity = re.search(r'CardRarity\.(\w+)', args).group(1)
         g = re.search(r'BaseGoldCost\s*=\s*(\d+)', src)
         gold = int(g.group(1)) if g else 0
-        gpx = re.search(r'GoldPerX\s*=\s*(\d+)', src)
+        # X 金币系数：v1 用 GoldPerX 字段，2026-10-16 起改用 IntVar("GoldX") 单一真源（卡面随升级同步）
+        gpx = (re.search(r'GoldPerX\s*=\s*(\d+)', src)
+               or re.search(r'IntVar\(\s*"GoldX"\s*,\s*(\d+)', src))
 
         mv = re.search(r'CardLoc\(', src)
         i = mv.end() - 1
@@ -436,7 +438,7 @@ def build(cards: list[dict]) -> None:
         if not c["mechs"]:
             assert c["name"] in SPECIAL, f'{c["name"]} 未解析出机制标签，钩子=「{d["hook"]}」'
 
-    assert len(cards) == 82, f"卡数应为 82，实际 {len(cards)}"
+    assert len(cards) == 78, f"卡数应为 78（起始 2 + 常规 76），实际 {len(cards)}"
     for f, ns in FUNC.items():
         got = sum(1 for c in cards if c["func"] == f)
         assert got == len(ns), f"{f}: 名单 {len(ns)} 张，实际 {got} 张"
@@ -451,7 +453,7 @@ def build(cards: list[dict]) -> None:
     ws.title = "总览"
     headers = ["功能族", "张数", "占比", "机制构成"]
     last_col = len(headers) + 1
-    setup_sheet(ws, title="赌徒卡池 · 功能分类总览（v1.7，82 张）", last_col=last_col)
+    setup_sheet(ws, title="赌徒卡池 · 功能分类总览（v1.8，78 张：起始 2 + 常规 76）", last_col=last_col)
     for i, h in enumerate(headers, start=2):
         ws.cell(row=4, column=i, value=h)
     style_header_row(ws, row_num=4, col_start=2, col_end=last_col)
@@ -572,7 +574,7 @@ def build(cards: list[dict]) -> None:
 
     # --- md ---
     L = []
-    L.append(f"# 赌徒卡池 · 功能分类（v1.7，{len(cards)} 张）\n")
+    L.append(f"# 赌徒卡池 · 功能分类（v1.8，{len(cards)} 张：起始 2 + 常规 76）\n")
     L.append("数据源：`GamblerMod/src/Cards/*.cs`（数值为 `CanonicalVars` 真实基础值，占位符已替换）；"
              "编号／档位／升级后取自 `docs/design/gambler-design.md` §5、§3。"
              "本文件由 `tools/gen_card_table.py` 生成，改卡后重跑即可同步。\n")

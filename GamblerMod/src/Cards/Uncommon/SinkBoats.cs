@@ -23,7 +23,7 @@ public sealed class SinkBoats : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(10, ValueProp.Move),
-        new IntVar("LowDamage", 24),
+        new EnchantAwareVar("LowDamage", 24, EnchantKind.Damage),
     ];
 
     protected override void OnUpgrade()

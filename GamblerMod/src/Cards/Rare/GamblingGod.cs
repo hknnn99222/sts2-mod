@@ -24,5 +24,5 @@ public sealed class GamblingGodCard : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "赌神",
-        "#你的所有*赌博*视为正面。");
+        "#你的所有赌博视为正面。");
 }

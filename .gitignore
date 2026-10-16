@@ -11,3 +11,6 @@ assets/*.tmp
 
 # 构建/发布产物（可再生成）
 GamblerMod_v*.zip
+
+# xlsx 改版前的本地安全备份（不入库，确认后自行删除）
+docs/design/*_v17_backup.xlsx

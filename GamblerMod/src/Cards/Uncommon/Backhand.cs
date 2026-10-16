@@ -24,8 +24,8 @@ public sealed class Backhand : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(5, ValueProp.Move),
-        new IntVar("HeadsBlock", 9),
-        new IntVar("HeadsDamage", 9),
+        new EnchantAwareVar("HeadsBlock", 9, EnchantKind.Block),
+        new EnchantAwareVar("HeadsDamage", 9, EnchantKind.Damage),
     ];
 
     protected override void OnUpgrade()
@@ -52,5 +52,5 @@ public sealed class Backhand : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "反水",
-        "#花费 *2 金币*。\n获得 !B! 格挡。*赌博*：正面 → 改为 !HeadsBlock! 格挡并造成 !HeadsDamage! 伤害。");
+        "#花费 *2 金币*。\n硬币为正时：获得 !HeadsBlock! 格挡并造成 !HeadsDamage! 伤害；硬币为负时：获得 !B! 格挡。");
 }

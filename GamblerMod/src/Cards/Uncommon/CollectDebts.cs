@@ -29,7 +29,7 @@ public sealed class CollectDebts : GamblerCard
         foreach (var card in hand)
             await CardCmd.Discard(ctx, card);
 
-        await PlayerCmd.GainGold(hand.Count * (int)DynamicVars["PerCard"].BaseValue, Owner, true);
+        await PlayerCmd.GainGold(hand.Count * (int)DynamicVars["PerCard"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

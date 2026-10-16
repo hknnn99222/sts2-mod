@@ -28,7 +28,7 @@ public sealed class HeadTax : GamblerCard
             if (enemies[i].IsAlive) alive++;
 
         if (alive <= 0) return Task.CompletedTask;
-        return PlayerCmd.GainGold((int)DynamicVars["PerEnemy"].BaseValue * alive, Owner, true);
+        return PlayerCmd.GainGold((int)DynamicVars["PerEnemy"].BaseValue * alive, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(

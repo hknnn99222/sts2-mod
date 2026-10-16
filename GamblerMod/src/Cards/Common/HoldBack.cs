@@ -29,5 +29,5 @@ public sealed class HoldBack : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "收手",
-        "#获得 !B! 格挡。*风头正盛*：数值随头顶倍率放大，结算后清空。");
+        "#获得 !B! 格挡。数值随头顶倍率放大，结算后清空。");
 }

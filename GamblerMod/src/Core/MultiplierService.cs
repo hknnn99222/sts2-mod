@@ -36,12 +36,18 @@ public static class MultiplierService
 
     public static string LabelOf(int steps) => "x" + (steps * 0.5m).ToString("0.0");
 
-    /// <summary>掷出正面（自然正面 / 赌神 / 暗记）：+0.5。幸运筹码改币不调此方法。</summary>
+    /// <summary>掷出正面（自然正面 / 赌神 / 暗记 / 出千）：+0.5。幸运筹码改币不调此方法。</summary>
     public static void AddHeads()
     {
         _steps++;
         LastOutcome = FlipOutcome.Heads;
     }
+
+    /// <summary>
+    /// 做局注入（叠码/倍投）：直接推进刻度，**不写** LastOutcome——
+    /// 正/反徽章只跟"最近一次掷币"走，倍率注入不改变掷币归属。
+    /// </summary>
+    public static void AddSteps(int n) => _steps += n;
 
     /// <summary>掷出反面：立刻归零。</summary>
     public static void Reset()

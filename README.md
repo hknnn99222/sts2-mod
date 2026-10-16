@@ -13,6 +13,7 @@
 | M3/M4 卡池（43 张全量：普 11 / 罕 19 / 稀 13） | ✅ 代码完成，待验收 |
 | M5 风头正盛倍率（+8 张新卡、改造 3 张，卡池 51） | ✅ 代码完成，待验收 |
 | v1.7 扩池至 80（+29 张：普 7 / 罕 13 / 稀 9） | ✅ 代码完成，待验收 |
+| **v1.8 游玩体验优化**（词条化 + 图鉴全可见 + 徽章悬停 + 附魔修正 + 删 4 张牌 → 76） | ✅ 代码完成（已部署），待验收（清单见 test-plan 四·五-A） |
 
 测试清单见 [docs/testing/test-plan.md](docs/testing/test-plan.md)。
 
@@ -28,7 +29,7 @@ sts2-mod\
 │       ├── Core\             共用层：GamblerCard 基类 / GoldCost / GambleService /
 │       │                     SpendTracker / GoldCostCheckPatch / GamblerHooks（全局钩子）
 │       ├── Character\        角色 + 职业卡池
-│       ├── Cards\            80 张卡（Basic/Common/Uncommon/Rare + 单例仓）
+│       ├── Cards\            76 张常规卡（Basic/Common/Uncommon/Rare + 单例仓）
 │       ├── Powers\           6 个力量 + 单例仓
 │       ├── UI\               头顶「风头正盛」倍率徽章（倍率 x1.5 + 掷币 正/反）
 │       └── Relics\           幸运筹码 + 单例仓

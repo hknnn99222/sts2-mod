@@ -24,7 +24,7 @@ public sealed class HiredThugs : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(4, ValueProp.Move),
-        new IntVar("HeadsDamage", 9),
+        new EnchantAwareVar("HeadsDamage", 9, EnchantKind.Damage),
         new IntVar("Hits", 3),
     ];
 
@@ -44,5 +44,5 @@ public sealed class HiredThugs : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "摇骰",
-        "#花费 *5 金币*。\n对随机敌人造成 !D! 伤害 !Hits! 次。*赌博*：正面 → 每次 !HeadsDamage! 伤害。");
+        "#花费 *5 金币*。\n硬币为正时：对随机敌人造成 !HeadsDamage! 伤害 !Hits! 次；硬币为负时：对随机敌人造成 !D! 伤害 !Hits! 次。");
 }

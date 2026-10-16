@@ -22,7 +22,7 @@ public sealed class TryYourLuck : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(5, ValueProp.Move),
-        new IntVar("HeadsDamage", 10),
+        new EnchantAwareVar("HeadsDamage", 10, EnchantKind.Damage),
     ];
 
     protected override void OnUpgrade()
@@ -40,5 +40,5 @@ public sealed class TryYourLuck : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "试手气",
-        "#造成 !D! 伤害。*赌博*：正面 → 改为造成 !HeadsDamage! 伤害。");
+        "#硬币为正时：造成 !HeadsDamage! 伤害；硬币为负时：造成 !D! 伤害。");
 }

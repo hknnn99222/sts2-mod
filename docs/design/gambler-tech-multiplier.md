@@ -3,6 +3,7 @@
 > 状态：**已实现并编译通过（2026-10-16）**，待游戏内验收｜依据：游戏设计 [gambler-design.md](gambler-design.md) §2.8 / §5（v1.6）｜延续 [gambler-tech-design.md](gambler-tech-design.md) 的全部约定
 > 本文档只做设计，不含实现代码；文中代码均为**签名草图**，用于评审接口形态。
 > **落地与设计的差异见 §8 实现记录**（含一处待游戏内校准的常量）。
+> **2026-10-17（v1.8）更新**：金币兑现的「卡面显示裸值」退化**已修**——改用 `Core/CardValueVars.cs` 的 `MultiplierAwareVar`（预览时把 `BaseValue × 倍率` 写进 `EnchantedValue/PreviewValue`），兑现的卡面现在跟着倍率跳动；本文件 §3 与 §8 里「裸值」相关表述以此条为准。
 
 ## 0. 先说约束④的门禁（本机制必须过这一关）
 
@@ -76,7 +77,7 @@ static class MultiplierService
 ```
 
 - **订阅方式**（R5）：`GambleService` 在 `Flip` 内部**直接调用** `MultiplierService.AddHeads()/Reset()`，不用事件（少一层间接）；需要"被做局改成正面的不算"的判定在 `GambleService.Flip` 里用 `FlipRecord.OriginalHeads` 区分——**这是本机制对 Core 的唯一必要侵入点，且只是加两行调用**。
-- 判定规则（设计 §2.8）：只有**带「赌博」词条**的牌的**原始结果**为正面才 `AddHeads`；被赌神/暗记强制的、被幸运筹码改币的**都不计入**（用 `OriginalHeads` 与"是否被干预"两个标志区分——既有 `FlipRecord` 已同时记录 `OriginalHeads`/`FinalHeads`，够用）。
+- 判定规则（设计 §2.8，**2026-10-16 用户拍板**，2026-10-16 审查确认）：带「赌博」词条的牌**定案为正面**即 `AddHeads`——赌神 / 暗记 / 出千的强制正面**计入**（"做局换确定性"，照常 +0.5）；幸运筹码改币**不计入**且倍率按反面归零（遗物只保牌效、不保连胜）。本段旧口径与 §5 验收表、§8 实现记录及 design §2.8 相反，已按拍板修正。
 
 ### 3.2 `Powers/HeadsStreakPower`（新增，**只用于显示**）
 
@@ -218,7 +219,7 @@ sealed class MultiplierBadge : Control      // 纯文字版：一个 MegaLabel �
 | 项 | 设计 | 实际落地 | 原因 |
 |---|---|---|---|
 | 显示用 Power | `HeadsStreakPower`（可选） | **未做** | 钩子挂在既有 `GamblerHooks` 单例上（它已在战斗钩子监听集合里，`AfterPlayerTurnStart`/`AfterGoldGained`/`AfterCombatEnd` 都生效，与 `Modify*` 走同一套监听者迭代）。少一个类型、少一份状态副本 |
-| 金币兑现 | 卡内自算 + `MakeCalculatedVar` 显示 | **卡内自算 + 卡面显示裸值**（`IntVar`），描述里写"×倍率" | `MakeCalculatedVar` 的语义是 `base + bonus×mult`（源码核实），与"7 × 倍率"不合，且升级增量会落到 `Base` 子变量上、很绕。按 §6 M2 的既定退化执行 |
+| 金币兑现 | 卡内自算 + `MakeCalculatedVar` 显示 | **卡内自算 + `MultiplierAwareVar` 显示**（2026-10-17 修：卡面 = `BaseValue × 倍率` 的当前值，不再是裸值） | `MakeCalculatedVar` 的语义是 `base + bonus×mult`（源码核实），与"7 × 倍率"不合；自定义 `MultiplierAwareVar`（`Core/CardValueVars.cs`）直接给预览值即可，无需绕 Base/Extra 子变量 |
 | 词条注册 | 按「赌博」做法走 `CustomKeywords` | **不注册**：卡描述用 `*风头正盛*` 富文本高亮 | 复核实测：本项目「赌博」词条**从未注册过** `CustomKeywords`，就是 `*文字*` 高亮。照既有实践走，保持一致 |
 | `GambleService.LastFlipHeads` / `HeadsCountThisTurn` | 供叠注/同花顺/底牌消费 | **已无消费者**（改造后不读它们） | 属 M1 冻结的 Core 公开接口，按 §4.8 ② **只加不改**，保留不删（v2 清理时可一并移除） |
 

@@ -22,12 +22,12 @@ public sealed class BankWind : GamblerCard
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var steps = (int)DynamicVars["Steps"].BaseValue;
-        for (var i = 0; i < steps; i++) MultiplierService.AddHeads();
+        // AddSteps 只推进刻度、不写 LastOutcome——正/反徽章只跟"最近一次掷币"走（2026-10-16 审查修正）
+        MultiplierService.AddSteps((int)DynamicVars["Steps"].BaseValue);
         return Task.CompletedTask;
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "叠码",
-        "#你的*风头*倍率 +0.5 ×!Steps!（不清空）。");
+        "#你的风头倍率 +0.5 ×!Steps!（不清空）。");
 }

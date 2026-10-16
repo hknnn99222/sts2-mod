@@ -3,14 +3,15 @@ namespace GamblerMod.Cards;
 // 卡牌单例仓：所有卡实例必须在 Entry.Initialize（池合并前）创建——
 // CustomCardModel 构造器自动注册进池/ModelDb，晚于池合并会抛异常（BaseLib 源码语义）。
 // 加新卡：写卡类 → 这里加一行属性 + Init 一行 → Entry 不动。
-// 当前进度：80/80 全量（起始 2 + 普 20 + 罕 35 + 稀 25，含 M2 做局三件、v1.6「风头正盛」8 张、v1.7 扩池 29 张）。
+// 当前进度：76/76 全量（起始 2 + 普 20 + 罕 33 + 稀 23，含 M2 做局三件、v1.6「风头正盛」8 张、v1.7 扩池 29 张；
+// 2026-10-17 删 4 张自掷牌 豹子/老虎机/连庄/连胜，卡池 80→76）。
 public static class GamblerCards
 {
     // Basic（起始签名牌）
     public static Basic.PrivateStash PrivateStash { get; private set; } = null!;
     public static Basic.TryYourLuck TryYourLuck { get; private set; } = null!;
 
-    // Common（普通档 11）
+    // Common（普通档 20）
     public static Common.FlyingCard FlyingCard { get; private set; } = null!;
     public static Common.AddMore AddMore { get; private set; } = null!;
     public static Common.GambleAll GambleAll { get; private set; } = null!;
@@ -32,14 +33,13 @@ public static class GamblerCards
     public static Common.PileOn PileOn { get; private set; } = null!;
     public static Common.BuyOff BuyOff { get; private set; } = null!;
 
-    // Uncommon（罕见档 19）
+    // Uncommon（罕见档 33）
     public static Uncommon.AllIn AllIn { get; private set; } = null!;
     public static Uncommon.ConsecutiveBet ConsecutiveBet { get; private set; } = null!;
     public static Uncommon.Ransack Ransack { get; private set; } = null!;
     public static Uncommon.DoubleDown DoubleDown { get; private set; } = null!;
     public static Uncommon.Parlay Parlay { get; private set; } = null!;
     public static Uncommon.Comeback Comeback { get; private set; } = null!;
-    public static Uncommon.WinStreak WinStreak { get; private set; } = null!;
     public static Uncommon.HiredThugs HiredThugs { get; private set; } = null!;
     public static Uncommon.SecretMark SecretMark { get; private set; } = null!;
     public static Uncommon.Dividend Dividend { get; private set; } = null!;
@@ -65,18 +65,15 @@ public static class GamblerCards
     public static Uncommon.CollectDebts CollectDebts { get; private set; } = null!;
     public static Uncommon.SinkBoats SinkBoats { get; private set; } = null!;
     public static Uncommon.UnderTheTable UnderTheTable { get; private set; } = null!;
-    public static Uncommon.ConsecutiveWins ConsecutiveWins { get; private set; } = null!;
     public static Uncommon.SkipStone SkipStone { get; private set; } = null!;
     public static Uncommon.SwapChips SwapChips { get; private set; } = null!;
 
-    // Rare（稀有档 13）
+    // Rare（稀有档 23）
     public static Rare.AllOrNothing AllOrNothing { get; private set; } = null!;
     public static Rare.RussianRoulette RussianRoulette { get; private set; } = null!;
     public static Rare.GreedSmash GreedSmash { get; private set; } = null!;
-    public static Rare.TripleSevens TripleSevens { get; private set; } = null!;
     public static Rare.Flush Flush { get; private set; } = null!;
     public static Rare.Destiny Destiny { get; private set; } = null!;
-    public static Rare.SlotMachine SlotMachine { get; private set; } = null!;
     public static Rare.HitMan HitMan { get; private set; } = null!;
     public static Rare.TearContract TearContract { get; private set; } = null!;
     public static Rare.Blackmail Blackmail { get; private set; } = null!;
@@ -128,7 +125,6 @@ public static class GamblerCards
         DoubleDown = new Uncommon.DoubleDown();
         Parlay = new Uncommon.Parlay();
         Comeback = new Uncommon.Comeback();
-        WinStreak = new Uncommon.WinStreak();
         HiredThugs = new Uncommon.HiredThugs();
         SecretMark = new Uncommon.SecretMark();
         Dividend = new Uncommon.Dividend();
@@ -154,17 +150,14 @@ public static class GamblerCards
         CollectDebts = new Uncommon.CollectDebts();
         SinkBoats = new Uncommon.SinkBoats();
         UnderTheTable = new Uncommon.UnderTheTable();
-        ConsecutiveWins = new Uncommon.ConsecutiveWins();
         SkipStone = new Uncommon.SkipStone();
         SwapChips = new Uncommon.SwapChips();
 
         AllOrNothing = new Rare.AllOrNothing();
         RussianRoulette = new Rare.RussianRoulette();
         GreedSmash = new Rare.GreedSmash();
-        TripleSevens = new Rare.TripleSevens();
         Flush = new Rare.Flush();
         Destiny = new Rare.Destiny();
-        SlotMachine = new Rare.SlotMachine();
         HitMan = new Rare.HitMan();
         TearContract = new Rare.TearContract();
         Blackmail = new Rare.Blackmail();

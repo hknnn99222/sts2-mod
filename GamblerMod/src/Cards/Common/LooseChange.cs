@@ -16,20 +16,26 @@ public sealed class LooseChange : GamblerCard
 {
     public LooseChange() : base(1, CardType.Skill, CardRarity.Common, TargetType.None) { }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Cap", 8)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new IntVar("Step", 2), // 每 Step 张弃牌堆的牌 = 1 金币
+        new IntVar("Cap", 8),
+    ];
 
     protected override void OnUpgrade() => DynamicVars["Cap"].UpgradeValueBy(4);
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
+        var step = (int)DynamicVars["Step"].BaseValue;
+        var cap = (int)DynamicVars["Cap"].BaseValue;
         var discarded = PileType.Discard.GetPile(Owner).Cards.Count;
-        var gold = discarded / 2;
-        if (gold > (int)DynamicVars["Cap"].BaseValue) gold = (int)DynamicVars["Cap"].BaseValue;
+        var gold = discarded / step;
+        if (gold > cap) gold = cap;
         if (gold <= 0) return Task.CompletedTask;
-        return PlayerCmd.GainGold(gold, Owner, true);
+        return PlayerCmd.GainGold(gold, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "散码",
-        "#每 2 张*弃牌堆*的牌，获得 1 金币（至多 !Cap! 金币）。");
+        "#每 *!Step!* 张*弃牌堆*的牌，获得 1 金币（至多 !Cap! 金币）。");
 }
