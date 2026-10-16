@@ -94,7 +94,7 @@ GamblerMod/src/
 - [ ] `GamblerMod.json` version 字段 v0.1.0 → 跟发布包版本对齐
 - [ ] xlsx 三件套待提交（见"当前状态"）；提交后 zip 是否进 .gitignore 一并定
 - [ ] **实现 M5「风头正盛」倍率系统**：✅ 代码已完成（2026-10-16）；此后任何改卡数值/加卡，**先读 [gambler-tech-design.md](docs/design/gambler-tech-design.md)** 的约束①–④ 与 §5 分配红线（R1–R8），并遵循 [gambler-tech-multiplier.md](docs/design/gambler-tech-multiplier.md) §0 的门禁写法（说明理由 + 只加不改 + 追加变更记录）
-- [ ] **文档同步状态（2026-10-16 更新）**：xlsx 三个 sheet + test-plan 验收数值曾整表滞后于代码（v1.4 重定价只同步了设计文档），已按「代码=真源」全量回灌；v1.6 整表重建为 51 行、**v1.7 再重建为 80 行**（说明行随之下移到第 86 行）。**改卡数值/加卡后要同步这四处**：设计文档 §5、xlsx 常规卡池 + 期望校验、test-plan、HANDOFF；xlsx 卡表列序**按 # 升序**（稀有度分组只在设计文档里保持）
+- [ ] **文档同步状态（2026-10-16 更新）**：xlsx 三个 sheet + test-plan 验收数值曾整表滞后于代码（v1.4 重定价只同步了设计文档），已按「代码=真源」全量回灌；v1.6 整表重建为 51 行、**v1.7 再重建为 80 行**（说明行随之下移到第 86 行）。**改卡数值/加卡后要同步这四处**：设计文档 §5、xlsx 常规卡池 + 期望校验、test-plan、HANDOFF；xlsx 卡表列序**按 # 升序**（稀有度分组只在设计文档里保持）；**对账与重生工具（2026-10-16 新增）**：`python tools/gen_card_table.py --audit` 逐卡比对「代码 ↔ 设计文档 §3/§5/§6/§7.3 ↔ 两份 xlsx 的卡表/分布统计/期望校验」，报出差异并给出退出码；去掉 `--audit` 重生 `docs/design/gambler-cards-classified.{xlsx,md}`（功能分类 + 全卡表，数值直接取卡文件 CanonicalVars 真实值）。改完卡先跑 --audit 再决定重生。
 - [ ] 台规"正面 +X 金"硬编码在 Core（`GamblerHooks.cs` OnHeadsFlipped，当前 3）——改它必须动 Core，与"改卡不碰 Core"约定冲突，后续可挪进卡/Power 数据化
 - [ ] 设计侧扩展期（不阻塞）：多人卡/职业遗物扩展/药水/事件（先古之民重逢事件可埋）
 
