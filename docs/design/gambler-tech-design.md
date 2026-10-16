@@ -1,13 +1,13 @@
 # 赌徒 Mod 技术设计文档
 
-> 状态：**已评审（2026-10-14），按结论修订**｜依据：游戏设计 [gambler-design.md](gambler-design.md) v1.3（卡池 43 张）｜API 调研完成于 2026-10-14（本机实测：sts2 v0.111.0 + BaseLib 3.4.7 工坊版反射导出）
+> 状态：**已评审（2026-10-14），按结论修订**｜依据：游戏设计 [gambler-design.md](gambler-design.md)（评审时 v1.3 / 卡池 43 张；该文档其后演进至 v1.7 / 80 张常规卡，本设计的分层与组件结构经该版本沿用）｜API 调研完成于 2026-10-14（本机实测：sts2 v0.111.0 + BaseLib 3.4.7 工坊版反射导出）
 > 本文档只做设计，不含实现代码；文中代码均为**签名草图**，用于评审接口形态。
 
 ## 0. 三条硬约束的落实位置（评审时重点看）
 
 | 约束 | 落实章节 |
 |---|---|
-| ① 共用方法提取，不重复写 | §4 共用组件（GamblerCard 基类 + 4 个服务，43 张卡只写效果差异） |
+| ① 共用方法提取，不重复写 | §4 共用组件（GamblerCard 基类 + 4 个服务，82 张卡只写效果差异） |
 | ② 减少内存分配（申请空间） | §5 分配红线（热路径零 new、集合复用、静态缓存） |
 | ③ 多用成熟库，少自己写 | §2 依赖决策表（BaseLib 承担注册/本地化/关键词/UI 扩展，自写仅 5 个组件且均属"简单"级） |
 | ④ **卡牌必改：公共类能不改就不改，改卡只改卡牌文件** | §3.1 变更影响半径规则 + §4.1 基类覆盖全部已知变体 + §4.8 Core 冻结门禁 |
@@ -20,7 +20,7 @@
 
 | 能力 | API | 备注 |
 |---|---|---|
-| 卡模型构造 | `CardModel.#ctor(int energyCost, CardType, CardRarity, TargetType, bool)` | 43 张卡全部走此构造 |
+| 卡模型构造 | `CardModel.#ctor(int energyCost, CardType, CardRarity, TargetType, bool)` | 82 张卡全部走此构造 |
 | 打出效果钩子 | `CardModel.OnPlay(PlayerChoiceContext, CardPlay)` | 异步管线 |
 | 可打出检查 | `CardModel.CanPlay()` / `CanPlay(out UnplayableReason, ref AbstractModel)` | 金币不足 → 返回 UnplayableReason |
 | 金币增减 | `PlayerCmd.GainGold(Decimal, Player, bool)` / `LoseGold(Decimal, Player, GoldLossType)` | `GoldLossType = Spent / Lost / Stolen`，挥金协同用 `Spent` |
@@ -68,7 +68,7 @@
 | **掷骰管线（含做局干预）** | 自写 `GambleService`（见 §4.2） | ~120 行，核心是纯函数 |
 | **本回合花费累计** | 自写 `SpendTracker`（见 §4.4） | ~30 行，一个 int |
 | **战斗状态仓** | 自写 `GamblerCombatState`（见 §4.5） | ~40 行，字段+重置 |
-| 43 张卡效果 | 自写（不可避免） | 每张 5-20 行 |
+| 82 张卡效果 | 自写（不可避免） | 每张 5-20 行 |
 
 ### 2.2 引入方式与版本
 
@@ -81,7 +81,7 @@
 - **D1 项目名 ✅**：`MyMod` → `GamblerMod`（dll / 清单 / 命名空间三处同步，csproj 已预留说明）。
 - **D2 角色视觉占位 ✅**：借用原版**战士（Ironclad）贴图**，选人/战斗/地图可完整跑通，美术后补只换贴图路径。
 - **D3 金币费用记法 ✅**：v1 文字方案（`额外花费 X 金币`，RichTextGold 金色）+ **预留辉星式"费用下方显示"扩展位**（显示层与逻辑分离，未来接 `NAdditionalCostDisplay`，v1 不实现）。
-- **D4 重掷语义 ✅**：**不做重掷机制**。删除「换骰」「操纵牌局」两张卡，不补新卡（卡池 45→43，游戏设计文档已同步 v1.3）。GambleService 无 Reroll API；掷骰记录仅作只读统计。
+- **D4 重掷语义 ✅**：**不做重掷机制**。删除「换骰」「操纵牌局」两张卡，不补新卡（当时卡池 45→43，游戏设计文档已同步 v1.3）。GambleService 无 Reroll API；掷骰记录仅作只读统计。
 
 ---
 
@@ -130,7 +130,7 @@ GamblerMod/
 
 ## 4. 共用组件设计（约束①）
 
-### 4.1 `GamblerCard : CustomCardModel` —— 43 张卡的模板方法
+### 4.1 `GamblerCard : CustomCardModel` —— 82 张卡的模板方法
 
 把"金币费用 + 赌博"的公共流程固化在基类，子类只声明数据和效果：
 
@@ -179,7 +179,7 @@ class TryYourLuck : GamblerCard
 }
 ```
 
-按此估算：43 张卡 × 平均 15 行 + 本地化数据，内容层总量 ~1400 行，且**无一张卡需要知道"怎么扣金币/怎么掷硬币"**。
+按此估算：82 张卡 × 平均 15 行 + 本地化数据；实测卡源码（含 using／注释／本地化声明）合计 3263 行，且**无一张卡需要知道"怎么扣金币/怎么掷硬币"**。
 
 ### 4.2 `GambleService` —— 掷骰管线（核心自写组件）
 
@@ -267,7 +267,7 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 
 ### 4.7 D4 重掷——已按评审结论移除
 
-「换骰」「操纵牌局」两张卡删除（不补新卡，卡池 43），GambleService 不提供 Reroll；`FlipRecord` 仅记录原始/干预后结果，供只读统计（同花顺计数、底牌条件、台规产金、叠注的"上一掷"查询）。游戏设计文档 v1.3 已同步。
+「换骰」「操纵牌局」两张卡删除（不补新卡，当时卡池 43），GambleService 不提供 Reroll；`FlipRecord` 仅记录原始/干预后结果，供只读统计（同花顺计数、底牌条件、台规产金、叠注的"上一掷"查询）。游戏设计文档 v1.3 当时已同步。
 
 ### 4.8 Core 冻结与变更门禁（约束④的执行机制）
 
