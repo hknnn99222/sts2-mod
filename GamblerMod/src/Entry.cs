@@ -17,11 +17,11 @@ namespace GamblerMod;
 public static class Entry
 {
     public const string ModId = "GamblerMod";
-    public const string Version = "0.5.0";
+    public const string Version = "0.6.0";
 
     public static void Initialize()
     {
-        GD.Print($"[{ModId}] v{Version} 初始化（76 卡全量：起始 2 + 常规 76 + 「风头正盛」倍率 + 赌博/风头正盛词条）");
+        GD.Print($"[{ModId}] v{Version} 初始化（85 卡全量：起始 2 + 常规 85 + 四轴引擎）");
 
         new Harmony(ModId).PatchAll(Assembly.GetExecutingAssembly());
 
@@ -35,11 +35,12 @@ public static class Entry
         // 内容层订阅（技术设计 §4.2/§4.6 干预窗口）：Core 不引用具体内容类（约束④）
         Core.GambleService.Intervenor = Relics.LuckyChip.TryIntervene;        // 幸运筹码：反面后花 5 金改正面
         Core.GambleService.OnHeads += Powers.HouseRulesPower.OnHeadsFlipped;  // 台规：每次掷出正面 +3 金
+        Core.GambleService.OnHeads += Powers.CheatKingPower.OnHeadsFlipped;   // 千王：每回合前 N 次正面 → 1 次必正
 
         _ = UI.MultiplierBadge.Attached; // 头顶倍率徽章（AddedNode 静态字段初始化即登记）
 
         _ = new Character.GamblerCharacter();
 
-        GD.Print($"[{ModId}] 注册完成：角色 + 76 卡（起始 2 + 常规 76：普 20/罕 33/稀 23）+ 6 力量 + 幸运筹码");
+        GD.Print($"[{ModId}] 注册完成：角色 + 85 卡（起始 2 + 常规 85：普 24/罕 35/稀 26）+ 8 力量 + 幸运筹码");
     }
 }

@@ -42,6 +42,23 @@ public static class GambleService
     /// <summary>回合开始：清空本回合必正层数（GamblerHooks.AfterPlayerTurnStart 调用）。</summary>
     public static void OnTurnStart() => _forcedHeadsThisTurn = 0;
 
+    /// <summary>当前剩余「必正」次数（持久层 + 本回合层）。出千轴的兑现牌（收网）读取。</summary>
+    public static int ForcedHeadsRemaining => _forcedHeads + _forcedHeadsThisTurn;
+
+    /// <summary>
+    /// 取走并清零所有「必正」次数（2026-10-17 出千轴兑现牌「收网」，只加不改）。
+    /// 返回取走的次数；0 表示本来就没有必正。
+    /// </summary>
+    public static int ConsumeForcedHeads()
+    {
+        var total = _forcedHeads + _forcedHeadsThisTurn;
+        if (total <= 0) return 0;
+        _forcedHeads = 0;
+        _forcedHeadsThisTurn = 0;
+        GD.Print($"[GamblerMod] 收网：一次性消耗 {total} 次必正");
+        return total;
+    }
+
     public static async Task<bool> Flip(Player player, CardModel source)
     {
         ResetIfNewCombat(source.CombatState);

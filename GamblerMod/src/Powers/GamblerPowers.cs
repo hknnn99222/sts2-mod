@@ -9,6 +9,8 @@ public static class GamblerPowers
     public static HouseRulesPower HouseRules { get; private set; } = null!;
     public static CashFlowPower CashFlow { get; private set; } = null!;
     public static CompoundInterestPower CompoundInterest { get; private set; } = null!;
+    public static BettingPower Betting { get; private set; } = null!;      // 2026-10-17 四轴·赌命
+    public static CheatKingPower CheatKing { get; private set; } = null!;  // 2026-10-17 四轴·出千
 
     public static void Init()
     {
@@ -18,5 +20,7 @@ public static class GamblerPowers
         HouseRules = new HouseRulesPower();
         CashFlow = new CashFlowPower();
         CompoundInterest = new CompoundInterestPower();
+        Betting = new BettingPower();
+        CheatKing = new CheatKingPower();
     }
 }

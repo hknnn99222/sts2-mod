@@ -374,3 +374,22 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 **删卡理由（游戏设计侧同步记录在 gambler-design.md §5.3 v1.8 说明）**：豹子/老虎机/连庄/连胜都绕开基类单掷流程自行掷币（`GambleService.Flip` 写在 `ApplyEffect` 的循环里），因此 ①挂不上「赌博」词条（词条挂载条件就是 `IsGambleCard`）；②一次出牌里多次推进倍率、覆盖徽章正反。用户决定整形态退场，卡池 80 → 76。
 
 **未改的口径**：`GambleService.Flip` 管线、`MultiplierService` 刻度语义、`GoldCost`、伤害/格挡钩子（`GamblerHooks.ModifyDamage/BlockMultiplicative`）本批一行未动。
+
+## 12. Core / 内容层变更记录（2026-10-17 v1.9 四轴改造批，§4.8 ③）
+
+本批把卡池从"一条博弈链"重排成四条独立引擎（设计 §2.9），新增 9 张卡。按 §4.8 门禁逐条说明：
+
+| 文件 | 改动 | 理由（门禁①：为什么卡内做不到） |
+|---|---|---|
+| `Core/GambleService.cs` | 新增 `ForcedHeadsRemaining`（只读总数）与 `ConsumeForcedHeads()`（取走并清零） | 必正层数是 Core 私有字段（暗记的持久层 + 出千/瞒天过海的回合层），卡牌既读不到也清不掉；出千轴的兑现牌「收网」必须"一次取空"才能成立。**只加不改**：`ForceNextFlips` / `Flip` 的扣层顺序一行未动 |
+| `Powers/BettingPower.cs`（新增） | 重写 `ModifyDamageAdditive`：伤害 +「已失去生命」的 Amount% | 赌命轴放大器。走伤害加法钩子（与力量同一条通道）而不是自己攒层数：①加成要随血线实时变化；②卡面预览同步（玩家看到的就是实际值）；③绕开 `PowerModel.Amount` 的 setter 是私有的（power 内部改不了自己的层数）。自伤（target == 自己）不吃加成 |
+| `Powers/CheatKingPower.cs`（新增） | 订阅 `GambleService.OnHeads`：每回合前 Amount 次正面 → `ForceNextFlips(1)` | 出千轴生成器的"自动化"部分。**必须每回合封顶**（`_usedThisTurn`，回合开始清零），否则"必正→正面→千王再给必正"会变成无限循环。订阅走 Entry 静态方法组（红线 R5） |
+| `Entry.cs` | 追加 `OnHeads += CheatKingPower.OnHeadsFlipped`；`GamblerPowers` 注册 2 个新力量；版本 v0.6.0 | 内容层订阅点（与台规同款） |
+| 内容层 | 新增 9 张卡（出千 5 / 赌命 4）+ `GamblerCards` 注册；暗记 1→2 次必正；封口改为"1 次必正 + 抽 1"（与暗记错开定位） | 四轴的生成器/兑现器必须落在内容层；暗记与封口同为必正生成器，用"次数/附带抽牌"区分稀有度 |
+
+**未改的口径**：`GambleService.Flip` 的干预顺序与正面率、`MultiplierService` 刻度语义、`GoldCost`、`GamblerHooks.ModifyDamage/BlockMultiplicative` 一行未动。
+
+**已知风险 / 待验收**：
+1. `BettingPower` 的加成同时作用于所有来源的伤害（含技能牌），验收时确认卡面数字与实际一致；
+2. `CheatKingPower` 的每回合计数在 power 实例上（与 Core 的静态掷币状态同口径）——多人隔离仍待做；
+3. `收网` 在必正为 0 时无事发生（描述已写明），验收确认不会空挥消耗能量。

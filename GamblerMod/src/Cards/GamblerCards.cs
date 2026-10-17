@@ -3,7 +3,7 @@ namespace GamblerMod.Cards;
 // 卡牌单例仓：所有卡实例必须在 Entry.Initialize（池合并前）创建——
 // CustomCardModel 构造器自动注册进池/ModelDb，晚于池合并会抛异常（BaseLib 源码语义）。
 // 加新卡：写卡类 → 这里加一行属性 + Init 一行 → Entry 不动。
-// 当前进度：76/76 全量（起始 2 + 普 20 + 罕 33 + 稀 23，含 M2 做局三件、v1.6「风头正盛」8 张、v1.7 扩池 29 张；
+// 当前进度：85/85 全量（起始 2 + 普 24 + 罕 35 + 稀 26，含 M2 做局三件、v1.6「风头正盛」8 张、v1.7 扩池 29 张；
 // 2026-10-17 删 4 张自掷牌 豹子/老虎机/连庄/连胜，卡池 80→76）。
 public static class GamblerCards
 {
@@ -11,7 +11,7 @@ public static class GamblerCards
     public static Basic.PrivateStash PrivateStash { get; private set; } = null!;
     public static Basic.TryYourLuck TryYourLuck { get; private set; } = null!;
 
-    // Common（普通档 20）
+    // Common（普通档 24）
     public static Common.FlyingCard FlyingCard { get; private set; } = null!;
     public static Common.AddMore AddMore { get; private set; } = null!;
     public static Common.GambleAll GambleAll { get; private set; } = null!;
@@ -32,8 +32,13 @@ public static class GamblerCards
     public static Common.ShuffleUp ShuffleUp { get; private set; } = null!;
     public static Common.PileOn PileOn { get; private set; } = null!;
     public static Common.BuyOff BuyOff { get; private set; } = null!;
+    // v1.8 四轴改造（出千 +5 / 赌命 +4）
+    public static Common.HushMoney HushMoney { get; private set; } = null!;
+    public static Common.BaitAndSwitch BaitAndSwitch { get; private set; } = null!;
+    public static Common.BloodCapital BloodCapital { get; private set; } = null!;
+    public static Common.BleedOut BleedOut { get; private set; } = null!;
 
-    // Uncommon（罕见档 33）
+    // Uncommon（罕见档 35）
     public static Uncommon.AllIn AllIn { get; private set; } = null!;
     public static Uncommon.ConsecutiveBet ConsecutiveBet { get; private set; } = null!;
     public static Uncommon.Ransack Ransack { get; private set; } = null!;
@@ -67,8 +72,10 @@ public static class GamblerCards
     public static Uncommon.UnderTheTable UnderTheTable { get; private set; } = null!;
     public static Uncommon.SkipStone SkipStone { get; private set; } = null!;
     public static Uncommon.SwapChips SwapChips { get; private set; } = null!;
+    public static Uncommon.CloseTheNet CloseTheNet { get; private set; } = null!;
+    public static Uncommon.BettingCard Betting { get; private set; } = null!;
 
-    // Rare（稀有档 23）
+    // Rare（稀有档 26）
     public static Rare.AllOrNothing AllOrNothing { get; private set; } = null!;
     public static Rare.RussianRoulette RussianRoulette { get; private set; } = null!;
     public static Rare.GreedSmash GreedSmash { get; private set; } = null!;
@@ -92,6 +99,9 @@ public static class GamblerCards
     public static Rare.Redouble Redouble { get; private set; } = null!;
     public static Rare.CashChips CashChips { get; private set; } = null!;
     public static Rare.GrandSlam GrandSlam { get; private set; } = null!;
+    public static Rare.CheatKingCard CheatKing { get; private set; } = null!;
+    public static Rare.SmokeAndMirrors SmokeAndMirrors { get; private set; } = null!;
+    public static Rare.StakeYourLife StakeYourLife { get; private set; } = null!;
 
     public static void Init()
     {
@@ -118,6 +128,10 @@ public static class GamblerCards
         ShuffleUp = new Common.ShuffleUp();
         PileOn = new Common.PileOn();
         BuyOff = new Common.BuyOff();
+        HushMoney = new Common.HushMoney();
+        BaitAndSwitch = new Common.BaitAndSwitch();
+        BloodCapital = new Common.BloodCapital();
+        BleedOut = new Common.BleedOut();
 
         AllIn = new Uncommon.AllIn();
         ConsecutiveBet = new Uncommon.ConsecutiveBet();
@@ -152,6 +166,8 @@ public static class GamblerCards
         UnderTheTable = new Uncommon.UnderTheTable();
         SkipStone = new Uncommon.SkipStone();
         SwapChips = new Uncommon.SwapChips();
+        CloseTheNet = new Uncommon.CloseTheNet();
+        Betting = new Uncommon.BettingCard();
 
         AllOrNothing = new Rare.AllOrNothing();
         RussianRoulette = new Rare.RussianRoulette();
@@ -176,5 +192,8 @@ public static class GamblerCards
         Redouble = new Rare.Redouble();
         CashChips = new Rare.CashChips();
         GrandSlam = new Rare.GrandSlam();
+        CheatKing = new Rare.CheatKingCard();
+        SmokeAndMirrors = new Rare.SmokeAndMirrors();
+        StakeYourLife = new Rare.StakeYourLife();
     }
 }

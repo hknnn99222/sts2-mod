@@ -12,7 +12,7 @@ namespace GamblerMod.Cards.Uncommon;
 // 罕见 #20·暗记（游戏设计 §5.2）：1 能技能，下一次赌博必为正面（升级：接下来 2 次）。
 public sealed class SecretMark() : GamblerCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Times", 1)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Times", 2)];
 
     protected override void OnUpgrade() => DynamicVars["Times"].UpgradeValueBy(1);
 
