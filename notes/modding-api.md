@@ -186,7 +186,15 @@ BaseLib 源码：https://github.com/Alchyr/BaseLib-StS2（关键文件 `Patches/
 MouseFilter = MouseFilterEnum.Pass;   // Pass：自己收事件、事件继续上传父节点 → 不挡点角色（用 Ignore 则永远收不到悬停）
 Connect(Control.SignalName.MouseEntered, Callable.From(OnHovered));
 Connect(Control.SignalName.MouseExited,  Callable.From(OnUnhovered));
-// OnHovered → NHoverTipSet.CreateAndShow(this, tip)；OnUnhovered → NHoverTipSet.Remove(this)（_ExitTree 也要 Remove）
+
+// OnHovered：★ 必须给对齐，否则提示节点停在 (0,0) = 屏幕左上角（本项目实测踩过）
+if (NHoverTipSet.CreateAndShow(this, tip) is { } tipSet)
+{
+    tipSet.SetAlignment(this, HoverTipAlignment.Center);  // None/Left/Right/Center
+    tipSet.SetFollowOwner();
+}
+// 仍不满意再叠加显式偏移：tipSet.SetGlobalPosition(GlobalPosition + new Vector2(0f, -140f))
+// OnUnhovered → NHoverTipSet.Remove(this)（_ExitTree 也要 Remove）
 ```
 
 ⚠️ 提示构建包 try/catch 并**懒建**：`HoverTipFactory.Static` 在自定义值没注册时可能抛，别让它把节点初始化带崩（本项目这个节点已被字体断言/_Process 坑过三次）。
@@ -204,7 +212,19 @@ Connect(Control.SignalName.MouseExited,  Callable.From(OnUnhovered));
 | ⚠️ 陷阱 | 附魔**只修标准 `DamageVar`/`BlockVar`**；把数值写进自定义 `IntVar`（"正面改为 X"这种）→ 卡面永远显示裸值，玩家会以为吃不到附魔。修法见下 |
 | ⚠️ | **金币/能量没有任何附魔通道**，结构上不可能吃到附魔，别当 bug 查 |
 
-**自定义 DynamicVar 子类改卡面显示**（本项目 `Core/CardValueVars.cs`）：继承 `IntVar` 覆写 `UpdateCardPreview(CardModel, CardPreviewMode, Creature?, bool)`，算好写 `EnchantedValue` + `PreviewValue`（照抄 BaseLib `Cards/Variables/CustomExtraDamageVar` 的写法）。用途：让"正面/反面两套数值"或"×倍率后的金币"在卡面上如实显示，而不是显示裸值。
+**★ 卡面数值：伤害/格挡一律用原生变量，别用 `IntVar`**（2026-10-17 实测踩坑，本项目 v1.8 第一版就踩了）
+
+引擎只为**它认得的变量类型**跑完整卡面预览管线（附魔 + 力量/虚弱/易伤/敏捷）。用 `IntVar` 承载伤害/格挡数值 → 卡面永远显示裸值：玩家会看到"正面数值不吃增伤、不吃虚弱"，而且卡面与结算对不上。
+**引擎的 `DamageVar` / `BlockVar` 都带 `(string 名字, decimal 数值, ValueProp props)` 构造器**（元数据核实）——"一张卡两套伤害数值"直接这样写，自动获得与标准 `!D!`/`!B!` 完全一致的预览行为：
+
+```csharp
+new DamageVar("HeadsDamage", 10, ValueProp.Move),   // 自定义名的伤害变量，与标准 DamageVar 并存
+new BlockVar("TailsBlock",  16, ValueProp.Move),
+```
+
+补充事实：`DynamicVar.Name` **只有 getter**（元数据核实），所以想要自定义名字必须走上面的构造器重载，别指望"先 new 再改名"（BaseLib `CustomCalculatedDamageVar` 用反射找 Name setter，找不到会静默不设名）。
+
+**引擎没有管线的资源才需要自定义变量**（本项目 `Core/CardValueVars.cs` 的 `MultiplierAwareVar`：金币 × 倍率显示）：继承 `IntVar`（**名字走 `IntVar(string, decimal)` 构造器**）覆写 `UpdateCardPreview(CardModel, CardPreviewMode, Creature?, bool)`，算好写 `EnchantedValue` + `PreviewValue`。
 
 **`DamageCmd.Attack` 只有两个重载**：`(decimal)` 与 `(CalculatedDamageVar)` —— 动态数值卡（如 PerfectedStrike）用后者。
 

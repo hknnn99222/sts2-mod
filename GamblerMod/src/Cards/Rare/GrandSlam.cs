@@ -24,7 +24,7 @@ public sealed class GrandSlam : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(30, ValueProp.Move),
-        new EnchantAwareVar("HotDamage", 50, EnchantKind.Damage),
+        new DamageVar("HotDamage", 50, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()

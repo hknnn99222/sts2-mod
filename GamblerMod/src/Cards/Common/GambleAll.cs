@@ -21,7 +21,8 @@ public sealed class GambleAll : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(6, ValueProp.Move),
-        new EnchantAwareVar("HeadsDamage", 13, EnchantKind.Damage),
+        // 原生 DamageVar/BlockVar（带名字的重载）：卡面自动算附魔/力量/虚弱（2026-10-17 修正）
+        new DamageVar("HeadsDamage", 13, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()

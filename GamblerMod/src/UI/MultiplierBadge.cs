@@ -204,9 +204,14 @@ public sealed class MultiplierBadge : MegaLabel
     private void OnHovered()
     {
         if (HoverTip is not { } tip) return;
-        // 位置交给引擎的默认对齐（跟随 owner）；若实测位置不理想，可在此加
-        // `?.SetGlobalPosition(GlobalPosition + new Vector2(0f, -46f))`（BaseLib NAdditionalResourceDisplay 的写法）
-        NHoverTipSet.CreateAndShow(this, tip);
+        // 定位要用引擎的对齐 API（BaseLib 的遗物悬停同款）：只 CreateAndShow 不给对齐，
+        // 节点会停在 (0,0) —— 实测就是"提示跑到屏幕左上角"。Center + FollowOwner = 跟随徽章居中。
+        // 若实测位置仍不理想，再叠加显式偏移：tipSet.SetGlobalPosition(GlobalPosition + new Vector2(0f, -140f))
+        if (NHoverTipSet.CreateAndShow(this, tip) is { } tipSet)
+        {
+            tipSet.SetAlignment(this, HoverTipAlignment.Center);
+            tipSet.SetFollowOwner();
+        }
     }
 
     private void OnUnhovered() => NHoverTipSet.Remove(this);

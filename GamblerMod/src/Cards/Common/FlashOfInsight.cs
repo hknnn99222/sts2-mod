@@ -21,7 +21,7 @@ public sealed class FlashOfInsight : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(4, ValueProp.Move),
-        new EnchantAwareVar("HeadsBlock", 8, EnchantKind.Block),
+        new BlockVar("HeadsBlock", 8, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()

@@ -24,7 +24,7 @@ public sealed class Insurance : GamblerCard
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new BlockVar(8, ValueProp.Move),
-        new EnchantAwareVar("TailsBlock", 16, EnchantKind.Block),
+        new BlockVar("TailsBlock", 16, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()

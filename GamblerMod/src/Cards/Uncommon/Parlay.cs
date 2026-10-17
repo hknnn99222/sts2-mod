@@ -18,7 +18,7 @@ public sealed class Parlay() : GamblerCard(1, CardType.Attack, CardRarity.Uncomm
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(8, ValueProp.Move),
-        new EnchantAwareVar("HotDamage", 16, EnchantKind.Damage),
+        new DamageVar("HotDamage", 16, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()
