@@ -77,3 +77,13 @@ dotnet build        # 编译 + 自动部署到 D:\SteamLibrary\...\Slay the Spir
 
 - Steam 创意工坊：游戏自带 ModUploader（需补 .pck 资源包后发布更完整）
 - 手动分发：`bin\Debug\net9.0\GamblerMod.dll` + `GamblerMod.json` 打包即可（要求用户订阅 BaseLib）
+
+### 一键发到手机（QQ）
+
+双击根目录 `一键发送到QQ.cmd`，即把最新的 `GamblerMod_v*.zip` 发到 QQ 的「我的iPhone」会话；
+也可把任意文件拖到该 cmd 上发送。脚本本体 `tools/send-to-qq.ps1`（Win32 窗口坐标 + 剪贴板，运行期间别动鼠标键盘）。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\send-to-qq.ps1 [-Target '我的iPhone'] [-DryRun] [文件路径]
+```
+
