@@ -198,4 +198,25 @@ internal static class CardContracts
             f.Add("Entry 里 new GamblerHooks 会让 ModHelper 拒绝 BaseLib 的二次实例化订阅并打 ERROR" +
                   "（2026-10-21 日志实测）；BaseLib 在 ModelDb.Init 自动实例化，Entry 不要 new");
     }
+    // ---- R11 每个 power 必须有施加来源（2026-10-21 全量审计固化）----
+    // "存钱 bug" 的通用形态之一：power 写好了但没有任何卡 Apply 它（死 power）。
+    // 触发端形式多样（钩子/事件/SpendTracker），静态难全覆盖，这里至少把"施加端"焊死。
+    [Fact]
+    internal static void EveryPowerHasAnApplier(List<string> f)
+    {
+        var powersDir = Path.Combine(RepoRoot, "GamblerMod", "src", "Powers");
+        var cardsDir = Path.Combine(RepoRoot, "GamblerMod", "src", "Cards");
+        var allCardSrc = string.Join("\n", Directory.GetFiles(cardsDir, "*.cs", SearchOption.AllDirectories)
+            .Select(File.ReadAllText));
+        foreach (var file in Directory.GetFiles(powersDir, "*.cs"))
+        {
+            if (Path.GetFileName(file) == "GamblerPowers.cs") continue;
+            var src = File.ReadAllText(file);
+            var cls = Regex.Match(src, @"class\s+(\w+)").Groups[1].Value;
+            if (string.IsNullOrEmpty(cls)) continue;
+            if (src.Contains("// 测试豁免：无施加来源")) continue;
+            if (!allCardSrc.Contains($"Apply<Powers.{cls}>") && !allCardSrc.Contains($"Apply<Powers.{cls} "))
+                f.Add($"{cls}：没有任何卡 Apply 这个 power——要么是死 power，要么施加链断了（如属预期，加 \"// 测试豁免：无施加来源\"）");
+        }
+    }
 }

@@ -35,7 +35,7 @@
 
 **工作区状态（2026-10-21）**：干净，HEAD = `5cb6347` = origin/main（v1.15 + 全池改名 29 张均已提交推送）。v1.8–v1.15 各批次明细见上表。**两份 xlsx 纳入 git 跟踪**；markdown 仍是权威源，数据以卡牌代码为准，改卡后跑 `python tools/gen_card_table.py --audit` 对账。v1.7 版工作簿备份（`*_v17_backup.xlsx`，已 gitignore）确认无误后可删。
 
-- **代码级自校验测试（2026-10-21 新增）**：`cd GamblerMod.Tests && dotnet run`——11 组契约测试（自动先构建主项目再跑；退出码 = 失败组数）。覆盖：ApplyEffect 空转、描述 `!Var!` ↔ CanonicalVars 对账、承诺→命令映射、伤害/格挡变量必须原生 DamageVar/BlockVar、OnUpgrade 有效（认 IsUpgraded 模式）、赌博牌真用 heads 且正负两支齐全、描述 `#` 开头、全卡注册+卡名唯一、MultiplierService 纯逻辑、R9 power 不得覆写金币钩子、R10 Entry 不得实例化钩子单例。**改卡后建议跑一遍**。首轮抓到并修复：押注描述缺「硬币为负」分支（实现本来就对）。
+- **代码级自校验测试（2026-10-21 新增）**：`cd GamblerMod.Tests && dotnet run`——12 组契约测试（自动先构建主项目再跑；退出码 = 失败组数）。覆盖：ApplyEffect 空转、描述 `!Var!` ↔ CanonicalVars 对账、承诺→命令映射、伤害/格挡变量必须原生 DamageVar/BlockVar、OnUpgrade 有效（认 IsUpgraded 模式）、赌博牌真用 heads 且正负两支齐全、描述 `#` 开头、全卡注册+卡名唯一、MultiplierService 纯逻辑、R9 power 不得覆写金币钩子、R10 Entry 不得实例化钩子单例、R11 每个 power 必须有施加来源（死 power 检测）。2026-10-21 按「存钱 bug」逻辑做过一次全量链路审计：87 卡 + 13 power 的施加→触发闭环全部接通（战斗钩子可达 power 有原版 45 个回合开始力量佐证；金币钩子是唯一例外，已由 GamblerHooks 转发解决）。**改卡后建议跑一遍**。首轮抓到并修复：押注描述缺「硬币为负」分支（实现本来就对）。
 **测试文档**：[docs/testing/test-plan.md](docs/testing/test-plan.md)（M1-M5 + v1.7–v1.15 各批验收清单 + 已知简化偏离列表）。当前待验收入口：v1.8「四·五-A」（词条/图鉴/徽章/附魔）、v1.9「四·七」（四轴新卡）、v1.10–v1.15 各批次条目（数值以当前代码为准，旧批次清单里的数值被后续版本覆盖的以最新为准）。
 
 ## 已核实的事实（勿重复调研）
