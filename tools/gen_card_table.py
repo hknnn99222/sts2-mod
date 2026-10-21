@@ -333,7 +333,7 @@ def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
         if m and int(m.group(1)) != n_regular:
             issues.append(f'[{label}] 常规卡池表头写「{m.group(1)} 张」，实际 {n_regular} 张 → 表头：「{hdr}」')
 
-    # 4) 计数一致性（§6 分布统计 / §7.3 旋钮 / §5.4 逐卡表）
+    # 4) 计数一致性（§6 分布统计 / §7.3 旋钮）
     n_gamble = sum(1 for c in cards
                    if c["gamble"] or c["name"] == "试手气" or c["name"] in MULTI or c["name"] in TRUEGAMBLE)
     n_streak = sum(1 for c in cards if c["streak"])
@@ -360,24 +360,7 @@ def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
             if mm and int(mm.group(1)) != n_mech_rel:
                 issues.append(f'[design.md §7.3] 倍率关联牌数写 {mm.group(1)}，实际 {n_mech_rel}')
 
-    # §5.4 逐卡表名单 == 代码的硬币类卡
-    if "### 5.4" in text:
-        seg54 = text.split("### 5.4")[1].split("### 5.5")[0]
-        listed = []
-        for line in seg54.splitlines():
-            s = line.strip()
-            if s.startswith("|") and not s.startswith("|---"):
-                c = [x.strip() for x in s.strip("|").split("|")]
-                if c and c[0] not in ("赌博牌", ""):
-                    listed.append(c[0])
-        want = {c["name"] for c in cards
-                if c["gamble"] or c["name"] == "试手气" or c["name"] in MULTI or c["name"] in TRUEGAMBLE}
-        for miss in sorted(want - set(listed)):
-            issues.append(f'[design.md §5.4] 缺少硬币类卡「{miss}」')
-        for extra in sorted(set(listed) - want):
-            issues.append(f'[design.md §5.4] 「{extra}」不是代码里的硬币类卡（改名残留？）')
-
-    # 5) 两份 xlsx 的镜像页（分布统计 / 期望校验）必须与 design.md 同步
+    # 5) 两份 xlsx 的镜像页（分布统计）必须与 design.md 同步
     if os.path.exists(DESIGN_XLSX) and "## 6." in text:
         wbx = load_workbook(DESIGN_XLSX)
         if "分布统计" in wbx.sheetnames:
@@ -401,11 +384,6 @@ def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
                 if lead_x and lead_m and lead_x.group() != lead_m.group():
                     issues.append(f'[gambler-design.xlsx 分布统计 R{r}] {k}：xlsx「{val}」'
                                   f'与 design.md §6「{md6[k]}」首位数字不一致')
-        if "期望校验" in wbx.sheetnames:
-            wsx = wbx["期望校验"]
-            xl_names = [wsx.cell(row=r, column=2).value for r in range(5, 5 + len(listed))]
-            if xl_names != listed:
-                issues.append('[gambler-design.xlsx 期望校验] 卡名/顺序与 design.md §5.4 不一致')
 
     lines = [
         f"（参考计数）常规卡池 {n_regular} 张：普 {sum(1 for c in cards if c['rarity']=='Common')}"

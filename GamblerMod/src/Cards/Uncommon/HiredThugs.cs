@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #19·摇骰（游戏设计 §5.2 / §5.4）：1 能 + 5 金，对随机敌人 4×3 次；
+// 罕见 #19·摇骰（游戏设计 §5.2）：1 能 + 5 金，对随机敌人 4×3 次；
 // 赌博：正面 → 每次 9（升级 5×3 / 正面每次 10）。
 public sealed class HiredThugs : GamblerCard
 {

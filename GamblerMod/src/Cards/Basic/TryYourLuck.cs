@@ -11,8 +11,8 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Basic;
 
-// 起始签名牌·试手气（游戏设计 §3 / §5.4 期望锚定）：
-// 1 能攻击，造成 5 伤害；赌博：正面 → 改为 10（升级 7 / 14，期望 ≈ 1.2× 打击）。
+// 起始签名牌·试手气（游戏设计 §3）：
+// 1 能攻击，造成 5 伤害；赌博：正面 → 改为 10（升级 7 / 14）。
 public sealed class TryYourLuck : GamblerCard
 {
     public TryYourLuck() : base(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)

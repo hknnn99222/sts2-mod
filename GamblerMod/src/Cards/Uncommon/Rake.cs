@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #24·抽头（游戏设计 §5.2 / §5.4）：1 能，获得 7 金币；赌博：正面 → 14（升级 9 / 18）。
+// 罕见 #24·抽头（游戏设计 §5.2）：1 能，获得 7 金币；赌博：正面 → 14（升级 9 / 18）。
 public sealed class Rake : GamblerCard
 {
     public Rake() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)

@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace GamblerMod.Cards.Rare;
 
 // 稀有 #76·押牌（游戏设计 §5.3 / §5.5）：1 能，造成 8 伤害；赌博：正面 → 15 伤害；**反面** → 弃掉 2 张手牌（升级 12 / 19）。
-// 锚定：白板 1 能 = 6 伤；期望 (8-4.2 + 15)/2 ≈ 9.4（弃牌折价后）→ ≈1.2× ✓（原 24 伤 = 2.7×，v1.7 收尾时校正）
+// 校准：v1.7 收尾时由 24 伤下调到 10 伤——弃牌折价后与同费输出牌齐平
 // 钩子：真赌·押手牌。
 public sealed class AnteUp : GamblerCard
 {

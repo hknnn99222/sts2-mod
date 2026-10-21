@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #25·保险（游戏设计 §5.2 / §5.4）：1 能 + 2 金，获得 8 格挡；
+// 罕见 #25·保险（游戏设计 §5.2）：1 能 + 2 金，获得 8 格挡；
 // 反向赌博：反面 → 改为 16 格挡（升级 10 / 反面 20）。全池唯一"盼反面"的赌博牌。
 public sealed class Insurance : GamblerCard
 {

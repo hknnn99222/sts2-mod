@@ -173,7 +173,7 @@ class TryYourLuck : GamblerCard
     public TryYourLuck() : base(1, CardType.Attack, CardRarity.Basic, TargetType.Enemy)
     { IsGambleCard = true; }
     protected override Task ApplyEffect(ctx, play, bool heads)
-        => AttackCmd.Damage(heads ? 10 : 5, ...);   // 数字取自设计文档 §5.4
+        => AttackCmd.Damage(heads ? 10 : 5, ...);   // 数字取自设计文档 §3
 }
 ```
 
@@ -302,7 +302,7 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 | M0 骨架 | 项目改名、引 BaseLib、Entry 注册、角色占位（D2）进选人界面 | 选人界面出现赌徒（占位视觉），能开一局，起始 148 金 |
 | M1 核心管线 | GamblerCard + GoldCost + GambleService + 起始 4 种牌 | ①本钱加真金（商店同款钱）②试手气掷硬币、正/反伤害正确 ③金币不足卡变灰 ④掷骰记录可在日志查看 ⑤**改卡演练**：改试手气数值→只动 1 个卡文件→Core 零改动→重编译生效 |
 | M2 做局 | 幸运筹码 + 暗记/手气正旺 + 赌神 | 反面后弹改币、暗记必正按层数消耗、正面率加法上限 75% 生效 |
-| M3 卡池① | 普通档 11 张 + 本钱升级等 | 全部可玩、数值对照 §5.4 校验表抽查 |
+| M3 卡池① | 普通档 11 张 + 本钱升级等 | 全部可玩、数值对照 §5 卡表抽查 |
 | M4 卡池②③ | 罕见 19 + 稀有 13（真赌牌最后） | 43 卡全量可玩；一局完整跑通无报错 |
 
 每个里程碑 = 一次 git 提交序列 + 游戏内实测截图/日志，通过后才进下一个。

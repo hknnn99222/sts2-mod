@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #17·翻本（游戏设计 §5.2 / §5.4）：1 能 + 3 金，10 伤害；赌博：正面 → 20（升级 13 / 25）。
+// 罕见 #17·翻本（游戏设计 §5.2）：1 能 + 3 金，10 伤害；赌博：正面 → 20（升级 13 / 25）。
 public sealed class Comeback : GamblerCard
 {
     public Comeback() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)

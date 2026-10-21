@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace GamblerMod.Cards.Common;
 
 // 普通 #44·收手（游戏设计 §5.1 / §2.8，v1.10 改版）：1 能，获得 6 格挡 ×风头倍率（升级 9）。
-// 新机制「风头正盛」的教学卡：裸值 = 白板（纯奖励定价），格挡数由 Core 钩子乘倍率。
+// 新机制「风头正盛」的教学卡：裸值按同费常规牌水平（纯奖励定价），格挡数由 Core 钩子乘倍率。
 public sealed class HoldBack : GamblerCard
 {
     public HoldBack() : base(1, CardType.Skill, CardRarity.Common, TargetType.None)

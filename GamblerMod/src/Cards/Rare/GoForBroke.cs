@@ -13,7 +13,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace GamblerMod.Cards.Rare;
 
 // 稀有 #51·割肉（游戏设计 §5.3 / §2.8）：1 能，获得 10 格挡 ×风头倍率（升级 13）；
-// 自身失去「倍率 × 3」生命（向上取整）。裸值高于白板（10 > 5），因为自伤需要补偿。
+// 自身失去「倍率 × 3」生命（向上取整）。裸值高于同费常规牌（10 > 5），因为自伤需要补偿。
 public sealed class GoForBroke : GamblerCard
 {
     public GoForBroke() : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)

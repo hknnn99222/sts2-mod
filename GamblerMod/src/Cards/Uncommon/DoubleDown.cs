@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #15·双倍下注（游戏设计 §5.2 / §5.4）：2 能，10 伤害；赌博：正面 → 改为打两次（升级 12 / 12×2）。
+// 罕见 #15·双倍下注（游戏设计 §5.2）：2 能，10 伤害；赌博：正面 → 改为打两次（升级 12 / 12×2）。
 public sealed class DoubleDown : GamblerCard
 {
     public DoubleDown() : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
