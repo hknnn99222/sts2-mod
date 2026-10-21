@@ -11,39 +11,34 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #19·摇骰（游戏设计 §5.2）：1 能 + 5 金，对随机敌人 4×3 次；
-// 赌博：正面 → 每次 9（升级 5×3 / 正面每次 10）。
+// 罕见 #19·摇骰（游戏设计 §5.2，v1.12 改版）：1 能 + 3 金，对随机敌人 4 伤害 4 次；
+// 赌博：正面 → 改为 6 次（升级 5×4 / 正面 5×6——升级只加伤害，不再改正面每段数值）。
 public sealed class HiredThugs : GamblerCard
 {
     public HiredThugs() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.RandomEnemy)
     {
-        BaseGoldCost = 5;
+        BaseGoldCost = 3;
         IsGambleCard = true;
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new DamageVar(4, ValueProp.Move),
-        // 原生 DamageVar/BlockVar（带名字的重载）：卡面自动算附魔/力量/虚弱（2026-10-17 修正）
-        new DamageVar("HeadsDamage", 9, ValueProp.Move),
-        new IntVar("Hits", 3),
+        new IntVar("Hits", 4),
+        new IntVar("HeadsHits", 6),
     ];
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(1);
-        DynamicVars["HeadsDamage"].UpgradeValueBy(1);
-    }
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(1);
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
-        => DamageCmd.Attack(heads ? DynamicVars["HeadsDamage"].BaseValue : DynamicVars.Damage.BaseValue)
+        => DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, play)
             .TargetingRandomOpponents(CombatState)
-            .WithHitCount((int)DynamicVars["Hits"].BaseValue)
+            .WithHitCount((int)DynamicVars[heads ? "HeadsHits" : "Hits"].BaseValue)
             .WithHitFx(heads ? HeadsHitFx : TailsHitFx, null, heads ? HeadsHitSfx : null)
             .Execute(ctx);
 
     public override List<(string, string)>? Localization => new CardLoc(
         "摇骰",
-        "#花费 *5 金币*。\n硬币为正时：对随机敌人造成 !HeadsDamage! 伤害 !Hits! 次；硬币为负时：对随机敌人造成 !D! 伤害 !Hits! 次。");
+        "#花费 *3 金币*。\n硬币为正时：对随机敌人造成 !D! 伤害 !HeadsHits! 次；硬币为负时：造成 !D! 伤害 !Hits! 次。");
 }

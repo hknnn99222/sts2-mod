@@ -11,14 +11,14 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #16·叠注（游戏设计 §5.2）：1 能，8 伤害；若**风头倍率 ≥1.5**，改为 16 伤害（升级 10 / 20）。
+// 罕见 #16·叠注（游戏设计 §5.2，v1.12 加强）：1 能，10 伤害；若**风头倍率 ≥1.5**，改为 20 伤害（升级 12 / 24）。
 // v1.6 改造：条件从"上一掷为正面"改为"倍率 ≥1.5"——只读条件，数值**不乘**倍率、打完**不清空**（Q20 分开处理）。
 public sealed class Parlay() : GamblerCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(8, ValueProp.Move),
-        new DamageVar("HotDamage", 16, ValueProp.Move),
+        new DamageVar(10, ValueProp.Move),
+        new DamageVar("HotDamage", 20, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()

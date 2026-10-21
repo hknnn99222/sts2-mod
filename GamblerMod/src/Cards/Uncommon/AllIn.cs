@@ -12,8 +12,8 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #12·梭哈（游戏设计 §5.2）：X 能 + 10×X 金，造成 27×X 伤害（升级金币费降为 8×X）。
-// 可打出检查按最低 X=1 的金币（10/8）判灰；打出时按实际 X 结算。
+// 罕见 #12·梭哈（游戏设计 §5.2，v1.12 改版）：X 能 + 5×X 金，造成 20×X 伤害（升级金币费降为 4×X）。
+// 可打出检查按最低 X=1 的金币（5/4）判灰；打出时按实际 X 结算。
 public sealed class AllIn : GamblerCard
 {
     public AllIn() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy, costsX: true)
@@ -22,8 +22,8 @@ public sealed class AllIn : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(27, ValueProp.Move),
-        new IntVar("GoldX", 10), // 每 X 的金币系数；升级 −2（10→8）。卡面费用随 DynamicVar 同步显示
+        new DamageVar(20, ValueProp.Move),
+        new IntVar("GoldX", 5), // 每 X 的金币系数；升级 −1（5→4）。卡面费用随 DynamicVar 同步显示
     ];
 
     private int GoldPerX => (int)DynamicVars["GoldX"].BaseValue;
@@ -32,14 +32,14 @@ public sealed class AllIn : GamblerCard
 
     public override int EffectiveGoldCost => GoldPerX * ResolvedX;
 
-    protected override void OnUpgrade() => DynamicVars["GoldX"].UpgradeValueBy(-2);
+    protected override void OnUpgrade() => DynamicVars["GoldX"].UpgradeValueBy(-1);
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
         var x = ResolvedX;
         await GoldCost.Pay(Owner, GoldPerX * x);
 
-        await DamageCmd.Attack(27 * x)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue * x)
             .FromCard(this, play)
             .Targeting(play.Target)
             .WithHitFx("vfx/vfx_heavy_blunt", null, HeadsHitSfx)
