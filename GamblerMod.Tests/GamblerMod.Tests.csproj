@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>GamblerMod.Tests</AssemblyName>
+    <RootNamespace>GamblerMod.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 引用已构建的 mod dll（含 Godot-free 的纯逻辑，如 MultiplierService）。
+         先构建主项目再跑测试；MSBuild 依赖已由 BuildMod 目标保证。 -->
+    <Reference Include="GamblerMod">
+      <HintPath>..\GamblerMod\bin\Debug\net9.0\GamblerMod.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- 跑测试前先把主项目编出来（保证被测 dll 是最新源码） -->
+  <Target Name="BuildMod" BeforeTargets="Build">
+    <MSBuild Projects="..\GamblerMod\GamblerMod.csproj" Targets="Build" />
+  </Target>
+
+</Project>

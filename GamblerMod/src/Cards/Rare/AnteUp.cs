@@ -35,5 +35,5 @@ public sealed class AnteUp : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "押注",
-        "#花费 *5 金币*。\n获得 !EnergyGain! 点能量。硬币为正时：返还这 5 金币。");
+        "#花费 *5 金币*。\n获得 !EnergyGain! 点能量。硬币为正时：返还这 5 金币；硬币为负时：不返还。");
 }
