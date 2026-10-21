@@ -11,25 +11,22 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #67·翻盘（游戏设计 §5.2 / §5.5）：1 能 + 3 金，造成 10 伤害；若你生命低于 50%，改为 24（升级 14 / 30）。
+// 罕见 #67·翻盘（游戏设计 §5.2 / §5.5，v1.12 降费）：0 能，造成 6 伤害；若你生命低于 50%，改为 14（升级 8 / 18）。
 // 钩子：特异·生命条件。
 public sealed class SinkBoats : GamblerCard
 {
-    public SinkBoats() : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
-    {
-        BaseGoldCost = 3;
-    }
+    public SinkBoats() : base(0, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy) { }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(10, ValueProp.Move),
-        new DamageVar("LowDamage", 24, ValueProp.Move),
+        new DamageVar(6, ValueProp.Move),
+        new DamageVar("LowDamage", 14, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4);
-        DynamicVars["LowDamage"].UpgradeValueBy(6);
+        DynamicVars.Damage.UpgradeValueBy(2);
+        DynamicVars["LowDamage"].UpgradeValueBy(4);
     }
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
@@ -47,5 +44,5 @@ public sealed class SinkBoats : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "翻盘",
-        "#花费 *3 金币*。\n造成 !D! 伤害。若你的生命低于 50%，改为 !LowDamage! 伤害。");
+        "#造成 !D! 伤害。若你的生命低于 50%，改为 !LowDamage! 伤害。");
 }

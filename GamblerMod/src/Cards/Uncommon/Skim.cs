@@ -7,28 +7,31 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #60·抽水（游戏设计 §5.2 / §5.5）：1 能，每张手牌获得 1 金币（至多 8；升级至多 12）。
-// 钩子：即时产金·手牌数。
+// 罕见 #60·抽水（游戏设计 §5.2 / §5.5，v1.12 改版）：1 能，获得 2 次必正 + 5 点活力（升级 3 次必正）。
+// 钩子由「即时产金·手牌数」改为「出千·必正与活力」——同时给确定性资源与下一次攻击的爆发。
 public sealed class Skim : GamblerCard
 {
     public Skim() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None) { }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Cap", 8)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new IntVar("Force", 2),
+        new IntVar("Vigor", 5),
+    ];
 
-    protected override void OnUpgrade() => DynamicVars["Cap"].UpgradeValueBy(4);
+    protected override void OnUpgrade() => DynamicVars["Force"].UpgradeValueBy(1);
 
-    protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
+    protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var cards = PileType.Hand.GetPile(Owner).Cards.Count;
-        if (cards > (int)DynamicVars["Cap"].BaseValue) cards = (int)DynamicVars["Cap"].BaseValue;
-        if (cards <= 0) return Task.CompletedTask;
-        return PlayerCmd.GainGold(cards, Owner, false);
+        GambleService.ForceNextFlips((int)DynamicVars["Force"].BaseValue);
+        await PowerCmd.Apply<VigorPower>(ctx, Owner.Creature, DynamicVars["Vigor"].BaseValue, Owner.Creature, this);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "抽水",
-        "#每张手牌获得 1 金币（至多 !Cap! 金币）。");
+        "#获得 !Force! 次必正，以及 !Vigor! 点活力。");
 }

@@ -10,25 +10,27 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #27·高利贷（游戏设计 §5.2）：0 能，获得 14 金币；下场战斗开始时失去 6 金币（不足则全失，升级 +18 金）。
-// M4 简化：欠款在下场战斗首次回合开始时结算（GamblerHooks），不做区分债务人的多人校准。
-public sealed class LoanShark() : GamblerCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.None)
+// 罕见 #27·高利贷（游戏设计 §5.2 / §5.5，v1.12 改型：技能 → 能力）：
+// 0 能，立即获得 50 金币（升级 60）；此后每回合开始失去 5 金币（由 LoanInterestPower 结算）。
+// 钩子由「跨战斗贷款」改为「借贷·回合利息」——先拿一大笔现金，代价是本场战斗的持续失血（钱包）。
+public sealed class LoanShark : GamblerCard
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new IntVar("GoldGain", 14),
-        new IntVar("Debt", 6),
-    ];
+    private const int InterestPerTurn = 5;
 
-    protected override void OnUpgrade() => DynamicVars["GoldGain"].UpgradeValueBy(4);
+    public LoanShark() : base(0, CardType.Power, CardRarity.Uncommon, TargetType.None) { }
 
-    protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("GoldGain", 50)];
+
+    protected override void OnUpgrade() => DynamicVars["GoldGain"].UpgradeValueBy(10);
+
+    protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        GamblerHooks.PendingLoanDebt += (int)DynamicVars["Debt"].BaseValue;
-        return PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
+        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
+        await PowerCmd.Apply<Powers.LoanInterestPower>(
+            ctx, Owner.Creature, InterestPerTurn, Owner.Creature, this);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "高利贷",
-        "#获得 !GoldGain! 金币。下场战斗开始时失去 !Debt! 金币（不足则全失）。");
+        "#获得 !GoldGain! 金币。每回合开始失去 5 金币。");
 }

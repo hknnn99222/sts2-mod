@@ -12,6 +12,7 @@ public static class GamblerPowers
     public static BettingPower Betting { get; private set; } = null!;      // 2026-10-17 四轴·赌命
     public static CheatKingPower CheatKing { get; private set; } = null!;  // 2026-10-17 四轴·出千
     public static DividendPower Dividend { get; private set; } = null!;    // 2026-10-19 v1.10 分红（原血本）
+    public static LoanInterestPower LoanInterest { get; private set; } = null!; // 2026-10-21 v1.12 高利贷利息
 
     public static void Init()
     {
@@ -24,5 +25,6 @@ public static class GamblerPowers
         Betting = new BettingPower();
         CheatKing = new CheatKingPower();
         Dividend = new DividendPower();
+        LoanInterest = new LoanInterestPower();
     }
 }

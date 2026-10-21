@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #68·暗注（游戏设计 §5.2 / §5.5）：1 能 + 6 金，造成 6 点**无视格挡**的伤害（升级 9）。
+// 罕见 #68·暗注（游戏设计 §5.2 / §5.5，v1.12 上调）：1 能 + 6 金，造成 13 点**无视格挡**的伤害（升级 16）。
 // 钩子：附加费·穿透（走 CreatureCmd.Damage + ValueProp.Unblockable，不触发格挡）。
 public sealed class UnderTheTable : GamblerCard
 {
@@ -20,7 +20,7 @@ public sealed class UnderTheTable : GamblerCard
         BaseGoldCost = 6;
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Pierce", 6)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Pierce", 13)];
 
     protected override void OnUpgrade() => DynamicVars["Pierce"].UpgradeValueBy(3);
 

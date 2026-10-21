@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #24·抽头（游戏设计 §5.2）：1 能，获得 7 金币；赌博：正面 → 14（升级 9 / 18）。
+// 罕见 #24·抽头（游戏设计 §5.2，v1.12 上调）：1 能，获得 10 金币；赌博：正面 → 20（升级 12 / 24）。
 public sealed class Rake : GamblerCard
 {
     public Rake() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
@@ -20,14 +20,14 @@ public sealed class Rake : GamblerCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("GoldGain", 7),
-        new IntVar("HeadsGold", 14),
+        new IntVar("GoldGain", 10),
+        new IntVar("HeadsGold", 20),
     ];
 
     protected override void OnUpgrade()
     {
         DynamicVars["GoldGain"].UpgradeValueBy(2);
-        DynamicVars["HeadsGold"].UpgradeValueBy(4); // 14→18（设计 §5.2 #24；2026-10-16 审查修正）
+        DynamicVars["HeadsGold"].UpgradeValueBy(4); // 20→24
     }
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)

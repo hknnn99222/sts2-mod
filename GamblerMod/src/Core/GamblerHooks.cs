@@ -14,14 +14,12 @@ namespace GamblerMod.Core;
 // 全局钩子单例（技术设计 §4.5 的战斗状态仓，M4 落地）：
 //   - 回合开始：SpendTracker 清零（连续下注按回合计）+ 出千本回合必正层数清零
 //   - 战斗结束：金币费用/掷骰记录等战斗态复位
-//   - 高利贷：下场战斗首次回合开始时扣款（M4 简化：不做区分债务人的多人校准）
 //   - 利滚利：每次获得金币 +2/+3（防递归标记）
 // 实例化即订阅（CustomSingletonModel(HookType.Combat) 语义），在 Entry 中创建。
 // 台规"正面 +3 金"已移至 Powers.HouseRulesPower（内容层订阅 GambleService.OnHeads）——
 // Core 不再持有任何卡牌专属数值（约束④）。
 public sealed class GamblerHooks : CustomSingletonModel
 {
-    public static int PendingLoanDebt; // 高利贷：待扣欠款
     private static bool _inGoldGain;   // 利滚利防递归
 
     public GamblerHooks() : base(HookType.Combat)
@@ -36,19 +34,6 @@ public sealed class GamblerHooks : CustomSingletonModel
     {
         SpendTracker.OnTurnStart();
         GambleService.OnTurnStart(); // 出千的本回合必正层数清零
-
-        // 高利贷欠款：下场战斗的首次回合开始时结算
-        if (PendingLoanDebt > 0)
-        {
-            var debt = PendingLoanDebt;
-            PendingLoanDebt = 0;
-            var actual = System.Math.Min(debt, player.Gold);
-            if (actual > 0)
-            {
-                GD.Print($"[GamblerMod] 高利贷：战斗开始扣除 {actual} 金币");
-                return PlayerCmd.LoseGold(actual, player, MegaCrit.Sts2.Core.Entities.Gold.GoldLossType.Lost);
-            }
-        }
 
         return Task.CompletedTask;
     }

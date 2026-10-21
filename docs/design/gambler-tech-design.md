@@ -393,3 +393,13 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 1. `BettingPower` 的加成同时作用于所有来源的伤害（含技能牌），验收时确认卡面数字与实际一致；
 2. `CheatKingPower` 的每回合计数在 power 实例上（与 Core 的静态掷币状态同口径）——多人隔离仍待做；
 3. `收网` 在必正为 0 时无事发生（描述已写明），验收确认不会空挥消耗能量。
+
+### 12.1 v1.12/v1.13 罕见档批次的 Core 变更（2026-10-21，§4.8 ③）
+
+| 文件 | 改动 | 理由 |
+|---|---|---|
+| `Core/GamblerHooks.cs` | 删除 `PendingLoanDebt` 字段与回合开始的扣款分支 | 高利贷（#27）由「技能·下场战斗扣款」改为「能力·每回合利息」，欠款逻辑移入内容层 `Powers/LoanInterestPower`（订阅回合开始钩子）。旧代码已无调用方，保留会变成死状态 |
+| `Powers/LoanInterestPower.cs`（新增） | 每回合开始失去 Amount 金币（不足则扣光） | 卡内无法订阅回合开始；按 §4.8 的分层，能力本体放内容层 |
+| `Powers/DividendPower.cs`（v1.10 已有） | 未改 | — |
+
+**未改的口径**：`GambleService` 的必正接口（收网改为只读 `ForcedHeadsRemaining`，不消耗）、`SpendTracker`、`MultiplierService`、`GoldCost` 的行文未动。
