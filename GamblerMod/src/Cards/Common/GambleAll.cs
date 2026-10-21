@@ -11,10 +11,11 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #3·买定离手（游戏设计 §5.1 / §5.4）：2 能 AoE 攻击，6 伤（升级 9）；赌博：正面 → 13（升级 17）。
+// 普通 #3·买定离手（游戏设计 §5.1 / §5.4）：1 能 AoE 攻击，6 伤（升级 9）；赌博：正面 → 13（升级 17）。
+// v1.10：费用 2 能 → 1 能（数值未动，属于用户指定的加强，期望倍率见 §5.4 脚注）。
 public sealed class GambleAll : GamblerCard
 {
-    public GambleAll() : base(2, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
+    public GambleAll() : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)
     {
         IsGambleCard = true;
     }

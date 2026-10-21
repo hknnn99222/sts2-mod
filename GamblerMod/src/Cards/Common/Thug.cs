@@ -12,25 +12,21 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #4·看场（游戏设计 §5.1）：1 能 + 5 金，16 伤害并施加 1 易伤（升级 19 伤 / 2 易伤）。
+// 普通 #4·看场（游戏设计 §5.1，v1.10 改版）：1 能 + 3 金，14 伤害并施加 2 易伤（升级 17 伤 / 2 易伤）。
 public sealed class Thug : GamblerCard
 {
     public Thug() : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
     {
-        BaseGoldCost = 5;
+        BaseGoldCost = 3;
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(16, ValueProp.Move),
-        new IntVar("Vuln", 1),
+        new DamageVar(14, ValueProp.Move),
+        new IntVar("Vuln", 2),
     ];
 
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(3);
-        DynamicVars["Vuln"].UpgradeValueBy(1);
-    }
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3);
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
@@ -45,5 +41,5 @@ public sealed class Thug : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "看场",
-        "#花费 *5 金币*。\n造成 !D! 伤害，施加 !Vuln! 易伤。");
+        "#花费 *3 金币*。\n造成 !D! 伤害，施加 !Vuln! 易伤。");
 }

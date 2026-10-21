@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 namespace GamblerMod.Cards.Uncommon;
 
 // 罕见 #86·押注（v1.8 四轴改造·赌命轴放大器）：1 能能力，你造成的伤害 +「已失去生命」的 10%（升级 15%）。
-// 赌命轴的放大器：把"自伤"从成本变成收益来源，与放血/血本/押宝/割肉形成正循环。
+// 赌命轴的放大器：把"自伤"从成本变成收益来源，与放血/分红/押宝/割肉形成正循环。
 public sealed class BettingCard() : GamblerCard(1, CardType.Power, CardRarity.Uncommon, TargetType.None)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Percent", 10)];

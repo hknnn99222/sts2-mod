@@ -11,13 +11,13 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #5·悬红（游戏设计 §5.1）：1 能攻击，7 伤害；击杀则获得 10 金币（升级 9 伤 / +14 金）。
+// 普通 #5·悬红（游戏设计 §5.1，v1.10 改版）：1 能攻击，9 伤害；击杀则获得 15 金币（升级 11 伤 / +19 金）。
 public sealed class BountyHunter() : GamblerCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(7, ValueProp.Move),
-        new IntVar("Bounty", 10),
+        new DamageVar(9, ValueProp.Move),
+        new IntVar("Bounty", 15),
     ];
 
     protected override void OnUpgrade()

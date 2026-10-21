@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通档 #1·底注（游戏设计 §5.1）：1 能 + 2 金，造成 10 伤害（升级 13）。
+// 普通档 #1·底注（游戏设计 §5.1）：1 能 + 2 金，造成 11 伤害（升级 14）。
 // 混合费用的最小样板（附加费·伤）。验收用：暂入起始牌，M1 验收后移除。
 public sealed class FlyingCard : GamblerCard
 {
@@ -20,7 +20,7 @@ public sealed class FlyingCard : GamblerCard
         BaseGoldCost = 2;
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(10, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(11, ValueProp.Move)];
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3);
 

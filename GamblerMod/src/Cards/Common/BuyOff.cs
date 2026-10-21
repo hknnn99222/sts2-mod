@@ -10,16 +10,16 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #58·换码（游戏设计 §5.1 / §5.5）：0 能 + 6 金，获得 2 点能量（升级 3 点）。
+// 普通 #58·换码（游戏设计 §5.1 / §5.5，v1.10 改版）：0 能 + 2 金，获得 1 点能量（升级 2 点）。
 // 钩子：附加费·买能量。价格锚点用原版金印的市场比（3 金 = 1 能量）。
 public sealed class BuyOff : GamblerCard
 {
     public BuyOff() : base(0, CardType.Skill, CardRarity.Common, TargetType.None)
     {
-        BaseGoldCost = 6;
+        BaseGoldCost = 2;
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Energy", 2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Energy", 1)];
 
     protected override void OnUpgrade() => DynamicVars["Energy"].UpgradeValueBy(1);
 
@@ -28,5 +28,5 @@ public sealed class BuyOff : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "换码",
-        "#花费 *6 金币*。\n获得 !Energy! 点能量。");
+        "#花费 *2 金币*。\n获得 !Energy! 点能量。");
 }

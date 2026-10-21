@@ -12,30 +12,29 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #56·洗牌（游戏设计 §5.1 / §5.5）：1 能，弃置 1 张手牌，抽 2 张牌（升级抽 3）。
-// 钩子：弃牌换抽。
+// 普通 #56·洗牌（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能，消耗 1 张手牌，获得 6 金币（升级 8）。
+// 钩子：牌换金·小额（兑筹 #23 是 12 金的大额版；本卡是普通档的小额版，负责早期把废牌折现）。
 public sealed class ShuffleUp : GamblerCard
 {
     public ShuffleUp() : base(1, CardType.Skill, CardRarity.Common, TargetType.None) { }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Cards", 2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("GoldGain", 6)];
 
-    protected override void OnUpgrade() => DynamicVars["Cards"].UpgradeValueBy(1);
+    protected override void OnUpgrade() => DynamicVars["GoldGain"].UpgradeValueBy(2);
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var hand = PileType.Hand.GetPile(Owner).Cards;
-        if (hand.Count > 0)
-        {
-            var prefs = new CardSelectorPrefs(CardSelectorPrefs.DiscardSelectionPrompt, 1, 1);
-            var picked = (await CardSelectCmd.FromHand(ctx, Owner, prefs, c => c != this, this)).ToList();
-            if (picked.Count > 0) await CardCmd.Discard(ctx, picked[0]);
-        }
+        if (PileType.Hand.GetPile(Owner).Cards.Count == 0) return;
 
-        await CardPileCmd.Draw(ctx, (int)DynamicVars["Cards"].BaseValue, Owner);
+        var prefs = new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, 1, 1);
+        var selected = (await CardSelectCmd.FromHand(ctx, Owner, prefs, c => c != this, this)).ToList();
+        if (selected.Count == 0) return;
+
+        await CardCmd.Exhaust(ctx, selected[0]);
+        await PlayerCmd.GainGold(DynamicVars["GoldGain"].BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "洗牌",
-        "#弃置 1 张手牌，抽 !Cards! 张牌。");
+        "#消耗 1 张手牌，获得 !GoldGain! 金币。");
 }

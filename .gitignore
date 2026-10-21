@@ -14,3 +14,6 @@ GamblerMod_v*.zip
 
 # xlsx 改版前的本地安全备份（不入库，确认后自行删除）
 docs/design/*_v17_backup.xlsx
+
+# 打包暂存目录（安装说明模板 + 发版中间产物）
+dist/

@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #8·盲注（游戏设计 §5.1 / §5.4）：1 能，4 格挡；赌博：正面 → 8（升级 6 / 13）。
+// 普通 #8·盲注（游戏设计 §5.1 / §5.4，v1.10 改版）：1 能，5 格挡；赌博：正面 → 9（升级 7 / 13）。
 public sealed class FlashOfInsight : GamblerCard
 {
     public FlashOfInsight() : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
@@ -20,14 +20,14 @@ public sealed class FlashOfInsight : GamblerCard
     }
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(4, ValueProp.Move),
-        new BlockVar("HeadsBlock", 8, ValueProp.Move),
+        new BlockVar(5, ValueProp.Move),
+        new BlockVar("HeadsBlock", 9, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(2);
-        DynamicVars["HeadsBlock"].UpgradeValueBy(5);
+        DynamicVars["HeadsBlock"].UpgradeValueBy(4);
     }
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)

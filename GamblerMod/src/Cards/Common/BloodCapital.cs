@@ -7,25 +7,23 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #83·血本（v1.8 四轴改造·赌命轴）：0 能，失去 5 点生命换取 2 点能量（升级：失去 4）。
-// 赌命轴的"燃料"：0 费换能量，把血量当成可透支的费用。配合押注（按已失去生命加成伤害）越用越强。
-public sealed class BloodCapital() : GamblerCard(0, CardType.Skill, CardRarity.Common, TargetType.None)
+// 普通 #83·分红（v1.10 由「血本」改名并改型：技能 → 能力）：
+// 每回合开始支付 3 金币，回复 1 点生命（升级回 2）。金币不足 3 时不触发。
+// 赌命轴的续航件：把金币流水换成血量，让放血/押宝等自伤牌能长期转下去。
+// 类名与文件名保留 BloodCapital（历史名），显示名以 Localization 为准。
+public sealed class BloodCapital() : GamblerCard(0, CardType.Power, CardRarity.Common, TargetType.None)
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("HpLoss", 5), new IntVar("EnergyGain", 2)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Heal", 1)];
 
-    protected override void OnUpgrade() => DynamicVars["HpLoss"].UpgradeValueBy(-1);
+    protected override void OnUpgrade() => DynamicVars["Heal"].UpgradeValueBy(1);
 
-    protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
-    {
-        await CreatureCmd.Damage(ctx, Owner.Creature, DynamicVars["HpLoss"].BaseValue, ValueProp.Move, this, play);
-        await PlayerCmd.GainEnergy(DynamicVars["EnergyGain"].BaseValue, Owner);
-    }
+    protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
+        => PowerCmd.Apply<Powers.DividendPower>(ctx, Owner.Creature, DynamicVars["Heal"].BaseValue, Owner.Creature, this);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "血本",
-        "#失去 !HpLoss! 点生命。获得 !EnergyGain! 点能量。");
+        "分红",
+        "#每回合开始支付 *3 金币*，回复 !Heal! 点生命。");
 }

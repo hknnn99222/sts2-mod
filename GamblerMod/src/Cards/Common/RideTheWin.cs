@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #45·乘胜（游戏设计 §5.1 / §2.8）：1 能，造成 6 伤害 ×风头倍率（升级 9）。
+// 普通 #45·乘胜（游戏设计 §5.1 / §2.8，v1.10 改版）：1 能，造成 7 伤害 ×风头倍率（升级 10）。
 public sealed class RideTheWin : GamblerCard
 {
     public RideTheWin() : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
@@ -19,7 +19,7 @@ public sealed class RideTheWin : GamblerCard
         IsHeadsStreakCard = true;
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6, ValueProp.Move)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(7, ValueProp.Move)];
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3);
 
