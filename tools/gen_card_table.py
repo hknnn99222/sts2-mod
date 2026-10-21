@@ -108,8 +108,16 @@ def parse_cards() -> list[dict]:
             vals["D"] = mm.group(1)
         for mm in re.finditer(r'new BlockVar\(\s*(-?\d+)', src):
             vals["B"] = mm.group(1)
+        # 具名变量：new DamageVar("HeadsDamage", 30, ...) / new BlockVar("HeadsBlock", 16, ...)
+        for mm in re.finditer(r'new DamageVar\(\s*"(\w+)"\s*,\s*(-?\d+)', src):
+            vals[mm.group(1)] = mm.group(2)
+        for mm in re.finditer(r'new BlockVar\(\s*"(\w+)"\s*,\s*(-?\d+)', src):
+            vals[mm.group(1)] = mm.group(2)
         for mm in re.finditer(r'new IntVar\(\s*"(\w+)"\s*,\s*(-?\d+)', src):
             vals[mm.group(1)] = mm.group(2)
+        # 兜底：项目内自定义变量（MultiplierAwareVar 等）同样按 (名字, 数值) 解析
+        for mm in re.finditer(r'new \w+Var\(\s*"(\w+)"\s*,\s*(-?\d+)', src):
+            vals.setdefault(mm.group(1), mm.group(2))
         desc = re.sub(r'!(\w+)!', lambda mm: vals.get(mm.group(1), mm.group(0)), desc)
         desc = re.sub(r'\*\*(.+?)\*\*', r'\1', desc)
         desc = re.sub(r'\*(.+?)\*', r'\1', desc)
@@ -399,6 +407,15 @@ def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
 
 
 # ============================================================ 生成
+def current_version() -> str:
+    """从 design.md 头部取最新的 vX.Y（版本号不再手写，避免生成物停在旧版）。"""
+    head = "".join(open(DESIGN_MD, encoding="utf-8").read().splitlines()[:6])
+    vers = re.findall(r'v(\d+\.\d+)', head)
+    if not vers:
+        return "v?"
+    return "v" + max(vers, key=lambda v: tuple(int(x) for x in v.split(".")))
+
+
 def build(cards: list[dict]) -> None:
     sys.path.insert(0, r"C:\Users\hkn\.zcode\cli\plugins\cache\zcode-plugins-official\spreadsheets\0.1.8\skills\xlsx")
     sys.path.insert(0, r"C:\Users\hkn\.zcode\cli\plugins\cache\zcode-plugins-official\spreadsheets\0.1.8\skills\xlsx\templates")
@@ -438,7 +455,9 @@ def build(cards: list[dict]) -> None:
     ws.title = "总览"
     headers = ["功能族", "张数", "占比", "机制构成"]
     last_col = len(headers) + 1
-    setup_sheet(ws, title="赌徒卡池 · 功能分类总览（v1.8，78 张：起始 2 + 常规 76）", last_col=last_col)
+    ver = current_version()
+    n_regular = sum(1 for c in cards if c["rarity"] != "Basic")
+    setup_sheet(ws, title=f"赌徒卡池 · 功能分类总览（{ver}，{len(cards)} 张：起始 2 + 常规 {n_regular}）", last_col=last_col)
     for i, h in enumerate(headers, start=2):
         ws.cell(row=4, column=i, value=h)
     style_header_row(ws, row_num=4, col_start=2, col_end=last_col)
@@ -559,7 +578,7 @@ def build(cards: list[dict]) -> None:
 
     # --- md ---
     L = []
-    L.append(f"# 赌徒卡池 · 功能分类（v1.8，{len(cards)} 张：起始 2 + 常规 76）\n")
+    L.append(f"# 赌徒卡池 · 功能分类（{ver}，{len(cards)} 张：起始 2 + 常规 {n_regular}）\n")
     L.append("数据源：`GamblerMod/src/Cards/*.cs`（数值为 `CanonicalVars` 真实基础值，占位符已替换）；"
              "编号／档位／升级后取自 `docs/design/gambler-design.md` §5、§3。"
              "本文件由 `tools/gen_card_table.py` 生成，改卡后重跑即可同步。\n")
