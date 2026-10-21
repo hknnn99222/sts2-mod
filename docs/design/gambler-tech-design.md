@@ -403,3 +403,14 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 | `Powers/DividendPower.cs`（v1.10 已有） | 未改 | — |
 
 **未改的口径**：`GambleService` 的必正接口（收网改为只读 `ForcedHeadsRemaining`，不消耗）、`SpendTracker`、`MultiplierService`、`GoldCost` 的行文未动。
+
+### 12.2 v1.15 稀有档批次的 Core 变更（2026-10-21，§4.8 ③）
+
+| 文件 | 改动 | 理由 |
+|---|---|---|
+| `Core/SpendTracker.cs` | `Record` 里新增「保本」结算：持有 `Powers/CapitalGuardPower` 时，按本次花费额施加等量敏捷（升级版再加等量力量） | 引擎没有"金币已花费"钩子（只有 AfterGoldGained），而保本要实时、按每一笔花费触发。`SpendTracker.Record` 是全局唯一的金币花费记账点（与流水抽牌同款做法：直接探测内容层力量） |
+| `Powers/RoulettePower.cs`（新增） | 每回合开始随机自伤/打敌人，独立 Rng mixin | 能力型轮盘；随机源必须可复现（读档后同回合序列一致） |
+| `Powers/ShowdownPower.cs`（新增） | `AfterModifyingGoldGained(player, amount)` → 获得 amount + 层数 的格挡 | 晒冷要"等量"而不是固定值，必须拿钩子里的 amount 参数 |
+| `Powers/CapitalGuardPower.cs`（新增） | 仅持有档位（0/1），逻辑在 SpendTracker | 同上，卡内无法订阅花费 |
+
+**未改的口径**：`GoldCost`、`GambleService`、`MultiplierService`、`GamblerHooks` 一行未动。
