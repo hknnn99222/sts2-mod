@@ -341,6 +341,20 @@ def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
         if m and int(m.group(1)) != n_regular:
             issues.append(f'[{label}] 常规卡池表头写「{m.group(1)} 张」，实际 {n_regular} 张 → 表头：「{hdr}」')
 
+    # 3.5) §6 汇总行的「类型」计数必须与代码统计一致（2026-10-21 修：曾把起始牌口径混入算错一位，
+    #      逐卡表全对但汇总行错——这条校验就是防"汇总手算"再次漏网）
+    text = open(DESIGN_MD, encoding="utf-8").read()
+    if "## 6." in text:
+        seg6 = text.split("## 6.")[1].split("## 7.")[0]
+        m_typ = re.search(r'(\d+)\s*攻\s*/\s*(\d+)\s*技\s*/\s*(\d+)\s*能', seg6)
+        if m_typ:
+            want_typ = tuple(sum(1 for c in cards if c["rarity"] != "Basic" and c["type"] == t)
+                             for t in ("攻击", "技能", "能力"))
+            got_typ = tuple(int(x) for x in m_typ.groups())
+            if got_typ != want_typ:
+                issues.append(f'[design.md §6] 类型计数写 {got_typ[0]}攻/{got_typ[1]}技/{got_typ[2]}能，'
+                              f'代码实际（85 常规）{want_typ[0]}攻/{want_typ[1]}技/{want_typ[2]}能')
+
     # 4) 计数一致性（§6 分布统计 / §7.3 旋钮）
     n_gamble = sum(1 for c in cards
                    if c["gamble"] or c["name"] == "试手气" or c["name"] in MULTI or c["name"] in TRUEGAMBLE)
