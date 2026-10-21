@@ -230,6 +230,50 @@ new BlockVar("TailsBlock",  16, ValueProp.Move),
 
 **pck 里放本地化 json**：直接把 `assets/GamblerMod/localization/<lang>/xxx.json` 交给现有 Godot 导出流程即可（`export_filter="all_resources"` 会带上），导出后用 `strings GamblerMod.pck | grep localization` 核对；运行时游戏按 `res://<ModId>/localization/<lang>/<表名>.json` 取（BaseLib `DefaultLoc` 的路径构造即此形式）。
 
+## 2026-10-21 批次新增/核实的 API（卡牌重构用）
+
+> 这批是 v1.10–v1.15 改卡时新用到或踩过的接口；签名均从 `lib/sts2.xml` / 程序集元数据核实。
+
+### 活力（Vigor）
+- 原版力量：`MegaCrit.Sts2.Core.Models.Powers.VigorPower`（储君在用）。语义 = **下一次攻击额外造成等量伤害，打出后消耗**。
+- 用法与其它力量一致：`PowerCmd.Apply<VigorPower>(ctx, Owner.Creature, amount, Owner.Creature, this)`，不需要自己实现消耗逻辑。
+
+### 把牌放回抽牌堆
+- `CardPileCmd.Add(card, PileType.Draw, CardPilePosition.Random, this, false)`：把一张牌随机洗回抽牌堆（`CardPilePosition` 枚举 = `None / Bottom / Top / Random`）。
+- **没有** `PutOnTopOfDrawPile` 之类的专用命令；`CardCmd.DiscardAndDraw` 是"弃置后抽等量"（弃牌堆语义），不能替代"回牌堆"。
+
+### 选卡提示（CardSelectorPrefs）
+- 构造器：`CardSelectorPrefs(LocString prompt, int min, int max)`。
+- 引擎只提供 5 个预设：`DiscardSelectionPrompt` / `ExhaustSelectionPrompt` / `TransformSelectionPrompt` / `RemoveSelectionPrompt` / `EnchantSelectionPrompt` / `UpgradeSelectionPrompt`（都是 `LocString`）。
+- **没有"放回抽牌堆"的预设提示**。本项目「抵押/换牌」暂时借用 `DiscardSelectionPrompt`，动作仍是回牌堆（已知 UI 文案偏离，记在 test-plan）。
+- 要自定义文案需要 `new LocString(locTable, locEntryKey)` + 往 pck 的 `localization/<lang>/<表名>.json` 补条目，属于后续本地化工作。
+
+### PowerCmd.Apply 的签名陷阱
+```csharp
+PowerCmd.Apply<T>(PlayerChoiceContext ctx, Creature target, decimal amount,
+                  Creature applier, CardModel? cardSource, bool silent = false)
+```
+- **第 5 个参数是 `CardModel`，不是力量本体**。从力量里再施加力量时传 `null`（本项目保本在 `SpendTracker` 里给敏捷/力量时踩过）。
+- 力量要造成伤害时用 `CreatureCmd.Damage(ctx, target, amount, ValueProp.Move, dealerCreature)`（5 参重载，dealer 是 Creature，没有 cardSource 通道）。
+
+### 金额相关的金币钩子
+- `AfterGoldGained(Player)` **拿不到这次的金额**（利滚利只能按固定值加钱）。
+- 要按金额做事用 `AbstractModel.AfterModifyingGoldGained(Player player, decimal amount)`（晒冷的"金币→等量格挡"靠它）。
+- **金币"花费"没有钩子**：本项目把唯一记账点放在 `Core/SpendTracker.Record`（`GoldCost.Pay` 调用它），保本在那里探测 `CapitalGuardPower` 并施加敏捷/力量。
+
+### 卡牌永久成长
+- `DynamicVar.BaseValue` / `PreviewValue` 都有公开 setter（元数据核实）。
+- 做法：结算后 `DynamicVars.Damage.BaseValue += 4; DynamicVars.Damage.PreviewValue = BaseValue;`
+  —— 同一次冒险内跨战斗保留（清台 #14）；读档是否保留取决于引擎对卡牌模型状态的序列化（test-plan 已列为验收观察项）。
+- 别用 `UpgradeValueBy` 做成长：它带"刚升级"的预览语义。
+
+### 其它确认过的小事实
+- `PowerStackType` 枚举 = `None / Counter / Single`；`PowerType` = `None / Buff / Debuff`。
+- `CardModel.IsUpgraded` 可在 `ApplyEffect` 里读，用来把"升级档"编码进力量层数（轮盘/晒冷/保本都用 Amount 0/1 表示档位）。
+- `DamageResult` 有 `BlockedDamage`（被格挡抵消的伤害）与 `WasBlockBroken`；"破盾转金"直接累加前者（吃水 #54）。
+- "消耗"关键词要挂在**卡牌实例**上：`AfterCreated()` 里 `AddKeyword(CardKeyword.Exhaust)`，别写构造器（会污染 canonical 模型）。
+- 条件/档位数值（伤害）仍然必须用原生 `DamageVar`/`BlockVar`（见上节），`IntVar` 只用于次数、金币、层数。
+
 ## ModHelper 可用方法（XML 文档摘要）
 
 

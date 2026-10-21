@@ -159,7 +159,7 @@ abstract class GamblerCard : CustomCardModel
 | 固定金币附加费 | 双费 16 张 | `BaseGoldCost` 字段 + Pay/Check/CostText |
 | X 金币费 | 梭哈（X能+10X金） | `GoldCostX` 数据 + ResolveX 桥接（复用引擎 X 费解析） |
 | 可选加投（想花多少花多少） | 加注（至多 6 金） | GoldCost.BeginOptionalSpend 原语（打牌时选择投入额） |
-| 赌博 / 反向赌博 | 14 张（含反向的保险） | `IsGambleCard` + ApplyEffect(heads)（反向=卡内判 heads）；**该标志同时是「赌博」词条的挂载条件**（v1.8） |
+| 赌博 | 13 张（v1.15 起无反向赌博：保险已改常规赌） | `IsGambleCard` + ApplyEffect(heads)；**该标志同时是「赌博」词条的挂载条件**（v1.8） |
 | 真赌（反面惩罚） | 5 张 | 纯卡内逻辑，无特殊支撑 |
 | 升级改金币费 | 按 §2.7 约定 | OnUpgrade 虚方法 + CostText(升级态) 缓存联动 |
 
@@ -313,7 +313,7 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 
 - 卡名/描述/角色名/遗物名：`CustomCardModel.Localization` 代码内双语（zh/en 键值对），v1 不做 .pck。
 - "赌博"关键词：`CustomKeywords` 注册（高亮 + 悬停说明"打出时掷硬币：正面强化、反面基础"）。
-- 真赌/反向赌博等变体在卡描述里用文字说明，不注册新关键词（v1 减负）。
+- 真赌等变体在卡描述里用文字说明，不注册新关键词（v1 减负）。
 
 ## 8. 风险与备选
 
