@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
@@ -8,35 +7,22 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #75·保本（游戏设计 §5.3 / §5.5）：2 能 + 10 金，**消耗你一半金币，获得等量格挡**（至多 30；升级至多 40）。
-// 钩子：特异·金币转格挡（v1.7 由"金币转伤"改为防御向——把钱押在台面上换护甲）。
+// 稀有 #75·保本（游戏设计 §5.3 / §5.5，v1.15 改型：技能 → 能力）：2 能，
+// 本场战斗中你每花费 1 金币，获得 1 点敏捷；升级版再加 1 点力量。
+// 钩子：花费追踪·转敏捷——触发点在 Core/SpendTracker.Record（层数 1 = 升级档）。
 public sealed class TheVault : GamblerCard
 {
-    public TheVault() : base(2, CardType.Skill, CardRarity.Rare, TargetType.None)
-    {
-        BaseGoldCost = 10;
-    }
+    public TheVault() : base(2, CardType.Power, CardRarity.Rare, TargetType.None) { }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Cap", 30)];
+    protected override void OnUpgrade() { /* 升级档由 Apply 的 amount 表达 */ }
 
-    protected override void OnUpgrade() => DynamicVars["Cap"].UpgradeValueBy(10);
-
-    protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
-    {
-        var half = Owner.Gold / 2;
-        var cap = (int)DynamicVars["Cap"].BaseValue;
-        var amount = Math.Min(half, cap);
-        if (amount <= 0) return;
-
-        await GoldCost.Pay(Owner, amount);
-        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(amount, ValueProp.Move), play);
-    }
+    protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
+        => PowerCmd.Apply<Powers.CapitalGuardPower>(ctx, Owner.Creature, IsUpgraded ? 1 : 0, Owner.Creature, this);
 
     public override List<(string, string)>? Localization => new CardLoc(
         "保本",
-        "#花费 *10 金币*。\n消耗你一半金币，获得等量格挡（至多 !Cap!）。");
+        "#本场战斗中，你每花费 1 金币，获得 1 点敏捷。");
 }

@@ -10,13 +10,13 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #39·弃牌（游戏设计 §5.3）：2 能，消耗。抽 2 张牌，获得 14 金币（升级 抽 3 / 18 金）。
-public sealed class TearContract() : GamblerCard(2, CardType.Skill, CardRarity.Rare, TargetType.None)
+// 稀有 #39·弃牌（游戏设计 §5.3，v1.15 改版）：1 能，消耗。抽 2 张牌，获得 16 金币（升级 抽 3 / 20 金）。
+public sealed class TearContract() : GamblerCard(1, CardType.Skill, CardRarity.Rare, TargetType.None)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
         new IntVar("Cards", 2),
-        new IntVar("GoldGain", 14),
+        new IntVar("GoldGain", 16),
     ];
 
     public override void AfterCreated()

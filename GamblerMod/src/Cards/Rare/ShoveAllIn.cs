@@ -12,7 +12,7 @@ using MegaCrit.Sts2.Core.Models;
 namespace GamblerMod.Cards.Rare;
 
 // 稀有 #72·全下（游戏设计 §5.3 / §5.5）：X 能 + **7×X 金**（金币系数 = 能量↔金币换算率），
-// 对随机敌人造成 9×X 伤害共 X 次（升级金币费降为 5×X）。
+// 对随机敌人造成 12×X 伤害共 X 次（升级金币费降为 5×X）。
 // 钩子：可变投入·X费多段（§5.5 口径）。可打出检查按最低 X=1 判灰（同梭哈）。
 // 2026-10-16 审查：TargetType 改为 RandomEnemy（旧 AnyEnemy 会强制选目标但选择被忽略）；
 // "9×X × X 次 = 9X²" 的二次增长与"总伤 9X"两种读法待设计拍板，代码暂按现实现不动。
@@ -40,7 +40,7 @@ public sealed class ShoveAllIn : GamblerCard
         var x = ResolvedX;
         await GoldCost.Pay(Owner, GoldPerX * x);
 
-        await DamageCmd.Attack(9 * x)
+        await DamageCmd.Attack(12 * x)
             .FromCard(this, play)
             .TargetingRandomOpponents(CombatState)
             .WithHitCount(x)
@@ -50,5 +50,5 @@ public sealed class ShoveAllIn : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "全下",
-        "#花费 *!GoldX!×X 金币*。\n对随机敌人造成 9×X 伤害，共 X 次。");
+        "#花费 *!GoldX!×X 金币*。\n对随机敌人造成 12×X 伤害，共 X 次。");
 }

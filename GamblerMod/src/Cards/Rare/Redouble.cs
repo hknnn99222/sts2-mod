@@ -10,11 +10,14 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #78·倍投（游戏设计 §5.3 / §5.5）：2 能，你的**倍率翻倍**（升级 费用变为 1）。
+// 稀有 #78·倍投（游戏设计 §5.3 / §5.5，v1.15 改版）：1 能 + 5 金，你的**倍率翻倍**（升级 费用变为 0）。
 // 钩子：做局·倍率翻倍（指数型做局：倍率越高收益越大）。
 public sealed class Redouble : GamblerCard
 {
-    public Redouble() : base(2, CardType.Skill, CardRarity.Rare, TargetType.None) { }
+    public Redouble() : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)
+    {
+        BaseGoldCost = 5;
+    }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Dummy", 0)];
 

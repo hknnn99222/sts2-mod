@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using GamblerMod.Core;
@@ -12,40 +11,26 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #77·截胡（游戏设计 §5.3 / §5.5）：2 能 + 8 金，对**生命值最低**的敌人造成 20 伤害；
-// 若击杀，获得 15 金币（升级 26 伤害）。
-// 钩子：击杀产金·处决（打庄的定向 + 击杀产金）。
+// 稀有 #77·截胡（游戏设计 §5.3 / §5.5，v1.15 改型：攻击 → 技能）：1 能 + 6 金，
+// 获得 16 格挡 + 等量金币（升级 20 / 20）。钩子：特异·格挡返金。
 public sealed class SweepAll : GamblerCard
 {
-    public SweepAll() : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+    public SweepAll() : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)
     {
-        BaseGoldCost = 8;
+        BaseGoldCost = 6;
     }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new DamageVar(20, ValueProp.Move),
-        new IntVar("Bounty", 15),
-    ];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(16, ValueProp.Move)];
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(6);
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(4);
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var target = CombatState.Enemies.Where(e => e.IsAlive).OrderBy(e => e.CurrentHp).FirstOrDefault();
-        if (target == null) return;
-
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this, play)
-            .Targeting(target)
-            .WithHitFx("vfx/vfx_bloody_impact", null, HeadsHitSfx)
-            .Execute(ctx);
-
-        if (target.IsDead)
-            await PlayerCmd.GainGold(DynamicVars["Bounty"].BaseValue, Owner, false);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, play);
+        await PlayerCmd.GainGold(DynamicVars.Block.BaseValue, Owner, false);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "截胡",
-        "#花费 *8 金币*。\n对*生命值最低*的敌人造成 !D! 伤害；若击杀，获得 !Bounty! 金币。");
+        "#花费 *6 金币*。\n获得 !B! 格挡，并获得等量金币。");
 }

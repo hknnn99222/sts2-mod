@@ -34,6 +34,18 @@ public static class SpendTracker
         _spentThisTurn += amount;
         _cumulative += amount;
 
+        // 保本（v1.15）：每次花费金币 → 等量敏捷；升级版再加等量力量。
+        var guard = player.Creature.GetPower<Powers.CapitalGuardPower>();
+        if (guard != null)
+        {
+            var ctx = new ThrowingPlayerChoiceContext();
+            await MegaCrit.Sts2.Core.Commands.PowerCmd.Apply<MegaCrit.Sts2.Core.Models.Powers.DexterityPower>(
+                ctx, player.Creature, amount, player.Creature, null);
+            if (guard.Amount > 0)
+                await MegaCrit.Sts2.Core.Commands.PowerCmd.Apply<MegaCrit.Sts2.Core.Models.Powers.StrengthPower>(
+                    ctx, player.Creature, amount, player.Creature, null);
+        }
+
         // 流水：每累计花费过阈值 → 抽 1 张（持有 CashFlowPower 时阈值 = 其 Amount）
         var cashFlow = player.Creature.GetPower<Powers.CashFlowPower>();
         if (cashFlow == null) return;

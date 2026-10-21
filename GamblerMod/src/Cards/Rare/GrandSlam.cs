@@ -11,20 +11,20 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #80·满贯（游戏设计 §5.3 / §5.5）：2 能 + 18 金，造成 30 伤害；
-// 若本场战斗中你掷出过**正面**，改为 50 伤害（升级 38 / 62）。
+// 稀有 #80·满贯（游戏设计 §5.3 / §5.5，v1.15 改版）：1 能 + 9 金，造成 36 伤害；
+// 若本场战斗中你掷出过**正面**，改为 60 伤害（升级 44 / 72）。
 // 钩子：特异·赌博计数（复用 GambleService 的掷骰记录，注：该记录按**整场战斗**累积，非单回合）。
 public sealed class GrandSlam : GamblerCard
 {
-    public GrandSlam() : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+    public GrandSlam() : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
-        BaseGoldCost = 18;
+        BaseGoldCost = 9;
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new DamageVar(30, ValueProp.Move),
-        new DamageVar("HotDamage", 50, ValueProp.Move),
+        new DamageVar(36, ValueProp.Move),
+        new DamageVar("HotDamage", 60, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()
@@ -47,5 +47,5 @@ public sealed class GrandSlam : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "满贯",
-        "#花费 *18 金币*。\n造成 !D! 伤害。若本场战斗中你掷出过*正面*，改为 !HotDamage! 伤害。");
+        "#花费 *9 金币*。\n造成 !D! 伤害。若本场战斗中你掷出过*正面*，改为 !HotDamage! 伤害。");
 }

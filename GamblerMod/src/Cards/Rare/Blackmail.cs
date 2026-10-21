@@ -11,24 +11,24 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #40·抽佣（游戏设计 §5.3）：2 能 + 8 金，施加 5 点力量削弱与 3 易伤（升级 6 点 / 4 易伤）。
+// 稀有 #40·抽佣（游戏设计 §5.3，v1.15 改版）：1 能 + 4 金，施加 6 点力量削弱与 4 易伤（升级 8 / 5）。
 // 力量削弱 = 负数 StrengthPower。
 public sealed class Blackmail : GamblerCard
 {
-    public Blackmail() : base(2, CardType.Skill, CardRarity.Rare, TargetType.AnyEnemy)
+    public Blackmail() : base(1, CardType.Skill, CardRarity.Rare, TargetType.AnyEnemy)
     {
-        BaseGoldCost = 8;
+        BaseGoldCost = 4;
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new IntVar("StrengthLoss", 5),
-        new IntVar("Vuln", 3),
+        new IntVar("StrengthLoss", 6),
+        new IntVar("Vuln", 4),
     ];
 
     protected override void OnUpgrade()
     {
-        DynamicVars["StrengthLoss"].UpgradeValueBy(1);
+        DynamicVars["StrengthLoss"].UpgradeValueBy(2);
         DynamicVars["Vuln"].UpgradeValueBy(1);
     }
 
@@ -40,5 +40,5 @@ public sealed class Blackmail : GamblerCard
 
     public override List<(string, string)>? Localization => new CardLoc(
         "抽佣",
-        "#花费 *8 金币*。\n施加 !StrengthLoss! 点*力量削弱*与 !Vuln! 易伤。");
+        "#花费 *4 金币*。\n施加 !StrengthLoss! 点*力量削弱*与 !Vuln! 易伤。");
 }

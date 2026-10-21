@@ -10,15 +10,15 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #74·摊牌（游戏设计 §5.3 / §5.5）：2 能，对随机敌人造成「弃牌堆张数」伤害（至多 20；升级至多 28）。
+// 稀有 #74·摊牌（游戏设计 §5.3 / §5.5，v1.15 改版）：1 能，对随机敌人造成「弃牌堆张数」伤害（至多 30；升级至多 40）。
 // 钩子：特异·弃牌堆规模（越弃越强的收尾牌）。
 public sealed class PipCount : GamblerCard
 {
-    public PipCount() : base(2, CardType.Skill, CardRarity.Rare, TargetType.None) { }
+    public PipCount() : base(1, CardType.Skill, CardRarity.Rare, TargetType.None) { }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Cap", 20)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Cap", 30)];
 
-    protected override void OnUpgrade() => DynamicVars["Cap"].UpgradeValueBy(8);
+    protected override void OnUpgrade() => DynamicVars["Cap"].UpgradeValueBy(10);
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
