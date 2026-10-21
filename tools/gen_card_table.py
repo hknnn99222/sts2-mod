@@ -302,8 +302,10 @@ def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
     for label, path in (("gambler-cards.xlsx", CARDS_XLSX), ("gambler-design.xlsx", DESIGN_XLSX)):
         if not os.path.exists(path):
             continue
+        xl_names = set()
         for row in read_xlsx_cards(path, "常规卡池"):
             n = row["name"].replace("★", "").replace("**", "")
+            xl_names.add(n)
             c = byname.get(n)
             if not c:
                 issues.append(f'[{label}] {n}：卡表里有、代码没有')
@@ -330,6 +332,13 @@ def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
                         issues.append(f'[{label} 起始套牌 #{r[1]}] 卡名「{nm}」不在代码里')
         except KeyError:
             pass
+
+        # 2.5) 反向盲区（2026-10-21 修）：代码有、卡表没有 —— 曾漏检 86-89 四张
+        for c in cards:
+            if c["rarity"] == "Basic":
+                continue
+            if c["name"] not in xl_names:
+                issues.append(f'[{label}] {c["name"]}：代码有、卡表没有（xlsx 常规卡池缺行）')
 
     # 3) xlsx 表头张数 / 版本标记
     from openpyxl import load_workbook
