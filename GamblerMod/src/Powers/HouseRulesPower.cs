@@ -16,7 +16,7 @@ public sealed class HouseRulesPower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
 
     /// <summary>
-    /// 台规·正面 +3 金（设计 §5.2 #29）。从 GamblerHooks 移入本文件（2026-10-16）：
+    /// 保护费·正面 +3 金（设计 §5.2 #29）。从 GamblerHooks 移入本文件（2026-10-16）：
     /// 数值与卡面/描述同处内容层，改数值只动本文件（约束④，Core 不再持有卡牌专属数值）。
     /// OnHeads 是 Action 事件（无法 await），GainGold 走 fire-and-forget——多掷牌连续正面时
     /// 会有多个并发命令，命令队列天然串行，属已知口径。

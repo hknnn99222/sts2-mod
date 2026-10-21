@@ -10,8 +10,8 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #66·清码（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能，**消耗**全部手牌，每张获得 7 金币（升级 9）。
-// 钩子：手牌换金（v1.14 由弃置改消耗——配合保底/加码的消耗堆协同）。
+// 罕见 #66·清仓（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能，**消耗**全部手牌，每张获得 7 金币（升级 9）。
+// 钩子：手牌换金（v1.14 由弃置改消耗——配合回收/加码的消耗堆协同）。
 public sealed class CollectDebts : GamblerCard
 {
     public CollectDebts() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None) { }
@@ -33,6 +33,6 @@ public sealed class CollectDebts : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "清码",
+        "清仓",
         "#消耗全部手牌，每张获得 !PerCard! 金币。");
 }

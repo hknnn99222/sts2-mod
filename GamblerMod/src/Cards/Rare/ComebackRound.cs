@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #50·追数（游戏设计 §5.3 / §2.8，v1.15 改价）：2 能，造成 20 伤害 ×风头倍率（升级 24）；
+// 稀有 #50·追击（游戏设计 §5.3 / §2.8，v1.15 改价）：2 能，造成 20 伤害 ×风头倍率（升级 24）；
 // **击杀则本次不清空倍率**——「兑现后清空」规则的唯一例外（设计 §2.8）。
 public sealed class ComebackRound : GamblerCard
 {
@@ -36,6 +36,6 @@ public sealed class ComebackRound : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "追数",
+        "追击",
         "#造成 !D! 伤害。数值随头顶倍率放大；若*击杀*则倍率不清空。");
 }

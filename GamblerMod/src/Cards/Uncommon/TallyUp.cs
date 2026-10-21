@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #64·保底（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能，每张**已消耗**的牌获得 2 金币（升级 3）。
+// 罕见 #64·回收（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能，每张**已消耗**的牌获得 2 金币（升级 3）。
 // 钩子由「消耗堆协同·转格挡」改为「消耗堆协同·产金」——从防御牌变成消耗流的经济出口。
 public sealed class TallyUp : GamblerCard
 {
@@ -28,6 +28,6 @@ public sealed class TallyUp : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "保底",
+        "回收",
         "#每张*已消耗*的牌，获得 !PerExhaust! 金币。");
 }

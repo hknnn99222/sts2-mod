@@ -44,7 +44,7 @@ public static class MultiplierService
     }
 
     /// <summary>
-    /// 做局注入（叠码/倍投）：直接推进刻度，**不写** LastOutcome——
+    /// 做局注入（加码/倍投）：直接推进刻度，**不写** LastOutcome——
     /// 正/反徽章只跟"最近一次掷币"走，倍率注入不改变掷币归属。
     /// </summary>
     public static void AddSteps(int n) => _steps += n;

@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 namespace GamblerMod.Cards.Rare;
 
 // 稀有 #88·瞒天过海（v1.8 四轴改造·出千轴）：1能+6金，本回合接下来 3 次赌博必为正（升级 4）。
-// 与封口（持久层）区分：瞒天过海只保本回合（ForceNextFlipsThisTurn），回合开始清零。
+// 与发牌（持久层）区分：瞒天过海只保本回合（ForceNextFlipsThisTurn），回合开始清零。
 public sealed class SmokeAndMirrors : GamblerCard
 {
     public SmokeAndMirrors() : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)

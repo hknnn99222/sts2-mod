@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #23·兑筹（游戏设计 §5.2 / §5.5，v1.12 改版）：1 能 + 6 金，获得 2 点力量（升级 3）。
+// 罕见 #23·重注（游戏设计 §5.2 / §5.5，v1.12 改版）：1 能 + 6 金，获得 2 点力量（升级 3）。
 // 钩子由「牌换金·卡组精简」改为「附加费·买力量」——金币直接换成战斗属性。
 public sealed class Pawnshop : GamblerCard
 {
@@ -28,6 +28,6 @@ public sealed class Pawnshop : GamblerCard
         => PowerCmd.Apply<StrengthPower>(ctx, Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "兑筹",
+        "重注",
         "#花费 *6 金币*。\n获得 !Strength! 点力量。");
 }

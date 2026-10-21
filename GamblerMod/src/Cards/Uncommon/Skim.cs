@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #60·抽水（游戏设计 §5.2 / §5.5，v1.12 改版）：1 能，获得 2 次必正 + 5 点活力（升级 3 次必正）。
+// 罕见 #60·做手脚（游戏设计 §5.2 / §5.5，v1.12 改版）：1 能，获得 2 次必正 + 5 点活力（升级 3 次必正）。
 // 钩子由「即时产金·手牌数」改为「出千·必正与活力」——同时给确定性资源与下一次攻击的爆发。
 public sealed class Skim : GamblerCard
 {
@@ -32,6 +32,6 @@ public sealed class Skim : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "抽水",
+        "做手脚",
         "#获得 !Force! 次必正，以及 !Vigor! 点活力。");
 }

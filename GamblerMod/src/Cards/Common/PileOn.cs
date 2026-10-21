@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #57·护池（游戏设计 §5.1 / §5.5，v1.10 改版）：0 能 + 5 金，获得 4 格挡 4 次（升级 6 格挡 4 次）。
+// 普通 #57·封盘（游戏设计 §5.1 / §5.5，v1.10 改版）：0 能 + 5 金，获得 4 格挡 4 次（升级 6 格挡 4 次）。
 // 钩子：附加费·多段格挡（v1.7 由攻击牌转为防御牌，提高防备浓度）。
 public sealed class PileOn : GamblerCard
 {
@@ -36,6 +36,6 @@ public sealed class PileOn : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "护池",
+        "封盘",
         "#花费 *5 金币*。\n获得 !B! 格挡 !Hits! 次。");
 }

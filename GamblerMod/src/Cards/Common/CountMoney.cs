@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #55·点码（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能，获得 5 格挡；本回合每花费 1 金币，额外 +1 格挡（升级基础 8）。
+// 普通 #55·记账（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能，获得 5 格挡；本回合每花费 1 金币，额外 +1 格挡（升级基础 8）。
 // 钩子：花费追踪·转格挡（v1.10 由"每 5 金 +3"改为"每 1 金 +1"，更直观地读整条金币流水）。
 public sealed class CountMoney : GamblerCard
 {
@@ -28,6 +28,6 @@ public sealed class CountMoney : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "点码",
+        "记账",
         "#获得 !B! 格挡。本回合每花费 1 金币，额外 +1 格挡。");
 }

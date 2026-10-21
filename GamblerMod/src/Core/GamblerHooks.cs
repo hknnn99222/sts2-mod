@@ -16,7 +16,7 @@ namespace GamblerMod.Core;
 //   - 战斗结束：金币费用/掷骰记录等战斗态复位
 //   - 利滚利：每次获得金币 +2/+3（防递归标记）
 // 实例化即订阅（CustomSingletonModel(HookType.Combat) 语义），在 Entry 中创建。
-// 台规"正面 +3 金"已移至 Powers.HouseRulesPower（内容层订阅 GambleService.OnHeads）——
+// 保护费"正面 +3 金"已移至 Powers.HouseRulesPower（内容层订阅 GambleService.OnHeads）——
 // Core 不再持有任何卡牌专属数值（约束④）。
 public sealed class GamblerHooks : CustomSingletonModel
 {

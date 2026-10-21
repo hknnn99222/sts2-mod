@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #8·盲注（游戏设计 §5.1，v1.10 改版）：1 能，5 格挡；赌博：正面 → 9（升级 7 / 13）。
+// 普通 #8·跟注（游戏设计 §5.1，v1.10 改版）：1 能，5 格挡；赌博：正面 → 9（升级 7 / 13）。
 public sealed class FlashOfInsight : GamblerCard
 {
     public FlashOfInsight() : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
@@ -37,6 +37,6 @@ public sealed class FlashOfInsight : GamblerCard
             ValueProp.Move, play, false);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "盲注",
+        "跟注",
         "#硬币为正时：获得 !HeadsBlock! 格挡；硬币为负时：获得 !B! 格挡。");
 }

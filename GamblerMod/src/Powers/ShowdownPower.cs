@@ -9,7 +9,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Powers;
 
-// 晒冷（稀有 #49 的能力本体，v1.15 由攻击牌改造成能力）：
+// 存钱（稀有 #49 的能力本体，v1.15 由攻击牌改造成能力）：
 // 每次获得金币时，获得等量格挡（Amount = 额外加成，基础 0、升级 5）。
 // 走 AfterModifyingGoldGained(player, amount) 拿到"这一笔金币的实际数额"，
 // 与利滚利（AfterGoldGained，不看数额）互补。
@@ -26,7 +26,7 @@ public sealed class ShowdownPower : CustomPowerModel
     }
 
     public override List<(string, string)>? Localization => new PowerLoc(
-        "晒冷",
+        "存钱",
         "#每次获得金币时，获得等量格挡。",
         "#每次获得金币时获得格挡。");
 }

@@ -24,7 +24,7 @@ public sealed class DividendPower : CustomPowerModel
     {
         if (player.Gold < Cost) return;
 
-        // 直接扣款、不走 GoldCost.Pay：分红是"被动维持费"，不计入花费追踪（加注/点码等只读主动花费）。
+        // 直接扣款、不走 GoldCost.Pay：分红是"被动维持费"，不计入花费追踪（加注/记账等只读主动花费）。
         await PlayerCmd.LoseGold(Cost, player, GoldLossType.Spent);
         await CreatureCmd.Heal(player.Creature, Amount, true);
     }

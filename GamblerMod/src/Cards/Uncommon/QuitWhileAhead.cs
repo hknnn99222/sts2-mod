@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #46·割禾青（游戏设计 §5.2 / §2.8）：0 能，每 0.5 倍率抽 1 张牌（至多 3；升级至多 4）。
+// 罕见 #46·见好就收（游戏设计 §5.2 / §2.8）：0 能，每 0.5 倍率抽 1 张牌（至多 3；升级至多 4）。
 // 唯一把倍率**当货币**的兑现牌：不走乘法钩子，直接读倍率刻度换算抽牌数（x1.0 → 2 张，x1.5+ → 上限）。
 public sealed class QuitWhileAhead : GamblerCard
 {
@@ -31,6 +31,6 @@ public sealed class QuitWhileAhead : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "割禾青",
+        "见好就收",
         "#每 0.5 倍率抽 1 张牌（至多 !Cap! 张）。结算后清空倍率。");
 }

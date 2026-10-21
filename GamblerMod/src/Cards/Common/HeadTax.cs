@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #53·买码（游戏设计 §5.1 / §5.5）：1 能，每个敌人给予 5 金币（升级 7）。
+// 普通 #53·人头费（游戏设计 §5.1 / §5.5）：1 能，每个敌人给予 5 金币（升级 7）。
 // 钩子：即时产金·按敌人数。
 public sealed class HeadTax : GamblerCard
 {
@@ -32,6 +32,6 @@ public sealed class HeadTax : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "买码",
+        "人头费",
         "#每个敌人给予 !PerEnemy! 金币。");
 }

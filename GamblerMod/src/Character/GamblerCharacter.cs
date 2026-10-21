@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Characters;
 namespace GamblerMod.Character;
 
 // M0 占位角色（技术设计 D2）：PlaceholderCharacterModel 只借原版战士的资产路径（场景/贴图）。
-// 数值按游戏设计 v1.3 + 角色设定：HP 72、起始 148 金（本该 150，兑筹抽走两枚"手续费"）。
+// 数值按游戏设计 v1.3 + 角色设定：HP 72、起始 148 金（本该 150，兑换筹码时抽走两枚"手续费"）。
 // 卡池 / 起始牌 / 起始遗物 / 药水池暂借战士（M1 起换成本职业内容）。
 // 注意：原版模型是 ModelDb 单例，禁止 new（DuplicateModelException），
 // 一律用 ModelDb.GetById + GetId 运行时查库；不做静态字段初始化，避免 cctor 抛异常连累类型加载。

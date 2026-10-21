@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #65·加码（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能，获得 1 点能量（升级基础 2）；
+// 罕见 #65·底气（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能，获得 1 点能量（升级基础 2）；
 // 每拥有 50 金币额外 +1 点能量，不设上限。钩子由「花费追踪·转能量」改为「持有量·转能量」——
 // 改读钱包余额而不是本回合流水，和"攒钱"路线绑定。
 public sealed class RakeFee : GamblerCard
@@ -30,6 +30,6 @@ public sealed class RakeFee : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "加码",
+        "底气",
         "#获得 !Energy! 点能量。每拥有 *50 金币*，额外 +1 点能量。");
 }

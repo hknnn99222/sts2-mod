@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #54·吃水（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能 + 3 金，造成 16 伤害；**被格挡抵消的伤害**转为金币（升级 20）。
+// 普通 #54·抽税（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能 + 3 金，造成 16 伤害；**被格挡抵消的伤害**转为金币（升级 20）。
 // 钩子：即时产金·破盾转金（v1.10 由「击杀产金·溢出转金」改为「破盾转金」——
 // 收益不再要求击杀，而是奖励打在有格挡的敌人身上：盾越厚，抽水越多）。
 public sealed class TakeCut : GamblerCard
@@ -47,6 +47,6 @@ public sealed class TakeCut : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "吃水",
+        "抽税",
         "#花费 *3 金币*。\n造成 !D! 伤害；**被格挡抵消的伤害**转为金币。");
 }

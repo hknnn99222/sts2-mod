@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #40·抽佣（游戏设计 §5.3，v1.15 改版）：1 能 + 4 金，施加 6 点力量削弱与 4 易伤（升级 8 / 5）。
+// 稀有 #40·暗算（游戏设计 §5.3，v1.15 改版）：1 能 + 4 金，施加 6 点力量削弱与 4 易伤（升级 8 / 5）。
 // 力量削弱 = 负数 StrengthPower。
 public sealed class Blackmail : GamblerCard
 {
@@ -39,6 +39,6 @@ public sealed class Blackmail : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "抽佣",
+        "暗算",
         "#花费 *4 金币*。\n施加 !StrengthLoss! 点*力量削弱*与 !Vuln! 易伤。");
 }

@@ -13,7 +13,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #70·抵押（游戏设计 §5.2 / §5.5，v1.14 改版）：0 能，将 1 张手牌放回抽牌堆，获得 9 格挡（升级 12）。
+// 罕见 #70·留一手（游戏设计 §5.2 / §5.5，v1.14 改版）：0 能，将 1 张手牌放回抽牌堆，获得 9 格挡（升级 12）。
 // 钩子由「卖血换甲」改为「特异·回牌换甲」——把暂时没用的牌洗回牌库，换一格防线。
 // 注：选卡界面沿用引擎自带的"弃置"提示文案（引擎没有"放回抽牌堆"的预设提示），实际动作是放回抽牌堆。
 public sealed class SkipStone : GamblerCard
@@ -39,6 +39,6 @@ public sealed class SkipStone : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "抵押",
+        "留一手",
         "#将 1 张手牌放回抽牌堆，获得 !B! 格挡。");
 }

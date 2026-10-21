@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #62·反水（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能 + 3 金，赌博：
+// 罕见 #62·还手（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能 + 3 金，赌博：
 // 正面 → 10 格挡 + 10 伤害；反面 → 6 格挡 + 6 伤害（升级 12+12 / 7+7）。
 // 钩子：赌博·格挡反击（守攻混合形态；v1.14 反面前也带伤害，不再只是纯防御）。
 public sealed class Backhand : GamblerCard
@@ -53,6 +53,6 @@ public sealed class Backhand : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "反水",
+        "还手",
         "#花费 *3 金币*。\n硬币为正时：获得 !HeadsBlock! 格挡并造成 !HeadsDamage! 伤害；硬币为负时：获得 !B! 格挡并造成 !D! 伤害。");
 }

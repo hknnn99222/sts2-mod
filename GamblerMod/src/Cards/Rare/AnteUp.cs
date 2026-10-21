@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #76·押牌（游戏设计 §5.3 / §5.5，v1.15 改版）：1 能 + 5 金，获得 2 点能量（升级 3）；
+// 稀有 #76·押注（游戏设计 §5.3 / §5.5，v1.15 改版）：1 能 + 5 金，获得 2 点能量（升级 3）；
 // 赌博：正面 → 返还本次花费的 5 金币。钩子：真赌·退注（赌的是"这 5 金花得值不值"）。
 public sealed class AnteUp : GamblerCard
 {
@@ -34,6 +34,6 @@ public sealed class AnteUp : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "押牌",
+        "押注",
         "#花费 *5 金币*。\n获得 !EnergyGain! 点能量。硬币为正时：返还这 5 金币。");
 }

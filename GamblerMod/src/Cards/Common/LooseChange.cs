@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #52·散码（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能，每 2 张弃牌堆的牌获得 1 金币（不设上限）。
+// 普通 #52·捡漏（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能，每 2 张弃牌堆的牌获得 1 金币（不设上限）。
 // 升级改为额外抽 1 张（v1.10：去掉封顶，让"越打越堆"的弃牌堆真正成为收益来源）。
 // 钩子：即时产金·弃牌堆（按弃牌堆张数产金）。
 public sealed class LooseChange : GamblerCard
@@ -37,6 +37,6 @@ public sealed class LooseChange : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "散码",
+        "捡漏",
         "#每 *!Step!* 张*弃牌堆*的牌，获得 1 金币。（升级：额外抽 1 张）");
 }

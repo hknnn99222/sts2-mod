@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 namespace GamblerMod.Cards.Uncommon;
 
 // 罕见 #22·数牌（游戏设计 §5.2 / §5.5，v1.12 改版）：0 能，每张手牌获得 2 金币（升级 3）。
-// 钩子由「信息（看顶牌）」改为「即时产金·手牌数」——原抽水的手牌折现定位移交本卡。
+// 钩子由「信息（看顶牌）」改为「即时产金·手牌数」——手牌折现的定位移交本卡。
 public sealed class CountCards() : GamblerCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.None)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("PerCard", 2)];

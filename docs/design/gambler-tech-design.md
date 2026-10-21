@@ -192,7 +192,7 @@ static class GambleService
     // 查询 player 身上实现 IGambleModifier 的 power（手气正旺/赌神）聚合而成
     static int HeadsRatePercent(Player player);
 
-    // 本回合掷骰记录（只读统计，供 同花顺/底牌/台规/叠注 消费；无重掷 API——D4 已定）
+    // 本回合掷骰记录（只读统计，供 同花顺/底牌/保护费/叠注 消费；无重掷 API——D4 已定）
     static IReadOnlyList<FlipRecord> FlipsThisTurn { get; }   // 复用 List，回合开始 Clear（§5 R3）
 }
 
@@ -219,7 +219,7 @@ static class GoldCost
 }
 ```
 
-假筹（下一次金币花费免单）：实现为 Pay 前查询的免单层数（存于战斗状态仓），不动 PlayerCmd。
+假币（下一次金币花费免单）：实现为 Pay 前查询的免单层数（存于战斗状态仓），不动 PlayerCmd。
 
 ### 4.4 `SpendTracker` —— 本回合花费累计
 
@@ -241,7 +241,7 @@ static class SpendTracker
 ```csharp
 static class GamblerCombatState
 {
-    // 掷骰记录（List 复用）/ 本回合花费 / 假筹免单层数 / 暗记必正层数 / 幸运筹码本回合已用
+    // 掷骰记录（List 复用）/ 本回合花费 / 假币免单层数 / 暗记必正层数 / 幸运筹码本回合已用
     static void OnCombatStart();  // 订阅战斗钩子：Clear 全部，不 new（§5 R3）
     static void OnTurnStart();    // 回合级重置
 }
@@ -265,7 +265,7 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 
 ### 4.7 D4 重掷——已按评审结论移除
 
-「换骰」「操纵牌局」两张卡删除（不补新卡，当时卡池 43），GambleService 不提供 Reroll；`FlipRecord` 仅记录原始/干预后结果，供只读统计（同花顺计数、底牌条件、台规产金、叠注的"上一掷"查询）。游戏设计文档 v1.3 当时已同步。
+「换骰」「操纵牌局」两张卡删除（不补新卡，当时卡池 43），GambleService 不提供 Reroll；`FlipRecord` 仅记录原始/干预后结果，供只读统计（同花顺计数、底牌条件、保护费产金、叠注的"上一掷"查询）。游戏设计文档 v1.3 当时已同步。
 
 ### 4.8 Core 冻结与变更门禁（约束④的执行机制）
 
@@ -345,14 +345,14 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 | 文件 | 改动 | 理由（门禁①：为什么卡内做不了） |
 |---|---|---|
 | `GamblerHooks.cs` | ①利滚利 `AfterGoldGained` 的防递归守卫改为 `await` 包在 try/finally 内 | 原写法 finally 在 Task 完成前就复位守卫，金币入账发生在命令执行层时递归窗口重新敞开（潜在无限递归）——卡内无法修，属 Core 自身缺陷 |
-| | ②移除台规 `OnHeadsFlipped` 及其订阅，迁移至 `Powers/HouseRulesPower`（Entry 注册） | 卡牌专属数值（+3 金）硬编码在 Core 违反约束④；数值与卡面同处内容层后，改台规只动 power 文件 |
+| | ②移除保护费 `OnHeadsFlipped` 及其订阅，迁移至 `Powers/HouseRulesPower`（Entry 注册） | 卡牌专属数值（+3 金）硬编码在 Core 违反约束④；数值与卡面同处内容层后，改保护费只动 power 文件 |
 | | ③`AfterPlayerTurnStart` 增加 `GambleService.OnTurnStart()` | 出千"本回合全正"需要回合级清空；回合钩子只在 Core |
 | `GambleService.cs` | ④新增 `Intervenor` 委托 + `ForceNextFlipsThisTurn`/`OnTurnStart`，移除对 `Relics.LuckyChip` 的硬引用 | Core→内容层反向依赖违背分层规则；干预窗口做成注册点后新增做局遗物/卡不需再动 Core。**只加不改**：`ForceNextFlips`（暗记持久层）签名不动 |
 | | ⑤`HeadsCountThisTurn` 更名 `HeadsCountThisCombat`；删死字段 `_round`；头注改"按整场战斗" | 记录从未按回合清空，原名/注释误导（未来按旧注释补回合清空会让满贯静默坏掉）。唯一消费者满贯同步更名 |
-| `MultiplierService.cs` | ⑥新增 `AddSteps(int)`（不写 `LastOutcome`） | 叠码/倍投直接推进倍率是设计本意（做局·倍率注入），但 `AddHeads` 附带写"最近一次掷币归属"，会把正/反徽章写脏。**只加不改**：`AddHeads` 保留给掷币路径 |
+| `MultiplierService.cs` | ⑥新增 `AddSteps(int)`（不写 `LastOutcome`） | 加码/倍投直接推进倍率是设计本意（做局·倍率注入），但 `AddHeads` 附带写"最近一次掷币归属"，会把正/反徽章写脏。**只加不改**：`AddHeads` 保留给掷币路径 |
 | `GamblerCard.cs` | ⑦`KeepStreakAfterPlay` 复位移入 finally | 状态残留防护：ApplyEffect 中途异常时旧写法不复位，下一次打出会误判续风 |
 | `GoldCost.cs` | ⑧`OnCombatStart()` 更名 `ResetForNextCombat()` | 旧名与调用点（AfterCombatEnd）语义相反；唯一调用点同步更新 |
-| 内容层 | ⑨`Entry` 注册 Intervenor/OnHeads；`HouseRulesPower` 承接台规；`CheatDeal` 改用回合层原语；`BankWind`/`Redouble` 改用 `AddSteps`；`GrandSlam` 改用新名 | 均为上述 Core 改动的消费侧同步 |
+| 内容层 | ⑨`Entry` 注册 Intervenor/OnHeads；`HouseRulesPower` 承接保护费；`CheatDeal` 改用回合层原语；`BankWind`/`Redouble` 改用 `AddSteps`；`GrandSlam` 改用新名 | 均为上述 Core 改动的消费侧同步 |
 
 **未改的口径（评估后保留）**：热路径 `GD.Print` 日志（M1-M5 验收的证据链，量级为每出牌 1-3 条、无性能实测问题，优先于 R1/R7 字面）；`GainGold` 第三参已全库修正为 `false`（wasStolenBack 语义，见审查报告 §3.4）。
 
@@ -384,8 +384,8 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 | `Core/GambleService.cs` | 新增 `ForcedHeadsRemaining`（只读总数）与 `ConsumeForcedHeads()`（取走并清零） | 必正层数是 Core 私有字段（暗记的持久层 + 出千/瞒天过海的回合层），卡牌既读不到也清不掉；出千轴的兑现牌「收网」必须"一次取空"才能成立。**只加不改**：`ForceNextFlips` / `Flip` 的扣层顺序一行未动 |
 | `Powers/BettingPower.cs`（新增） | 重写 `ModifyDamageAdditive`：伤害 +「已失去生命」的 Amount% | 赌命轴放大器。走伤害加法钩子（与力量同一条通道）而不是自己攒层数：①加成要随血线实时变化；②卡面预览同步（玩家看到的就是实际值）；③绕开 `PowerModel.Amount` 的 setter 是私有的（power 内部改不了自己的层数）。自伤（target == 自己）不吃加成 |
 | `Powers/CheatKingPower.cs`（新增） | 订阅 `GambleService.OnHeads`：每回合前 Amount 次正面 → `ForceNextFlips(1)` | 出千轴生成器的"自动化"部分。**必须每回合封顶**（`_usedThisTurn`，回合开始清零），否则"必正→正面→千王再给必正"会变成无限循环。订阅走 Entry 静态方法组（红线 R5） |
-| `Entry.cs` | 追加 `OnHeads += CheatKingPower.OnHeadsFlipped`；`GamblerPowers` 注册 2 个新力量；版本 v0.6.0 | 内容层订阅点（与台规同款） |
-| 内容层 | 新增 9 张卡（出千 5 / 赌命 4）+ `GamblerCards` 注册；暗记 1→2 次必正；封口改为"1 次必正 + 抽 1"（与暗记错开定位） | 四轴的生成器/兑现器必须落在内容层；暗记与封口同为必正生成器，用"次数/附带抽牌"区分稀有度 |
+| `Entry.cs` | 追加 `OnHeads += CheatKingPower.OnHeadsFlipped`；`GamblerPowers` 注册 2 个新力量；版本 v0.6.0 | 内容层订阅点（与保护费同款） |
+| 内容层 | 新增 9 张卡（出千 5 / 赌命 4）+ `GamblerCards` 注册；暗记 1→2 次必正；发牌改为"1 次必正 + 抽 1"（与暗记错开定位） | 四轴的生成器/兑现器必须落在内容层；暗记与发牌同为必正生成器，用"次数/附带抽牌"区分稀有度 |
 
 **未改的口径**：`GambleService.Flip` 的干预顺序与正面率、`MultiplierService` 刻度语义、`GoldCost`、`GamblerHooks.ModifyDamage/BlockMultiplicative` 一行未动。
 
@@ -410,7 +410,7 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 |---|---|---|
 | `Core/SpendTracker.cs` | `Record` 里新增「保本」结算：持有 `Powers/CapitalGuardPower` 时，按本次花费额施加等量敏捷（升级版再加等量力量） | 引擎没有"金币已花费"钩子（只有 AfterGoldGained），而保本要实时、按每一笔花费触发。`SpendTracker.Record` 是全局唯一的金币花费记账点（与流水抽牌同款做法：直接探测内容层力量） |
 | `Powers/RoulettePower.cs`（新增） | 每回合开始随机自伤/打敌人，独立 Rng mixin | 能力型轮盘；随机源必须可复现（读档后同回合序列一致） |
-| `Powers/ShowdownPower.cs`（新增） | `AfterModifyingGoldGained(player, amount)` → 获得 amount + 层数 的格挡 | 晒冷要"等量"而不是固定值，必须拿钩子里的 amount 参数 |
+| `Powers/ShowdownPower.cs`（新增） | `AfterModifyingGoldGained(player, amount)` → 获得 amount + 层数 的格挡 | 存钱要"等量"而不是固定值，必须拿钩子里的 amount 参数 |
 | `Powers/CapitalGuardPower.cs`（新增） | 仅持有档位（0/1），逻辑在 SpendTracker | 同上，卡内无法订阅花费 |
 
 **未改的口径**：`GoldCost`、`GambleService`、`MultiplierService`、`GamblerHooks` 一行未动。

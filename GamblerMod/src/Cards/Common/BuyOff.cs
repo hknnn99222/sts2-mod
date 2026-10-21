@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #58·换码（游戏设计 §5.1 / §5.5，v1.10 改版）：0 能 + 2 金，获得 1 点能量（升级 2 点）。
+// 普通 #58·充能（游戏设计 §5.1 / §5.5，v1.10 改版）：0 能 + 2 金，获得 1 点能量（升级 2 点）。
 // 钩子：附加费·买能量。价格锚点用原版金印的市场比（3 金 = 1 能量）。
 public sealed class BuyOff : GamblerCard
 {
@@ -27,6 +27,6 @@ public sealed class BuyOff : GamblerCard
         => PlayerCmd.GainEnergy((int)DynamicVars["Energy"].BaseValue, Owner);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "换码",
+        "充能",
         "#花费 *2 金币*。\n获得 !Energy! 点能量。");
 }

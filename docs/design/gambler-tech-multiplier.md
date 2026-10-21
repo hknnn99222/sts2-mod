@@ -102,7 +102,7 @@ public override decimal ModifyBlockMultiplicative(Creature target, decimal amoun
 - `ModifyGoldGained` **不用**（无 cardSource，见 §1）——金币走卡内自算（§3.4）。
 - 预览时 `cardPlay == null`，本实现不解引用它。
 
-### 3.4 金币类兑现牌（兑现 / 割禾青）的写法
+### 3.4 金币类兑现牌（兑现 / 见好就收）的写法
 
 引擎金币钩子拿不到卡来源，所以这两张**在卡内自己算**：
 
@@ -113,13 +113,13 @@ protected override Task ApplyEffect(ctx, play, heads)
 ```
 
 - 卡面数字：用 `MakeCalculatedVar`（BaseLib 的"计算型变量"，库内已做缓存）把显示值绑到 `7 * MultiplierService.Factor`，这样卡面也会跟着倍率变——**注意**：DisplayVar 这类"文本型变量"的数字是从显示字符串反解的，别用它做真实计算（数值一律走 `MultiplierService.Factor`）。
-- 「割禾青」抽牌数同理由卡内自算：`Math.Min(3, (int)(MultiplierService.Factor * 2))`。
+- 「见好就收」抽牌数同理由卡内自算：`Math.Min(3, (int)(MultiplierService.Factor * 2))`。
 
 ### 3.5 `Core/GamblerCard`（既有基类，**追加**两个成员）
 
 ```csharp
 protected bool IsHeadsStreakCard;        // 数据字段（类比 IsGambleCard），子类构造器里设
-protected bool KeepStreakAfterPlay;      // 「追数」击杀时置 true，跳过清空
+protected bool KeepStreakAfterPlay;      // 「追击」击杀时置 true，跳过清空
 
 // OnPlay 末尾追加（既有逻辑一行不动）：
 if (IsHeadsStreakCard && !KeepStreakAfterPlay) MultiplierService.Clear();
@@ -127,7 +127,7 @@ KeepStreakAfterPlay = false;             // 下次默认清空，防状态残留
 ```
 
 - 这样"结算后清空"只在基类写一次，8 张新卡各自的 `ApplyEffect` 里只管效果（约束①/④）。
-- 「追数」在 `ApplyEffect` 里检测击杀后 `KeepStreakAfterPlay = true`。
+- 「追击」在 `ApplyEffect` 里检测击杀后 `KeepStreakAfterPlay = true`。
 
 ### 3.6 头顶徽章（新增 UI，`Relics`/`UI` 层）
 
@@ -210,7 +210,7 @@ sealed class MultiplierBadge : Control      // 纯文字版：一个 MegaLabel �
 **改动文件清单**（与 §3 设计一致，仅下列"落地偏离"）
 
 - Core：`MultiplierService.cs`（新）、`GamblerCard.cs`、`GamblerHooks.cs`、`GambleService.cs`
-- 新卡 8 张：`Common/HoldBack`（收手）、`Common/RideTheWin`（乘胜）、`Uncommon/QuitWhileAhead`（割禾青）、`Uncommon/SettleUp`（兑现）、`Uncommon/TheFinale`（通杀）、`Rare/AllInToTheEnd`（晒冷）、`Rare/ComebackRound`（追数）、`Rare/GoForBroke`（割肉）
+- 新卡 8 张：`Common/HoldBack`（收手）、`Common/RideTheWin`（乘胜）、`Uncommon/QuitWhileAhead`（见好就收）、`Uncommon/SettleUp`（兑现）、`Uncommon/TheFinale`（通杀）、`Rare/AllInToTheEnd`（存钱）、`Rare/ComebackRound`（追击）、`Rare/GoForBroke`（止损）
 - 改造 3 张：`Uncommon/Parlay`（叠注）、`Rare/HoleCard`（底牌）、`Rare/Flush`（同花顺）
 - UI：`UI/MultiplierBadge.cs`（新）；注册：`Cards/GamblerCards.cs`、`Entry.cs`（版本 0.4.0）
 

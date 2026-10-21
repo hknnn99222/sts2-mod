@@ -12,8 +12,8 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Common;
 
-// 普通 #56·洗牌（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能，消耗 1 张手牌，获得 6 金币（升级 8）。
-// 钩子：牌换金·小额（兑筹 #23 是 12 金的大额版；本卡是普通档的小额版，负责早期把废牌折现）。
+// 普通 #56·典当（游戏设计 §5.1 / §5.5，v1.10 改版）：1 能，消耗 1 张手牌，获得 6 金币（升级 8）。
+// 钩子：牌换金·小额（普通档的小额版，负责早期把废牌折现）。
 public sealed class ShuffleUp : GamblerCard
 {
     public ShuffleUp() : base(1, CardType.Skill, CardRarity.Common, TargetType.None) { }
@@ -35,6 +35,6 @@ public sealed class ShuffleUp : GamblerCard
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "洗牌",
+        "典当",
         "#消耗 1 张手牌，获得 !GoldGain! 金币。");
 }

@@ -245,7 +245,7 @@ new BlockVar("TailsBlock",  16, ValueProp.Move),
 ### 选卡提示（CardSelectorPrefs）
 - 构造器：`CardSelectorPrefs(LocString prompt, int min, int max)`。
 - 引擎只提供 5 个预设：`DiscardSelectionPrompt` / `ExhaustSelectionPrompt` / `TransformSelectionPrompt` / `RemoveSelectionPrompt` / `EnchantSelectionPrompt` / `UpgradeSelectionPrompt`（都是 `LocString`）。
-- **没有"放回抽牌堆"的预设提示**。本项目「抵押/换牌」暂时借用 `DiscardSelectionPrompt`，动作仍是回牌堆（已知 UI 文案偏离，记在 test-plan）。
+- **没有"放回抽牌堆"的预设提示**。本项目「留一手/换牌」暂时借用 `DiscardSelectionPrompt`，动作仍是回牌堆（已知 UI 文案偏离，记在 test-plan）。
 - 要自定义文案需要 `new LocString(locTable, locEntryKey)` + 往 pck 的 `localization/<lang>/<表名>.json` 补条目，属于后续本地化工作。
 
 ### PowerCmd.Apply 的签名陷阱
@@ -258,7 +258,7 @@ PowerCmd.Apply<T>(PlayerChoiceContext ctx, Creature target, decimal amount,
 
 ### 金额相关的金币钩子
 - `AfterGoldGained(Player)` **拿不到这次的金额**（利滚利只能按固定值加钱）。
-- 要按金额做事用 `AbstractModel.AfterModifyingGoldGained(Player player, decimal amount)`（晒冷的"金币→等量格挡"靠它）。
+- 要按金额做事用 `AbstractModel.AfterModifyingGoldGained(Player player, decimal amount)`（存钱的"金币→等量格挡"靠它）。
 - **金币"花费"没有钩子**：本项目把唯一记账点放在 `Core/SpendTracker.Record`（`GoldCost.Pay` 调用它），保本在那里探测 `CapitalGuardPower` 并施加敏捷/力量。
 
 ### 卡牌永久成长
@@ -269,8 +269,8 @@ PowerCmd.Apply<T>(PlayerChoiceContext ctx, Creature target, decimal amount,
 
 ### 其它确认过的小事实
 - `PowerStackType` 枚举 = `None / Counter / Single`；`PowerType` = `None / Buff / Debuff`。
-- `CardModel.IsUpgraded` 可在 `ApplyEffect` 里读，用来把"升级档"编码进力量层数（轮盘/晒冷/保本都用 Amount 0/1 表示档位）。
-- `DamageResult` 有 `BlockedDamage`（被格挡抵消的伤害）与 `WasBlockBroken`；"破盾转金"直接累加前者（吃水 #54）。
+- `CardModel.IsUpgraded` 可在 `ApplyEffect` 里读，用来把"升级档"编码进力量层数（轮盘/存钱/保本都用 Amount 0/1 表示档位）。
+- `DamageResult` 有 `BlockedDamage`（被格挡抵消的伤害）与 `WasBlockBroken`；"破盾转金"直接累加前者（抽税 #54）。
 - "消耗"关键词要挂在**卡牌实例**上：`AfterCreated()` 里 `AddKeyword(CardKeyword.Exhaust)`，别写构造器（会污染 canonical 模型）。
 - 条件/档位数值（伤害）仍然必须用原生 `DamageVar`/`BlockVar`（见上节），`IntVar` 只用于次数、金币、层数。
 

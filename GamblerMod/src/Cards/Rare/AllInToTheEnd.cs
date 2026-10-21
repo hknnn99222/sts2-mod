@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Rare;
 
-// 稀有 #49·晒冷（游戏设计 §5.3 / §5.5，v1.15 改型：攻击 → 能力）：3 能，
+// 稀有 #49·存钱（游戏设计 §5.3 / §5.5，v1.15 改型：攻击 → 能力）：3 能，
 // 本场战斗中你每次获得金币，就获得等量格挡（升级：额外 +5 格挡）。
 // 钩子：产金转甲——把金币流水的每一笔都变成防线（层数 = 额外格挡，逻辑在 ShowdownPower）。
 public sealed class AllInToTheEnd : GamblerCard
@@ -23,6 +23,6 @@ public sealed class AllInToTheEnd : GamblerCard
         => PowerCmd.Apply<Powers.ShowdownPower>(ctx, Owner.Creature, IsUpgraded ? 5 : 0, Owner.Creature, this);
 
     public override List<(string, string)>? Localization => new CardLoc(
-        "晒冷",
+        "存钱",
         "#本场战斗中，你每次获得金币时，获得等量格挡。");
 }

@@ -34,7 +34,7 @@ public static class Entry
 
         // 内容层订阅（技术设计 §4.2/§4.6 干预窗口）：Core 不引用具体内容类（约束④）
         Core.GambleService.Intervenor = Relics.LuckyChip.TryIntervene;        // 幸运筹码：反面后花 5 金改正面
-        Core.GambleService.OnHeads += Powers.HouseRulesPower.OnHeadsFlipped;  // 台规：每次掷出正面 +3 金
+        Core.GambleService.OnHeads += Powers.HouseRulesPower.OnHeadsFlipped;  // 保护费：每次掷出正面 +3 金
         Core.GambleService.OnHeads += Powers.CheatKingPower.OnHeadsFlipped;   // 千王：每回合前 N 次正面 → 1 次必正
 
         _ = UI.MultiplierBadge.Attached; // 头顶倍率徽章（AddedNode 静态字段初始化即登记）
