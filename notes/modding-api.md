@@ -274,6 +274,12 @@ PowerCmd.Apply<T>(PlayerChoiceContext ctx, Creature target, decimal amount,
 - "消耗"关键词要挂在**卡牌实例**上：`AfterCreated()` 里 `AddKeyword(CardKeyword.Exhaust)`，别写构造器（会污染 canonical 模型）。
 - 条件/档位数值（伤害）仍然必须用原生 `DamageVar`/`BlockVar`（见上节），`IntVar` 只用于次数、金币、层数。
 
+**★ run 级金币钩子只派发给订阅单例，power 收不到（2026-10-21 存钱实测无效的根因）**
+
+引擎的金币三钩子（`ModifyGoldGained` / `AfterModifyingGoldGained(Player, decimal)` / `AfterGoldGained(Player)`）在 `PlayerCmd.GainGold` 里只派发给 `runState.IterateHookListeners(combatState)`——**那是 ModHelper 订阅的单例模型列表（CustomSingletonModel），生物身上的 power 不在其中**（IL 反汇编 GainGold 状态机核实；原版全池没有任何"获得金币时触发"的力量，佐证此路不通）。需要金币触发的 power 效果必须由 `Core/GamblerHooks`（单例）转发到 power 的静态方法（`GetPower` 判定 + 数值留在 power 文件，利滚利/存钱同款）。战斗级钩子（回合开始/伤害等）不受影响，power 正常收到。
+
+**★ CustomSingletonModel 子类不要在 Entry 里 new**：BaseLib 在 `ModelDb.Init` 会反射实例化（`CreateInstanceDefaultCtor`，要求 public 无参构造器）所有该类子类；Entry 再 new 一次 → ModHelper 以幂等 id 拒绝第二次订阅并打 ERROR（实测日志 `Tried to subscribe ... already been used`）。正确做法：只在 Entry 订阅 C# 事件（OnHeads 等），钩子单例交给 BaseLib 实例化。
+
 ## ModHelper 可用方法（XML 文档摘要）
 
 

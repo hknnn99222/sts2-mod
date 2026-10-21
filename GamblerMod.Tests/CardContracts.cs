@@ -170,4 +170,32 @@ internal static class CardContracts
     }
 
     static string Trunc(string s) => s.Length <= 60 ? s : s[..60] + "…";
+    // ---- R9 power 不得覆写 run 级金币钩子（2026-10-21 存钱实测无效的根因）----
+    // 引擎的金币钩子只派发给 runState.IterateHookListeners（ModHelper 订阅的单例模型），
+    // 生物身上的 power 收不到；需要金币触发的效果必须由 Core.GamblerHooks 转发（利滚利/存钱同款）。
+    [Fact]
+    internal static void PowersMustNotOverrideGoldHooks(List<string> f)
+    {
+        var powersDir = Path.Combine(RepoRoot, "GamblerMod", "src", "Powers");
+        foreach (var file in Directory.GetFiles(powersDir, "*.cs"))
+        {
+            var src = File.ReadAllText(file);
+            foreach (var hook in new[] { "AfterModifyingGoldGained", "AfterGoldGained", "ModifyGoldGained" })
+            {
+                if (Regex.IsMatch(src, @"override[^(]*\s" + hook + @"\s*\("))
+                    f.Add($"{Path.GetFileName(file)}：覆写了 {hook}——power 收不到 run 级金币钩子" +
+                          $"（只派发给订阅单例），必须改为 GamblerHooks 转发（见 ShowdownPower 的修法）");
+            }
+        }
+    }
+
+    // ---- R10 Entry 不得实例化 CustomSingletonModel 子类（二次订阅 ERROR）----
+    [Fact]
+    internal static void EntryMustNotCreateHookSingletons(List<string> f)
+    {
+        var entry = File.ReadAllText(Path.Combine(RepoRoot, "GamblerMod", "src", "Entry.cs"));
+        if (Regex.IsMatch(entry, @"new\s+Core\.GamblerHooks"))
+            f.Add("Entry 里 new GamblerHooks 会让 ModHelper 拒绝 BaseLib 的二次实例化订阅并打 ERROR" +
+                  "（2026-10-21 日志实测）；BaseLib 在 ModelDb.Init 自动实例化，Entry 不要 new");
+    }
 }

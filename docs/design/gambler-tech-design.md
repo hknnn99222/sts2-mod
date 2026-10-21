@@ -414,3 +414,17 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 | `Powers/CapitalGuardPower.cs`（新增） | 仅持有档位（0/1），逻辑在 SpendTracker | 同上，卡内无法订阅花费 |
 
 **未改的口径**：`GoldCost`、`GambleService`、`MultiplierService`、`GamblerHooks` 一行未动。
+
+## 13. Core / 内容层变更记录（2026-10-21 存钱实测无效修复批，§4.8 ③）
+
+用户实测"存钱（每次获得金币获得等量格挡）没有效果"；从当日游戏日志定位根因并修复。
+
+| 文件 | 改动 | 理由（门禁①：为什么 power 内做不到） |
+|---|---|---|
+| `Core/GamblerHooks.cs` | 新增 `AfterModifyingGoldGained` override，转发给 `Powers.ShowdownPower.OnGoldGained` | **run 级金币钩子只派发给 `runState.IterateHookListeners`（ModHelper 订阅的单例）**，power 不在派发集合里（IL 反汇编 GainGold 状态机核实；原版无任何金币触发型力量佐证）。power 侧覆写永远不被调用 → 必须由订阅单例转发（利滚利同款既有模式） |
+| `Powers/ShowdownPower.cs` | 删掉永远不触发的 `AfterModifyingGoldGained` override；新增静态 `OnGoldGained(player, amount)` 承载数值逻辑 | 数值留在内容层（约束④）；`GetPower` 判定 + `amount + Amount` 计算均在 power 文件 |
+| `Entry.cs` | 移除 `new Core.GamblerHooks()` | BaseLib 在 `ModelDb.Init` 自动实例化所有 CustomSingletonModel 子类；Entry 再 new = ModHelper 拒绝二次订阅并打 ERROR（当日日志实测）。顺带删除 GamblerHooks 构造器里无效的 `_subscribed` 守卫（它跑在 base 订阅之后，拦不住） |
+
+**测试同步**：GamblerMod.Tests 新增两组契约——R9「power 不得覆写金币三钩子」、R10「Entry 不得实例化钩子单例」（均做过负向验证：塞回坏代码能 FAIL）。套件 9 → **11 组**。
+
+**附带说明**：日志里 `Unknown card ID: CARD.GAMBLERMOD-WIN_STREAK` 的 WARN 是旧存档进度里残留已删卡（连胜），无害、随存档自然过期。

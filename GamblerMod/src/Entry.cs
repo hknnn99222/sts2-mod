@@ -27,7 +27,9 @@ public static class Entry
 
         _ = Core.GamblerKeywords.Gamble; // 自定义词条：touch 一下确保类型已加载（值由 BaseLib 在 ModelDb.Init 写入）
         _ = Core.GamblerHoverTips.Multiplier; // 徽章的自定义静态悬停提示（同机制，走 static_hover_tips 表）
-        _ = new Core.GamblerHooks(); // 全局钩子单例（战斗态复位/高利贷/利滚利/风头倍率乘算）
+        // GamblerHooks 不在这里 new（2026-10-21 修）：BaseLib 在 ModelDb.Init 会自动实例化
+        // 所有 CustomSingletonModel 子类；这里再 new 一次会让 ModHelper 拒绝第二次订阅并打
+        // ERROR（游戏日志实测："Tried to subscribe ... GAMBLERMOD-GAMBLER_HOOKS, already been used"）。
         Powers.GamblerPowers.Init();
         Relics.GamblerRelics.Init();
         Cards.GamblerCards.Init();

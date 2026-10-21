@@ -35,7 +35,7 @@
 
 **工作区状态（2026-10-21）**：干净，HEAD = `5cb6347` = origin/main（v1.15 + 全池改名 29 张均已提交推送）。v1.8–v1.15 各批次明细见上表。**两份 xlsx 纳入 git 跟踪**；markdown 仍是权威源，数据以卡牌代码为准，改卡后跑 `python tools/gen_card_table.py --audit` 对账。v1.7 版工作簿备份（`*_v17_backup.xlsx`，已 gitignore）确认无误后可删。
 
-- **代码级自校验测试（2026-10-21 新增）**：`cd GamblerMod.Tests && dotnet run`——9 组契约测试（自动先构建主项目再跑；退出码 = 失败组数）。覆盖：ApplyEffect 空转、描述 `!Var!` ↔ CanonicalVars 对账、承诺→命令映射、伤害/格挡变量必须原生 DamageVar/BlockVar、OnUpgrade 有效（认 IsUpgraded 模式）、赌博牌真用 heads 且正负两支齐全、描述 `#` 开头、全卡注册+卡名唯一、MultiplierService 纯逻辑。**改卡后建议跑一遍**。首轮抓到并修复：押注描述缺「硬币为负」分支（实现本来就对）。
+- **代码级自校验测试（2026-10-21 新增）**：`cd GamblerMod.Tests && dotnet run`——11 组契约测试（自动先构建主项目再跑；退出码 = 失败组数）。覆盖：ApplyEffect 空转、描述 `!Var!` ↔ CanonicalVars 对账、承诺→命令映射、伤害/格挡变量必须原生 DamageVar/BlockVar、OnUpgrade 有效（认 IsUpgraded 模式）、赌博牌真用 heads 且正负两支齐全、描述 `#` 开头、全卡注册+卡名唯一、MultiplierService 纯逻辑、R9 power 不得覆写金币钩子、R10 Entry 不得实例化钩子单例。**改卡后建议跑一遍**。首轮抓到并修复：押注描述缺「硬币为负」分支（实现本来就对）。
 **测试文档**：[docs/testing/test-plan.md](docs/testing/test-plan.md)（M1-M5 + v1.7–v1.15 各批验收清单 + 已知简化偏离列表）。当前待验收入口：v1.8「四·五-A」（词条/图鉴/徽章/附魔）、v1.9「四·七」（四轴新卡）、v1.10–v1.15 各批次条目（数值以当前代码为准，旧批次清单里的数值被后续版本覆盖的以最新为准）。
 
 ## 已核实的事实（勿重复调研）
@@ -68,8 +68,9 @@
 17. **自定义卡牌词条（v1.8 已验证做法）**：BaseLib `[CustomEnum, KeywordProperties(AutoKeywordPosition.Before)] public static CardKeyword X;`（字段必须 public static，**不能 readonly**）+ pck 内 `GamblerMod/localization/<lang>/card_keywords.json`，键 = `根命名空间大写-字段名大写.title/.description`（本项目 `GAMBLERMOD-GAMBLE`）。BaseLib 在 `ModelDb.Init` 反射写入枚举值 → **词条值不可缓存进静态字段**（静态初始化早于写入，会固化成 0）。自定义 StaticHoverTip 同机制、走 `static_hover_tips.json`（键 `GAMBLERMOD-MULTIPLIER.title`，slug 是字段名的 UPPER_SNAKE）
 18. **词条挂载必须走 `CanonicalKeywords` override，不要用 `AfterCreated` + `AddKeyword`**：后者的语义是"卡**实例**创建后"（`CardModel.AfterCreated`，sts2.xml 原文 "after the card is created (NOT during deserialization)"），图鉴/牌堆里的**模型本体**拿不到词条（撕毁契约的「消耗」就是走的这条路，图鉴里看不到）
 19. **卡牌图鉴（百科）可见性**：BaseLib `CustomCardPoolMarkAsSeenPatch` 在打开图鉴时对所有 `SeenByDefault == true` 的池调 `SaveManager.MarkCardAsSeen`，`CustomCardPoolModel` 默认 **false** → 不覆写的话整池在图鉴里渲染成"未知/未解锁"。覆写一行即"开局全可见"（落进存档进度）
-20. **卡面数值必须用引擎的原生变量类型**（2026-10-17 游戏内实测踩坑）：卡面的 `BaseValue/EnchantedValue/PreviewValue` 只有**引擎认得的类型**才会跑完整预览管线（附魔 + 力量 + 虚弱 + 易伤 + 敏捷）。把伤害/格挡数值写在 `IntVar` 上 → 卡面永远裸值（玩家看到"正面不吃增伤、不吃虚弱"，与结算对不上）。**`DamageVar`/`BlockVar` 都有 `(string 名字, decimal 数值, ValueProp props)` 构造器**（元数据核实）→ 一张卡想放两套伤害/格挡数值就 `new DamageVar("HeadsDamage", 10, ValueProp.Move)`，自动与标准 `!D!` 行为一致。`DynamicVar.Name` 只有 getter，改不了名（要自定义名字必须走构造器重载）。**结算侧仍传 `BaseValue`**（文档明示 BaseValue 才是"改游戏状态"该用的值）。金币/能量**没有任何修饰/附魔通道**，只能用自定义变量（本项目 `MultiplierAwareVar`）
-21. **悬停提示的定位**：`NHoverTipSet.CreateAndShow(owner, tip)` 之后**必须** `SetAlignment(owner, HoverTipAlignment.Center)`（或 Left/Right）+ `SetFollowOwner()`，否则提示节点停在 (0,0)，实测就是"提示跑到屏幕左上角"。参考 BaseLib `Patches/UI/CharacterSelectStartingRelicsPatch.cs` 的遗物悬停写法
+20. **run 级金币钩子只派发给订阅单例（2026-10-21 存钱实测无效的根因）**：`AfterModifyingGoldGained/AfterGoldGained` 只达 `runState.IterateHookListeners`（ModHelper 订阅的 CustomSingletonModel）；power 收不到 → 金币触发的 power 效果必须由 `Core/GamblerHooks` 转发（利滚利/存钱同款）。且 **CustomSingletonModel 子类不要在 Entry new**（BaseLib 在 ModelDb.Init 自动实例化，二次 new = 订阅被拒 + ERROR）
+21. **卡面数值必须用引擎的原生变量类型**（2026-10-17 游戏内实测踩坑）：卡面的 `BaseValue/EnchantedValue/PreviewValue` 只有**引擎认得的类型**才会跑完整预览管线（附魔 + 力量 + 虚弱 + 易伤 + 敏捷）。把伤害/格挡数值写在 `IntVar` 上 → 卡面永远裸值（玩家看到"正面不吃增伤、不吃虚弱"，与结算对不上）。**`DamageVar`/`BlockVar` 都有 `(string 名字, decimal 数值, ValueProp props)` 构造器**（元数据核实）→ 一张卡想放两套伤害/格挡数值就 `new DamageVar("HeadsDamage", 10, ValueProp.Move)`，自动与标准 `!D!` 行为一致。`DynamicVar.Name` 只有 getter，改不了名（要自定义名字必须走构造器重载）。**结算侧仍传 `BaseValue`**（文档明示 BaseValue 才是"改游戏状态"该用的值）。金币/能量**没有任何修饰/附魔通道**，只能用自定义变量（本项目 `MultiplierAwareVar`）
+22. **悬停提示的定位**：`NHoverTipSet.CreateAndShow(owner, tip)` 之后**必须** `SetAlignment(owner, HoverTipAlignment.Center)`（或 Left/Right）+ `SetFollowOwner()`，否则提示节点停在 (0,0)，实测就是"提示跑到屏幕左上角"。参考 BaseLib `Patches/UI/CharacterSelectStartingRelicsPatch.cs` 的遗物悬停写法
 
 ## 数值口径（v1.6，改卡前必读）
 

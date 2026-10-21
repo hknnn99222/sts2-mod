@@ -15,20 +15,26 @@ namespace GamblerMod.Core;
 //   - 回合开始：SpendTracker 清零（连续下注按回合计）+ 出千本回合必正层数清零
 //   - 战斗结束：金币费用/掷骰记录等战斗态复位
 //   - 利滚利：每次获得金币 +2/+3（防递归标记）
-// 实例化即订阅（CustomSingletonModel(HookType.Combat) 语义），在 Entry 中创建。
-// 保护费"正面 +3 金"已移至 Powers.HouseRulesPower（内容层订阅 GambleService.OnHeads）——
-// Core 不再持有任何卡牌专属数值（约束④）。
+//   - 存钱：每次获得金币 → 等量格挡（转发给 Powers.ShowdownPower）
+// 实例化即订阅（CustomSingletonModel(HookType.Combat) 语义）。
+// ⚠️ **不要在 Entry 里 new 本类**（2026-10-21 修）：BaseLib 会在 ModelDb.Init 自动实例化
+// 所有 CustomSingletonModel 子类——Entry 再 new 一次 = ModHelper 拒绝第二次订阅并打 ERROR
+// （游戏日志实测：Tried to subscribe ... GAMBLERMOD-GAMBLER_HOOKS, already been used）。
+// ⚠️ **run 级金币钩子只派发给订阅单例（IterateHookListeners），power 收不到**——
+// 需要金币触发的 power 效果必须在这里转发（存钱/利滚利同款；数值留在 power 文件，约束④）。
 public sealed class GamblerHooks : CustomSingletonModel
 {
     private static bool _inGoldGain;   // 利滚利防递归
 
-    public GamblerHooks() : base(HookType.Combat)
-    {
-        if (_subscribed) return; // 初始化重试时防重复订阅（ModHelper 按幂等 id 拒绝二次订阅）
-        _subscribed = true;
-    }
+    // 显式无参构造器是 BaseLib ModelDb.Init 反射实例化的入口（CreateInstanceDefaultCtor）
+    public GamblerHooks() : base(HookType.Combat) { }
 
-    private static bool _subscribed;
+    // ⚠️ 存钱的金额版钩子：在金币**入账前**拿到这一笔的最终数额
+    public override Task AfterModifyingGoldGained(Player player, decimal amount)
+    {
+        if (amount <= 0) return Task.CompletedTask;
+        return Powers.ShowdownPower.OnGoldGained(player, amount);
+    }
 
     public override Task AfterPlayerTurnStart(PlayerChoiceContext ctx, Player player)
     {
