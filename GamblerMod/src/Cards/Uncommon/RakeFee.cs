@@ -10,30 +10,26 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #65·加码（游戏设计 §5.2 / §5.5）：1 能，获得 1 点能量；本回合每花费过 10 金币额外 +1（至多 3；升级每 8 金）。
-// 钩子：花费追踪·转能量。
+// 罕见 #65·加码（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能，获得 1 点能量（升级基础 2）；
+// 每拥有 50 金币额外 +1 点能量，不设上限。钩子由「花费追踪·转能量」改为「持有量·转能量」——
+// 改读钱包余额而不是本回合流水，和"攒钱"路线绑定。
 public sealed class RakeFee : GamblerCard
 {
+    private const int GoldPerEnergy = 50;
+
     public RakeFee() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None) { }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-    [
-        new IntVar("Threshold", 10),
-        new IntVar("Cap", 3),
-    ];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new IntVar("Energy", 1)];
 
-    protected override void OnUpgrade() => DynamicVars["Threshold"].UpgradeValueBy(-2);
+    protected override void OnUpgrade() => DynamicVars["Energy"].UpgradeValueBy(1);
 
     protected override Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var extra = SpendTracker.SpentThisTurn / (int)DynamicVars["Threshold"].BaseValue;
-        var cap = (int)DynamicVars["Cap"].BaseValue;
-        // 「至多 !Cap!」修饰的是额外 +1 → 总额 = 1 + Cap（2026-10-16 审查修正 off-by-one）
-        var energy = 1 + (extra > cap ? cap : extra);
+        var energy = (int)DynamicVars["Energy"].BaseValue + Owner.Gold / GoldPerEnergy;
         return PlayerCmd.GainEnergy(energy, Owner);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "加码",
-        "#获得 1 点能量。本回合每花费过 *!Threshold! 金币*，额外 +1（至多 !Cap! 点）。");
+        "#获得 !Energy! 点能量。每拥有 *50 金币*，额外 +1 点能量。");
 }

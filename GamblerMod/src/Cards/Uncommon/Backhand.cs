@@ -11,47 +11,48 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace GamblerMod.Cards.Uncommon;
 
-// 罕见 #62·反水（游戏设计 §5.2 / §5.5）：1 能 + 2 金，赌博：正面 → 获得 9 格挡并造成 9 伤害；反面 → 5 格挡（升级 11/6）。
-// 钩子：赌博·格挡反击（守攻混合形态）。
+// 罕见 #62·反水（游戏设计 §5.2 / §5.5，v1.14 改版）：1 能 + 3 金，赌博：
+// 正面 → 10 格挡 + 10 伤害；反面 → 6 格挡 + 6 伤害（升级 12+12 / 7+7）。
+// 钩子：赌博·格挡反击（守攻混合形态；v1.14 反面前也带伤害，不再只是纯防御）。
 public sealed class Backhand : GamblerCard
 {
     public Backhand() : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.AnyEnemy)
     {
-        BaseGoldCost = 2;
+        BaseGoldCost = 3;
         IsGambleCard = true;
     }
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new BlockVar(5, ValueProp.Move),
-        new BlockVar("HeadsBlock", 9, ValueProp.Move),
-        // 原生 DamageVar/BlockVar（带名字的重载）：卡面自动算附魔/力量/虚弱（2026-10-17 修正）
-        new DamageVar("HeadsDamage", 9, ValueProp.Move),
+        new BlockVar(6, ValueProp.Move),
+        new BlockVar("HeadsBlock", 10, ValueProp.Move),
+        new DamageVar(6, ValueProp.Move),
+        new DamageVar("HeadsDamage", 10, ValueProp.Move),
     ];
 
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(1);
         DynamicVars["HeadsBlock"].UpgradeValueBy(2);
+        DynamicVars.Damage.UpgradeValueBy(1);
         DynamicVars["HeadsDamage"].UpgradeValueBy(2);
     }
 
     protected override async Task ApplyEffect(PlayerChoiceContext ctx, CardPlay play, bool heads)
     {
-        var block = heads ? (int)DynamicVars["HeadsBlock"].BaseValue : DynamicVars.Block.BaseValue;
-        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(block, ValueProp.Move), play);
+        await CreatureCmd.GainBlock(
+            Owner.Creature,
+            heads ? DynamicVars["HeadsBlock"].BaseValue : DynamicVars.Block.BaseValue,
+            ValueProp.Move, play, false);
 
-        if (heads)
-        {
-            await DamageCmd.Attack(DynamicVars["HeadsDamage"].BaseValue)
-                .FromCard(this, play)
-                .Targeting(play.Target)
-                .WithHitFx(HeadsHitFx, null, HeadsHitSfx)
-                .Execute(ctx);
-        }
+        await DamageCmd.Attack(heads ? DynamicVars["HeadsDamage"].BaseValue : DynamicVars.Damage.BaseValue)
+            .FromCard(this, play)
+            .Targeting(play.Target)
+            .WithHitFx(heads ? HeadsHitFx : TailsHitFx, null, heads ? HeadsHitSfx : null)
+            .Execute(ctx);
     }
 
     public override List<(string, string)>? Localization => new CardLoc(
         "反水",
-        "#花费 *2 金币*。\n硬币为正时：获得 !HeadsBlock! 格挡并造成 !HeadsDamage! 伤害；硬币为负时：获得 !B! 格挡。");
+        "#花费 *3 金币*。\n硬币为正时：获得 !HeadsBlock! 格挡并造成 !HeadsDamage! 伤害；硬币为负时：获得 !B! 格挡并造成 !D! 伤害。");
 }
