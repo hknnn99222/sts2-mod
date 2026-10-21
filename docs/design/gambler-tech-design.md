@@ -425,6 +425,8 @@ interface IFlipIntervenor   // 幸运筹码遗物实现（掷出反面后、结�
 | `Powers/ShowdownPower.cs` | 删掉永远不触发的 `AfterModifyingGoldGained` override；新增静态 `OnGoldGained(player, amount)` 承载数值逻辑 | 数值留在内容层（约束④）；`GetPower` 判定 + `amount + Amount` 计算均在 power 文件 |
 | `Entry.cs` | 移除 `new Core.GamblerHooks()` | BaseLib 在 `ModelDb.Init` 自动实例化所有 CustomSingletonModel 子类；Entry 再 new = ModHelper 拒绝二次订阅并打 ERROR（当日日志实测）。顺带删除 GamblerHooks 构造器里无效的 `_subscribed` 守卫（它跑在 base 订阅之后，拦不住） |
 
-**测试同步**：GamblerMod.Tests 新增两组契约——R9「power 不得覆写金币三钩子」、R10「Entry 不得实例化钩子单例」（均做过负向验证：塞回坏代码能 FAIL）。套件 9 → **11 组**。
+**测试同步**：GamblerMod.Tests 新增契约——R9「power 不得覆写金币三钩子」、R10「Entry 不得实例化钩子单例」（均做过负向验证：塞回坏代码能 FAIL）。
+
+**全量链路审计（2026-10-21，`8e79473`）**：按同一逻辑（"效果代码存在但运行时不可达"）扫全部 87 卡 + 13 power——①钩子可达性分型：战斗级钩子**可达** power（原版 45 个"回合开始"力量佐证；分红/千王/高利贷/保护费/存钱罐/轮盘/拼命 7 个 power 安全），run 级金币钩子是唯一例外（已修）；②施加端：13 个 power 全部有 Apply 来源卡，无死 power；③触发端：被动型有 GetPower 消费点，记账型（保本/流水）经 GoldCost.Pay→SpendTracker.Record 接线完整；④语义配对抽查（分红等）一致。**结论：无第二处死链。** 固化为 R11「每个 power 必须有施加来源」，套件现为 **12 组**（说明文档 [../testing/code-tests.md](../testing/code-tests.md)）。
 
 **附带说明**：日志里 `Unknown card ID: CARD.GAMBLERMOD-WIN_STREAK` 的 WARN 是旧存档进度里残留已删卡（连胜），无害、随存档自然过期。

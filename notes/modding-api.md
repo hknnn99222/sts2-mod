@@ -278,6 +278,8 @@ PowerCmd.Apply<T>(PlayerChoiceContext ctx, Creature target, decimal amount,
 
 引擎的金币三钩子（`ModifyGoldGained` / `AfterModifyingGoldGained(Player, decimal)` / `AfterGoldGained(Player)`）在 `PlayerCmd.GainGold` 里只派发给 `runState.IterateHookListeners(combatState)`——**那是 ModHelper 订阅的单例模型列表（CustomSingletonModel），生物身上的 power 不在其中**（IL 反汇编 GainGold 状态机核实；原版全池没有任何"获得金币时触发"的力量，佐证此路不通）。需要金币触发的 power 效果必须由 `Core/GamblerHooks`（单例）转发到 power 的静态方法（`GetPower` 判定 + 数值留在 power 文件，利滚利/存钱同款）。战斗级钩子（回合开始/伤害等）不受影响，power 正常收到。
 
+**★ 战斗级钩子可以直达 power（与金币例外相对）**：`AfterPlayerTurnStart` / `ModifyDamage/Additive` / `AfterAttack` 等带 `ICombatState` 的钩子会派发到生物身上的 power——原版有 **45 个**"在你的回合开始时…"的力量（BARRICADE/CREATIVE_AI 等）佐证。所以 power 覆写战斗钩子是安全的；**只有 run 级金币三钩子**（ModifyGoldGained / AfterModifyingGoldGained / AfterGoldGained）不走生物 power，必须经订阅单例（GamblerHooks）转发。
+
 **★ CustomSingletonModel 子类不要在 Entry 里 new**：BaseLib 在 `ModelDb.Init` 会反射实例化（`CreateInstanceDefaultCtor`，要求 public 无参构造器）所有该类子类；Entry 再 new 一次 → ModHelper 以幂等 id 拒绝第二次订阅并打 ERROR（实测日志 `Tried to subscribe ... already been used`）。正确做法：只在 Entry 订阅 C# 事件（OnHeads 等），钩子单例交给 BaseLib 实例化。
 
 ## ModHelper 可用方法（XML 文档摘要）

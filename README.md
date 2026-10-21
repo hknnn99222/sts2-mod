@@ -36,7 +36,8 @@ sts2-mod\
 │       │                     SpendTracker / GoldCostCheckPatch / GamblerHooks（全局钩子）
 │       ├── Character\        角色 + 职业卡池
 │       ├── Cards\            85 张常规卡（Basic/Common/Uncommon/Rare + 单例仓）
-│       ├── Powers\           13 个力量 + 单例仓
+│       ├── Powers\           13 个力量
+│   GamblerMod.Tests/     代码级自校验测试（12 组契约，见 docs/testing/code-tests.md） + 单例仓
 │       ├── UI\               头顶「风头正盛」倍率徽章（倍率 x1.5 + 掷币 正/反）
 │       └── Relics\           幸运筹码 + 单例仓
 ├── lib\                      编译引用（sts2 / 0Harmony / GodotSharp / BaseLib + sts2.xml API 文档）
