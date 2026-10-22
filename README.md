@@ -42,7 +42,7 @@ sts2-mod\
 │       └── Relics\           幸运筹码 + 单例仓
 ├── lib\                      编译引用（sts2 / 0Harmony / GodotSharp / BaseLib + sts2.xml API 文档）
 ├── docs\
-│   ├── design\               游戏设计（gambler-design.md v1.5）+ 技术设计（gambler-tech-design.md）
+│   ├── design\               游戏设计（gambler-design.md v1.15）+ 技术设计 + 美术资源清单（gambler-art-assets.md）
 │   └── testing\              测试文档
 ├── notes\modding-api.md      Modding API 笔记（含 BaseLib 使用要点/踩坑记录）
 └── HANDOFF.md                交接摘要（必读：引擎语义、加卡流程、历史事故）
