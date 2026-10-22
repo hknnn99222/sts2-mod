@@ -29,6 +29,13 @@ public sealed class DividendPower : CustomPowerModel
         await CreatureCmd.Heal(player.Creature, Amount, true);
     }
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/dividend_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/dividend_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "分红",
         "#每回合开始支付 *3 金币*，回复 !Amount! 点生命。",

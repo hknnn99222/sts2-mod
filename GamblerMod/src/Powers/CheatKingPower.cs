@@ -37,6 +37,13 @@ public sealed class CheatKingPower : CustomPowerModel
         return Task.CompletedTask;
     }
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/cheat_king_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/cheat_king_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "千王",
         "#每回合前 !Amount! 次掷出*正面*时，获得 1 次*必正*。",

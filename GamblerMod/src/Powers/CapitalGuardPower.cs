@@ -13,6 +13,13 @@ public sealed class CapitalGuardPower : CustomPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/capital_guard_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/capital_guard_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "保本",
         "#每次花费金币，获得等量敏捷。",

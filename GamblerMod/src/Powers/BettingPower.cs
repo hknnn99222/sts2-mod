@@ -30,6 +30,13 @@ public sealed class BettingPower : CustomPowerModel
         return lost * Amount / 100m;   // Amount = 10（10%）/ 15（15%）
     }
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/betting_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/betting_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "押注",
         "#你造成的伤害获得「已失去生命」的 !Amount!% 加成。",

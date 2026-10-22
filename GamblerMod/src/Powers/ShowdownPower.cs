@@ -33,6 +33,13 @@ public sealed class ShowdownPower : CustomPowerModel
             new BlockVar(amount + power.Amount, ValueProp.Move), null);
     }
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/showdown_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/showdown_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "存钱",
         "#每次获得金币时，获得等量格挡。",

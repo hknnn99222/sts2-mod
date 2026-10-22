@@ -10,6 +10,13 @@ public sealed class CompoundInterestPower : CustomPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/compound_interest_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/compound_interest_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "利滚利",
         "#本场战斗中你每次获得金币时，额外获得 !Amount! 金币。",

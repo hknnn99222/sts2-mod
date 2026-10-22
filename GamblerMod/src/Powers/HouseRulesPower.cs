@@ -32,6 +32,13 @@ public sealed class HouseRulesPower : CustomPowerModel
         await PlayerCmd.GainGold(Amount, player, false);
     }
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/house_rules_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/house_rules_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "赌场规则",
         "#每回合开始获得 !Amount! 金币。每次掷出*正面*，额外获得 3 金币。",

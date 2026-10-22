@@ -45,6 +45,13 @@ public sealed class RoulettePower : CustomPowerModel
         await PlayerCmd.GainGold(selfGold, player, false);
     }
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/roulette_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/roulette_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "俄罗斯轮盘",
         "#每回合开始随机开一枪：自己受 3 伤并得 5 金，或对随机敌人造成 10 伤。",

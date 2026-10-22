@@ -20,6 +20,13 @@ public sealed class PiggyBankPower : CustomPowerModel
         await PlayerCmd.GainGold(Amount, player, false);
     }
 
+    // 能力图标（v1.17，美术资源已入 pck）
+    public override string? CustomPackedIconPath =>
+        "res://GamblerMod/images/powers/piggy_bank_power.png";
+
+    public override string? CustomBigIconPath =>
+        "res://GamblerMod/images/powers/big/piggy_bank_power_big.png";
+
     public override List<(string, string)>? Localization => new PowerLoc(
         "存钱罐",
         "#每回合开始获得 !Amount! 金币。",
