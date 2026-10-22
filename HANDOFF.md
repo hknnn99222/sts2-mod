@@ -8,7 +8,7 @@
 - **目标**：为 Slay the Spire 2 开发自定义角色"赌徒"（金币混合费用 + 掷硬币赌博）
 - **仓库**：`D:\worlk\sts2-mod`，远程 `github.com:hknnn99222/sts2-mod.git`（main，提交信息用中文）
 - **阶段**：**代码全量完成（85 张常规卡 = 普 24 / 罕 35 / 稀 26，v1.10–v1.15 三档已逐张重调，常规类型 27 攻 / 45 技 / 13 能）**。M0/M1 游戏内验收通过；**M2-M5 + v1.7–v1.15 全批待游戏内验收**，里程碑见技术设计 §6
-- **发布**：仓库根 `GamblerMod_v0.3.0.zip` 是旧包（未跟踪，已过期）；**当前 mod 版本 v0.6.0**（`Entry.cs` 的 `Version` 与 `GamblerMod.json` 的 `version` 已对齐）
+- **发布**：仓库根旧包 `GamblerMod_v0.3.0.zip` 已过期（未跟踪）；**当前 mod 版本 v0.7.0**（`Entry.cs` 的 `Version` 与 `GamblerMod.json` 的 `version` 已对齐），发布包 `GamblerMod_v0.7.0.zip`
 
 ## 当前状态（2026-10-21）
 
@@ -31,7 +31,7 @@
 | 美术 | 部分完成 | 选人封面（486×720）+ 选人背景（1280×720 全屏场景）已上线；**卡面立绘仍是占位图（NoPE）**。完整资源清单（89 卡图 / 13 能力图标 / 1 遗物 / 角色 UI / 硬币 UI，含实测尺寸与命名）见 [gambler-art-assets.md](docs/design/gambler-art-assets.md) |
 | 角色包装 | ✅ 完成 | 角色设定（维克托"九指"科因）、台词包、金色名字色（`e8c34a`）、尖塔城市/先古之民设定已进游戏 |
 
-~~`GamblerMod.json` 里 `version` 还是 `v0.1.0`~~ 已修（2026-10-19 `cff5c08`）：Entry 与 json 均为 **v0.6.0**。
+~~`GamblerMod.json` 里 `version` 还是 `v0.1.0`~~ 已修（2026-10-19 `cff5c08`）：Entry 与 json 均为 **v0.6.0**（2026-10-22 已升到 **v0.7.0**）。
 
 **工作区状态（2026-10-21）**：干净，HEAD = `5cb6347` = origin/main（v1.15 + 全池改名 29 张均已提交推送）。v1.8–v1.15 各批次明细见上表。**两份 xlsx 纳入 git 跟踪**；markdown 仍是权威源，数据以卡牌代码为准，改卡后跑 `python tools/gen_card_table.py --audit` 对账。v1.7 版工作簿备份（`*_v17_backup.xlsx`，已 gitignore）确认无误后可删。
 
