@@ -41,19 +41,19 @@ STR_RE = re.compile(r'"((?:[^"\\]|\\.)*)"')
 
 # ---- 功能分类口径（详见 docs/design/gambler-cards-classified.md）----
 FUNC = {
-    "伤害": ["试手气", "底注", "加注", "买定离手", "打手", "悬红", "乘胜", "抽税", "梭哈", "连续下注",
+    "伤害": ["打击", "试手气", "底注", "加注", "买定离手", "打手", "悬红", "乘胜", "抽税", "梭哈", "连续下注",
              "清台", "双倍下注", "叠注", "摇骰", "通杀", "押宝", "翻盘",
              "暗注", "孤注一掷", "俄罗斯轮盘", "爆机", "同花顺", "打庄", "追击",
              "全下", "摊牌", "满贯", "偷天换日", "收网", "赌命"],
     "产金": ["本钱", "筹码", "返水", "捡漏", "人头费", "派彩", "抽头", "高利贷", "保护费", "兑现", "数牌",
              "清仓", "利滚利", "弃牌", "放血", "翻本", "回收"],
-    "格挡": ["护盘", "跟注", "收手", "记账", "封盘", "保险", "还手", "留一手", "止损", "保本", "存钱", "过路费"],
+    "格挡": ["防御", "护盘", "跟注", "收手", "记账", "封盘", "保险", "还手", "留一手", "止损", "保本", "存钱", "过路费"],
     "资源": ["摸牌", "典当", "充能", "流水", "见好就收", "底气", "换牌", "底牌", "提现", "分红", "押注"],
     "操控·辅助": ["暗记", "假币", "手气正旺", "加码", "赌神", "出千", "倍投", "发牌", "拼命", "千王", "瞒天过海", "再加注", "重注", "做手脚", "单双"],
     "debuff": ["放水", "暗算"],
 }
 FUNC_ORDER = ["伤害", "产金", "格挡", "资源", "操控·辅助", "debuff"]
-MECH_COLS = ["附加费", "可变投入", "赌博", "多掷", "真赌", "风头·兑现", "风头·只读条件", "花费追踪",
+MECH_COLS = ["基础", "附加费", "可变投入", "赌博", "多掷", "真赌", "风头·兑现", "风头·只读条件", "花费追踪",
              "击杀产金", "即时产金", "引擎产金", "做局", "条件·赌博计数", "自伤/自消耗", "特异",
              "出千·确定性", "赌命·血线"]
 
@@ -180,6 +180,8 @@ def gamble_cell_of(c: dict) -> str:
 def mechs_of(c: dict, hook: str) -> list[str]:
     r = []
     n = c["name"]
+    if n in ("打击", "防御"):
+        r.append("基础")
     if n in VOLUME:
         r.append("可变投入")
     elif hook.startswith("附加费"):
@@ -265,7 +267,7 @@ def read_xlsx_cards(path: str, sheet: str) -> list[dict]:
 
 
 # ============================================================ 对账
-NON_MOD_CARDS = {"打击", "防御"}      # §3 里的原版牌，不在 mod 代码里
+NON_MOD_CARDS = set()                # v1.16 起打击/防御已是 mod 自己的卡（Basic/StrikeGambler、DefendGambler）
 
 
 def audit(cards: list[dict]) -> tuple[list[str], list[str]]:
@@ -463,7 +465,7 @@ def build(cards: list[dict]) -> None:
         if not c["mechs"]:
             assert c["name"] in SPECIAL, f'{c["name"]} 未解析出机制标签，钩子=「{d["hook"]}」'
 
-    assert len(cards) == 87, f"卡数应为 87（起始 2 + 常规 85），实际 {len(cards)}"
+    assert len(cards) == 89, f"卡数应为 89（起始 4 + 常规 85），实际 {len(cards)}"
     for f, ns in FUNC.items():
         got = sum(1 for c in cards if c["func"] == f)
         assert got == len(ns), f"{f}: 名单 {len(ns)} 张，实际 {got} 张"
@@ -480,7 +482,7 @@ def build(cards: list[dict]) -> None:
     last_col = len(headers) + 1
     ver = current_version()
     n_regular = sum(1 for c in cards if c["rarity"] != "Basic")
-    setup_sheet(ws, title=f"赌徒卡池 · 功能分类总览（{ver}，{len(cards)} 张：起始 2 + 常规 {n_regular}）", last_col=last_col)
+    setup_sheet(ws, title=f"赌徒卡池 · 功能分类总览（{ver}，{len(cards)} 张：起始 4 + 常规 {n_regular}）", last_col=last_col)
     for i, h in enumerate(headers, start=2):
         ws.cell(row=4, column=i, value=h)
     style_header_row(ws, row_num=4, col_start=2, col_end=last_col)
@@ -601,7 +603,7 @@ def build(cards: list[dict]) -> None:
 
     # --- md ---
     L = []
-    L.append(f"# 赌徒卡池 · 功能分类（{ver}，{len(cards)} 张：起始 2 + 常规 {n_regular}）\n")
+    L.append(f"# 赌徒卡池 · 功能分类（{ver}，{len(cards)} 张：起始 4 + 常规 {n_regular}）\n")
     L.append("数据源：`GamblerMod/src/Cards/*.cs`（数值为 `CanonicalVars` 真实基础值，占位符已替换）；"
              "编号／档位／升级后取自 `docs/design/gambler-design.md` §5、§3。"
              "本文件由 `tools/gen_card_table.py` 生成，改卡后重跑即可同步。\n")

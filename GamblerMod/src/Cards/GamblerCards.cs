@@ -3,11 +3,13 @@ namespace GamblerMod.Cards;
 // 卡牌单例仓：所有卡实例必须在 Entry.Initialize（池合并前）创建——
 // CustomCardModel 构造器自动注册进池/ModelDb，晚于池合并会抛异常（BaseLib 源码语义）。
 // 加新卡：写卡类 → 这里加一行属性 + Init 一行 → Entry 不动。
-// 当前进度：85/85 全量（起始 2 + 普 24 + 罕 35 + 稀 26，含 M2 做局三件、v1.6「风头正盛」8 张、v1.7 扩池 29 张；
+// 当前进度：85/85 全量（起始 4 + 普 24 + 罕 35 + 稀 26，含 M2 做局三件、v1.6「风头正盛」8 张、v1.7 扩池 29 张；
 // 2026-10-17 删 4 张自掷牌 豹子/老虎机/连庄/连胜，卡池 80→76）。
 public static class GamblerCards
 {
-    // Basic（起始签名牌）
+    // Basic（起始牌：打击/防御 + 两张签名牌）
+    public static Basic.StrikeGambler StrikeGambler { get; private set; } = null!;
+    public static Basic.DefendGambler DefendGambler { get; private set; } = null!;
     public static Basic.PrivateStash PrivateStash { get; private set; } = null!;
     public static Basic.TryYourLuck TryYourLuck { get; private set; } = null!;
 
@@ -105,6 +107,8 @@ public static class GamblerCards
 
     public static void Init()
     {
+        StrikeGambler = new Basic.StrikeGambler();
+        DefendGambler = new Basic.DefendGambler();
         PrivateStash = new Basic.PrivateStash();
         TryYourLuck = new Basic.TryYourLuck();
 

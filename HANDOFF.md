@@ -28,14 +28,14 @@
 | **v1.9 四轴改造** | ✅ 代码完成，**待游戏内验收** | 按原版角色（亡灵契约师）的机制浓度重排：金币流水 / 出千·确定性 / 气势·倍率 / 赌命·下注 四条**能各自独立成型**的引擎（设计 §2.9）。+9 张（出千 5：发牌/偷天换日/收网/千王/瞒天过海；赌命 4：血本/放血/拼命/赌命）→ 卡池 76→**85（24/35/26）**；暗记 1→2 次必正。**新增 Core 接口** `GambleService.ForcedHeadsRemaining` / `ConsumeForcedHeads`；**新增 2 个力量** `BettingPower`（按已失去生命加成伤害）/ `CheatKingPower`（每回合前 N 次正面→1 次必正，**封顶防无限循环**）。验收清单见 test-plan「四·七」 |
 | **v1.8 游玩体验优化** | ✅ 代码完成（已部署），**待游戏内验收（本轮重点）** | 9 条体验诉求全落地：①「赌博」「风头正盛」**注册为真词条**（`Core/GamblerKeywords.cs` + pck 里 `localization/zhs/card_keywords.json`，卡面自动拼词条名、悬停出提示）②14 张赌博牌描述统一「硬币为正时…硬币为负时…」③**卡牌图鉴 76 张全可见**（`GamblerCardPool.SeenByDefault => true`）④头顶倍率徽章可悬停（`MouseFilter = Pass` + `static_hover_tips.json`）⑤赌博牌正/反面数值改吃附魔（`Core/CardValueVars.cs`）⑥兑现卡面金币随倍率跳动 ⑦⑧⑨按用户原句写三条提示文案。**并删 4 张自掷牌**（豹子/老虎机/连庄/连胜）→ 卡池 80→76。验收清单见 test-plan「四·五-A」 |
 | v1.7 收尾改动 | ✅ 已部署 | ①**全池改名成真实赌业术语**（底注/筹码/打手/悬红/护盘/返水/清台/派彩/重注/假币/保护费/爆机/单双/打庄/弃牌/暗算/见好就收/兑现/通杀/存钱/追击/止损/捡漏/人头费/抽税/记账/封盘/充能/再加注/押宝/还手/加码/回收/底气/清仓/翻盘/暗注/留一手/换牌/全下/摊牌/保本/过路费/倍投/提现；起始 私房钱→**本钱**）②**4 张攻击牌转防御**（围殴→封盘、清点→回收、打水漂→留一手、金库→保本，格挡牌 9→13）③倍率徽章修好 + 校准 ④3 张新赌博牌按当期定价口径校准 |
-| 美术 | 部分完成 | 选人封面（486×720）+ 选人背景（1280×720 全屏场景）已上线；**卡面立绘仍是占位图（NoPE）**。完整资源清单（87 卡图 / 13 能力图标 / 1 遗物 / 角色 UI / 硬币 UI，含实测尺寸与命名）见 [gambler-art-assets.md](docs/design/gambler-art-assets.md) |
+| 美术 | 部分完成 | 选人封面（486×720）+ 选人背景（1280×720 全屏场景）已上线；**卡面立绘仍是占位图（NoPE）**。完整资源清单（89 卡图 / 13 能力图标 / 1 遗物 / 角色 UI / 硬币 UI，含实测尺寸与命名）见 [gambler-art-assets.md](docs/design/gambler-art-assets.md) |
 | 角色包装 | ✅ 完成 | 角色设定（维克托"九指"科因）、台词包、金色名字色（`e8c34a`）、尖塔城市/先古之民设定已进游戏 |
 
 ~~`GamblerMod.json` 里 `version` 还是 `v0.1.0`~~ 已修（2026-10-19 `cff5c08`）：Entry 与 json 均为 **v0.6.0**。
 
 **工作区状态（2026-10-21）**：干净，HEAD = `5cb6347` = origin/main（v1.15 + 全池改名 29 张均已提交推送）。v1.8–v1.15 各批次明细见上表。**两份 xlsx 纳入 git 跟踪**；markdown 仍是权威源，数据以卡牌代码为准，改卡后跑 `python tools/gen_card_table.py --audit` 对账。v1.7 版工作簿备份（`*_v17_backup.xlsx`，已 gitignore）确认无误后可删。
 
-- **代码级自校验测试（2026-10-21 新增，[docs/testing/code-tests.md](docs/testing/code-tests.md) 有完整说明：每组规则防的真实事故 + 假阳性校准口径 + 负向验证记录）**：`cd GamblerMod.Tests && dotnet run`——12 组契约测试（自动先构建主项目再跑；退出码 = 失败组数）。覆盖：ApplyEffect 空转、描述 `!Var!` ↔ CanonicalVars 对账、承诺→命令映射、伤害/格挡变量必须原生 DamageVar/BlockVar、OnUpgrade 有效（认 IsUpgraded 模式）、赌博牌真用 heads 且正负两支齐全、描述 `#` 开头、全卡注册+卡名唯一、MultiplierService 纯逻辑、R9 power 不得覆写金币钩子、R10 Entry 不得实例化钩子单例、R11 每个 power 必须有施加来源（死 power 检测）。2026-10-21 按「存钱 bug」逻辑做过一次全量链路审计：87 卡 + 13 power 的施加→触发闭环全部接通（战斗钩子可达 power 有原版 45 个回合开始力量佐证；金币钩子是唯一例外，已由 GamblerHooks 转发解决）。**改卡后建议跑一遍**。首轮抓到并修复：押注描述缺「硬币为负」分支（实现本来就对）。
+- **代码级自校验测试（2026-10-21 新增，[docs/testing/code-tests.md](docs/testing/code-tests.md) 有完整说明：每组规则防的真实事故 + 假阳性校准口径 + 负向验证记录）**：`cd GamblerMod.Tests && dotnet run`——12 组契约测试（自动先构建主项目再跑；退出码 = 失败组数）。覆盖：ApplyEffect 空转、描述 `!Var!` ↔ CanonicalVars 对账、承诺→命令映射、伤害/格挡变量必须原生 DamageVar/BlockVar、OnUpgrade 有效（认 IsUpgraded 模式）、赌博牌真用 heads 且正负两支齐全、描述 `#` 开头、全卡注册+卡名唯一、MultiplierService 纯逻辑、R9 power 不得覆写金币钩子、R10 Entry 不得实例化钩子单例、R11 每个 power 必须有施加来源（死 power 检测）。2026-10-21 按「存钱 bug」逻辑做过一次全量链路审计：89 卡 + 13 power 的施加→触发闭环全部接通（战斗钩子可达 power 有原版 45 个回合开始力量佐证；金币钩子是唯一例外，已由 GamblerHooks 转发解决）。**改卡后建议跑一遍**。首轮抓到并修复：押注描述缺「硬币为负」分支（实现本来就对）。
 **测试文档**：[docs/testing/test-plan.md](docs/testing/test-plan.md)（M1-M5 + v1.7–v1.15 各批验收清单 + 已知简化偏离列表）。当前待验收入口：v1.8「四·五-A」（词条/图鉴/徽章/附魔）、v1.9「四·七」（四轴新卡）、v1.10–v1.15 各批次条目（数值以当前代码为准，旧批次清单里的数值被后续版本覆盖的以最新为准）。
 
 ## 已核实的事实（勿重复调研）

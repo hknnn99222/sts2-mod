@@ -165,8 +165,8 @@ internal static class CardContracts
             if (!Regex.IsMatch(regSrc, @"new\s+\w+\." + c.ClassName + @"\("))
                 f.Add($"{c.Title}（{c.ClassName}）：卡文件存在但 GamblerCards.Init 没有注册它——这张牌进不了卡池");
         }
-        f.AddRange(cards.Count == 87 ? Array.Empty<string>()
-            : [$"卡文件总数 {cards.Count} ≠ 87（起始 2 + 常规 85）——有文件被增删但没同步口径"]);
+        f.AddRange(cards.Count == 89 ? Array.Empty<string>()
+            : [$"卡文件总数 {cards.Count} ≠ 89（起始 4 + 常规 85）——有文件被增删但没同步口径"]);
     }
 
     static string Trunc(string s) => s.Length <= 60 ? s : s[..60] + "…";
